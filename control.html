@@ -6,6 +6,25 @@
     <title>Control – Ce Spun Românii</title>
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Definire componentă Alpine.js pentru control -->
+    <script>
+      function gameControl() {
+        return {
+          currentQuestion: {
+            text: "Nicio întrebare încă...",
+            answers: [],
+          },
+          revealAnswers() {
+            console.log("Reveal answers");
+            // aici vei adăuga logica de dezvăluire a răspunsurilor
+          },
+          nextQuestion() {
+            console.log("Next question");
+            // aici vei adăuga logica de încărcare a următoarei întrebări
+          },
+        };
+      }
+    </script>
     <!-- Alpine.js for reactive UI -->
     <script
       defer
@@ -23,10 +42,7 @@
       <!-- Întrebare curentă -->
       <div class="mb-6">
         <h2 class="text-xl font-semibold">Întrebarea:</h2>
-        <p
-          x-text="currentQuestion.text || 'Nicio întrebare încă...'"
-          class="mt-2 text-lg"
-        ></p>
+        <p x-text="currentQuestion.text" class="mt-2 text-lg"></p>
       </div>
 
       <!-- Răspunsuri și scoruri -->
@@ -35,9 +51,7 @@
           <div class="bg-white rounded-lg shadow p-4">
             <div class="flex justify-between items-center">
               <span x-text="answer.text"></span>
-              <span class="font-bold" x-text="answer.points + ' pct'"
-                >0 pct</span
-              >
+              <span class="font-bold" x-text="answer.points + ' pct'"></span>
             </div>
           </div>
         </template>
@@ -70,7 +84,7 @@
     <script src="js/supabase-client.js"></script>
     <!-- Config general (culoare, setări) -->
     <script src="js/config.js"></script>
-    <!-- Logica de control -->
+    <!-- Logică suplimentară control (dacă e nevoie) -->
     <script src="js/control.js"></script>
   </body>
 </html>

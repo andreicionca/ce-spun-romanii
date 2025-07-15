@@ -4,32 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Control – Ce Spun Românii</title>
-    <!-- Tailwind (via CDN) -->
+    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js for reactive UI -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
   </head>
-  <body class="bg-gray-100 p-4">
-    <h1 class="text-3xl font-bold text-center mb-6">Panou Control</h1>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow p-4">
+      <h1 class="text-2xl font-bold text-center">
+        Panou Control – Ce Spun Românii
+      </h1>
+    </header>
 
-    <!-- aici va fi UI‑ul tău Alpine/JS pentru întrebări și scoruri -->
+    <main class="flex-1 p-6" x-data="gameControl()">
+      <!-- Întrebare curentă -->
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold">Întrebarea:</h2>
+        <p
+          x-text="currentQuestion.text || 'Nicio întrebare încă...'"
+          class="mt-2 text-lg"
+        ></p>
+      </div>
 
-    <!-- Supabase JS + inițializare client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/index.min.js"></script>
+      <!-- Răspunsuri și scoruri -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <template x-for="(answer, idx) in currentQuestion.answers" :key="idx">
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex justify-between items-center">
+              <span x-text="answer.text"></span>
+              <span class="font-bold" x-text="answer.points + ' pct'"
+                >0 pct</span
+              >
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Controale moderare -->
+      <div class="mt-8 space-x-2">
+        <button
+          @click="revealAnswers()"
+          class="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Arată răspunsuri
+        </button>
+        <button
+          @click="nextQuestion()"
+          class="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          Următoarea întrebare
+        </button>
+      </div>
+    </main>
+
+    <footer class="p-4 text-center text-gray-600">
+      © 2025 Ce Spun Românii
+    </footer>
+
+    <!-- Supabase JS (UMD) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Inițializare client Supabase -->
     <script src="js/supabase-client.js"></script>
-    <script>
-      (async () => {
-        const { data, error } = await supabase
-          .from("questions")
-          .select("id")
-          .limit(1);
-        if (error) {
-          console.error("❌ Supabase error:", error);
-        } else {
-          console.log("✅ Supabase OK, questions:", data);
-        }
-      })();
-    </script>
-    <!-- fișierele tale JS -->
+    <!-- Config general (culoare, setări) -->
     <script src="js/config.js"></script>
+    <!-- Logica de control -->
     <script src="js/control.js"></script>
   </body>
 </html>

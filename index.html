@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ce Spun Românii</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="text-center p-8 bg-white rounded-xl shadow-lg">
+      <h1 class="text-4xl font-bold mb-4">Ce Spun Românii</h1>
+      <button
+        id="startBtn"
+        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Începe Joc
+      </button>
+    </div>
+
+    <script>
+      document.getElementById("startBtn").addEventListener("click", () => {
+        location.href = "setup.html";
+      });
+    </script>
+  </body>
+</html>

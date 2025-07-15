@@ -7,11 +7,3 @@
   window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
   console.log("✅ Supabase initialized");
 })();
-(async () => {
-  const { data, error } = await supabase
-    .from("questions")
-    .select("id")
-    .limit(1);
-  if (error) console.error("❌ Supabase error:", error);
-  else console.log("✅ Supabase OK, questions:", data);
-})();

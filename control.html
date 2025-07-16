@@ -79,13 +79,19 @@
         cursor: pointer;
       }
 
-      .btn-answer:not(.selected):hover {
+      .btn-answer:not(.selected):not(.revealed):hover {
         background-color: rgba(255, 255, 255, 0.15);
       }
 
       .btn-answer.selected {
         background-color: rgba(34, 197, 94, 0.3);
         border-color: rgba(34, 197, 94, 0.8);
+      }
+
+      .btn-answer.revealed {
+        background-color: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.8);
+        cursor: default;
       }
 
       /* Mobile-first team selection */
@@ -162,6 +168,19 @@
       .minimal-btn:hover {
         background: rgba(255, 255, 255, 0.15);
       }
+
+      .show-btn {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.5);
+        color: white;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .show-btn:hover {
+        background: rgba(59, 130, 246, 0.3);
+      }
+
       /* Mobile-first clickable elements */
       .btn-pointable {
         cursor: pointer;
@@ -184,7 +203,6 @@
       }
       .score-box-center {
         background: rgba(255, 255, 255, 0.12);
-
         transition: all 0.2s ease;
         font-weight: bold;
       }
@@ -312,6 +330,7 @@
           >
             <i class="fas fa-stop mr-1"></i>Stop Joc
           </button>
+
           <button
             id="singleX"
             class="strike-btn px-2 md:px-4 py-2 md:py-3 rounded text-sm md:text-lg"
@@ -410,25 +429,6 @@
       </div>
     </div>
 
-    <!-- Next Question Modal -->
-    <div id="nextModal" class="modal">
-      <div
-        class="glass rounded-lg p-4 md:p-6 w-full max-w-sm text-center text-white modal-content"
-      >
-        <button class="close-modal text-white" data-modal="nextModal">
-          &times;
-        </button>
-        <h2 class="text-lg md:text-xl font-bold mb-4">Următoarea întrebare</h2>
-        <p class="mb-6 text-sm md:text-base">Treci la următoarea întrebare?</p>
-        <button
-          id="nextModalOk"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 md:px-6 py-2 md:py-3 rounded font-semibold text-sm md:text-base"
-        >
-          Continuă
-        </button>
-      </div>
-    </div>
-
     <script>
       const supabaseClient = supabase.createClient(
         CONFIG.SUPABASE_URL,
@@ -456,29 +456,59 @@
       const singleX = document.getElementById("singleX");
       const progressiveXBtns = document.querySelectorAll(".progressiveX");
       const assignModal = document.getElementById("assignModal");
-      const nextModal = document.getElementById("nextModal");
       const modalPoints = document.getElementById("modalPoints");
       const assignTeam1 = document.getElementById("assignTeam1");
       const assignTeam2 = document.getElementById("assignTeam2");
-      const nextModalOk = document.getElementById("nextModalOk");
 
       let questions = [],
         currentIndex = 0,
         currentQPoints = 0,
-        selectedTeam = null;
+        selectedTeam = null,
+        gameId = null,
+        showMode = false;
 
       // Stop game modal
       stopBtn.addEventListener("click", () => {
         stopModal.style.display = "flex";
       });
 
-      confirmStop.addEventListener("click", () => {
+      confirmStop.addEventListener("click", async () => {
+        await saveGameProgress();
         window.location.href = "index.html";
       });
 
       cancelStop.addEventListener("click", () => {
         stopModal.style.display = "none";
       });
+
+      // Save game progress
+      async function saveGameProgress() {
+        if (!gameId) return;
+
+        try {
+          await supabaseClient
+            .from("games")
+            .update({
+              team1_score: parseInt(team1Total.textContent),
+              team2_score: parseInt(team2Total.textContent),
+              status: "finished",
+            })
+            .eq("id", gameId);
+
+          // Save current question index
+          await supabaseClient.from("game_state").insert({
+            game_id: gameId,
+            action_type: "game_finished",
+            data: {
+              current_question: currentIndex,
+              team1_score: parseInt(team1Total.textContent),
+              team2_score: parseInt(team2Total.textContent),
+            },
+          });
+        } catch (error) {
+          console.error("Error saving game progress:", error);
+        }
+      }
 
       // Team selection
       assignTeam1.addEventListener("click", () => selectTeam("team1"));
@@ -517,26 +547,23 @@
         gameCodeWelcome.textContent = gameCode || "----";
         startBtn.addEventListener("click", startGame);
         questionPoints.addEventListener("click", showAssignModal);
-        nextModalOk.addEventListener("click", () => {
-          nextModal.style.display = "none";
-          changeQuestion(currentIndex + 1);
-        });
       });
 
       async function startGame() {
         try {
           const { data: game } = await supabaseClient
             .from("games")
-            .select("id,set_id,team1_name,team2_name")
+            .select("id,set_id,team1_name,team2_name,team1_score,team2_score")
             .eq("game_code", gameCode)
             .single();
 
+          gameId = game.id;
           team1Name.textContent = game.team1_name;
           team2Name.textContent = game.team2_name;
           assignTeam1.textContent = game.team1_name;
           assignTeam2.textContent = game.team2_name;
-          team1Total.textContent = "0";
-          team2Total.textContent = "0";
+          team1Total.textContent = game.team1_score || "0";
+          team2Total.textContent = game.team2_score || "0";
 
           const { data: items } = await supabaseClient
             .from("question_set_items")
@@ -594,6 +621,8 @@
             if (a) {
               btn.innerHTML = `<span>${num}. ${a.text}</span><span class="text-yellow-400">${a.points}</span>`;
               btn.onclick = () => toggleAnswer(btn, a.points);
+              btn.dataset.text = a.text;
+              btn.dataset.points = a.points;
             } else {
               btn.innerHTML = `<span>${num}.</span><span></span>`;
               btn.disabled = true;
@@ -618,6 +647,8 @@
               if (a) {
                 btn.innerHTML = `<span>${num}. ${a.text}</span><span class="font-bold text-yellow-400">${a.points}</span>`;
                 btn.onclick = () => toggleAnswer(btn, a.points);
+                btn.dataset.text = a.text;
+                btn.dataset.points = a.points;
               } else {
                 btn.innerHTML = `<span>${num}.</span><span></span>`;
                 btn.disabled = true;
@@ -631,9 +662,57 @@
       }
 
       function toggleAnswer(btn, pts) {
-        const sel = btn.classList.toggle("selected");
-        currentQPoints += sel ? pts : -pts;
-        questionPoints.textContent = currentQPoints;
+        if (showMode) {
+          // In show mode: only reveal/hide answers, no points calculation
+          btn.classList.toggle("revealed");
+
+          // Broadcast individual answer reveal
+          broadcastToDisplay({
+            type: "reveal_answer",
+            text: btn.dataset.text,
+            points: btn.dataset.points,
+            revealed: btn.classList.contains("revealed"),
+          });
+        } else {
+          // Normal mode - calculate points for selected answers
+          if (btn.classList.contains("revealed")) return;
+
+          const sel = btn.classList.toggle("selected");
+          currentQPoints += sel ? pts : -pts;
+          questionPoints.textContent = currentQPoints;
+        }
+      }
+
+      function toggleShowMode() {
+        showMode = !showMode;
+
+        if (showMode) {
+          // Broadcast show mode state
+          broadcastToDisplay({
+            type: "show_mode",
+            enabled: true,
+          });
+        } else {
+          // Reset any shown answers but keep points and selections
+          document.querySelectorAll(".btn-answer").forEach((btn) => {
+            btn.classList.remove("revealed");
+          });
+
+          // Broadcast show mode state
+          broadcastToDisplay({
+            type: "show_mode",
+            enabled: false,
+          });
+        }
+      }
+
+      function enterShowMode() {
+        showMode = true;
+        // Don't reset selections when entering show mode
+        broadcastToDisplay({
+          type: "show_mode",
+          enabled: true,
+        });
       }
 
       function showAssignModal() {
@@ -647,21 +726,82 @@
         }
       }
 
-      function submitPoints(team) {
+      async function submitPoints(team) {
+        const points = currentQPoints;
+
         if (team === "team1") {
-          team1Total.textContent =
-            parseInt(team1Total.textContent) + currentQPoints;
+          const newScore = parseInt(team1Total.textContent) + points;
+          team1Total.textContent = newScore;
         } else {
-          team2Total.textContent =
-            parseInt(team2Total.textContent) + currentQPoints;
+          const newScore = parseInt(team2Total.textContent) + points;
+          team2Total.textContent = newScore;
         }
+
+        // Save score update to database
+        try {
+          await supabaseClient
+            .from("games")
+            .update({
+              team1_score: parseInt(team1Total.textContent),
+              team2_score: parseInt(team2Total.textContent),
+            })
+            .eq("id", gameId);
+
+          // Log the scoring action
+          await supabaseClient.from("game_state").insert({
+            game_id: gameId,
+            action_type: "score_update",
+            data: {
+              team: team,
+              points: points,
+              question_index: currentIndex,
+            },
+          });
+        } catch (error) {
+          console.error("Error saving score:", error);
+        }
+
         assignModal.style.display = "none";
-        nextModal.style.display = "flex";
+
+        // Reset points but keep selections for show mode
+        currentQPoints = 0;
+        questionPoints.textContent = "0";
+
+        // Enter show mode automatically
+        enterShowMode();
       }
 
       function changeQuestion(newIdx) {
         if (newIdx >= 0 && newIdx < questions.length) {
+          // Exit show mode when changing questions
+          showMode = false;
           loadQuestion(newIdx);
+
+          // Broadcast question change and exit show mode
+          broadcastToDisplay({
+            type: "question_change",
+            question: questions[newIdx],
+            index: newIdx,
+          });
+
+          broadcastToDisplay({
+            type: "show_mode",
+            enabled: false,
+          });
+        }
+      }
+
+      async function broadcastToDisplay(data) {
+        if (!gameId) return;
+
+        try {
+          await supabaseClient.from("game_state").insert({
+            game_id: gameId,
+            action_type: data.type,
+            data: data,
+          });
+        } catch (error) {
+          console.error("Error broadcasting to display:", error);
         }
       }
 
@@ -676,6 +816,13 @@
           loadQuestion(currentIndex);
         }
       });
+
+      // Auto-save periodically
+      setInterval(async () => {
+        if (gameId) {
+          await saveGameProgress();
+        }
+      }, 30000); // Save every 30 seconds
     </script>
   </body>
 </html>

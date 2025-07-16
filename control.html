@@ -151,7 +151,6 @@
         background: rgba(220, 38, 38, 0.9);
       }
 
-      /* Mobile-first minimal buttons */
       .minimal-btn {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -163,7 +162,6 @@
       .minimal-btn:hover {
         background: rgba(255, 255, 255, 0.15);
       }
-
       /* Mobile-first clickable elements */
       .btn-pointable {
         cursor: pointer;
@@ -206,7 +204,7 @@
       }
 
       /* Desktop responsive adjustments */
-      @media (min-width: 1100px) {
+      @media (min-width: 769px) {
         #main {
           padding: 1rem;
         }
@@ -239,31 +237,6 @@
   </head>
   <body class="bg-gray-900 min-h-screen h-full text-white">
     <div id="main" class="flex flex-col h-screen max-w-screen-xl mx-auto">
-      <!-- Header Bar -->
-      <div class="flex justify-center items-center mb-2 md:mb-4 h-10 relative">
-        <button
-          id="stopGame"
-          class="absolute left-0 bg-red-600 hover:bg-red-700 text-white px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
-        >
-          <i class="fas fa-stop mr-1"></i>Stop
-        </button>
-
-        <div
-          id="gameCodeDisplay"
-          class="text-sm md:text-lg font-bold px-2 md:px-4 py-1 md:py-2 glass rounded"
-        >
-          ----
-        </div>
-
-        <button
-          id="fullscreenToggle"
-          class="absolute right-0 minimal-btn px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold"
-          title="Ecran complet"
-        >
-          <i class="fas fa-expand mr-1"></i>Ecran
-        </button>
-      </div>
-
       <!-- Init Screen -->
       <div
         id="initScreen"
@@ -333,6 +306,12 @@
 
         <!-- Navigation & Strikes -->
         <div class="flex justify-between items-center mt-3 md:mt-6">
+          <button
+            id="stopGame"
+            class="left-0 bg-red-600 hover:bg-red-700 text-white px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
+          >
+            <i class="fas fa-stop mr-1"></i>Stop Joc
+          </button>
           <button
             id="singleX"
             class="strike-btn px-2 md:px-4 py-2 md:py-3 rounded text-sm md:text-lg"
@@ -456,7 +435,6 @@
       const gameCode = new URLSearchParams(window.location.search).get("game");
       const initScreen = document.getElementById("initScreen");
       const controlPanel = document.getElementById("controlPanel");
-      const codeDisplay = document.getElementById("gameCodeDisplay");
       const gameCodeWelcome = document.getElementById("gameCodeWelcome");
 
       const startBtn = document.getElementById("startBtn");
@@ -481,25 +459,11 @@
       const assignTeam1 = document.getElementById("assignTeam1");
       const assignTeam2 = document.getElementById("assignTeam2");
       const nextModalOk = document.getElementById("nextModalOk");
-      const fsBtn = document.getElementById("fullscreenToggle");
 
       let questions = [],
         currentIndex = 0,
         currentQPoints = 0,
         selectedTeam = null;
-
-      // Fullscreen toggle
-      fsBtn.addEventListener("click", () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch((err) => {
-            console.log("Fullscreen failed:", err);
-          });
-          fsBtn.innerHTML = '<i class="fas fa-compress mr-1"></i>Ieșire';
-        } else {
-          document.exitFullscreen();
-          fsBtn.innerHTML = '<i class="fas fa-expand mr-1"></i>Ecran';
-        }
-      });
 
       // Stop game modal
       stopBtn.addEventListener("click", () => {
@@ -548,7 +512,6 @@
       });
 
       document.addEventListener("DOMContentLoaded", () => {
-        codeDisplay.textContent = gameCode || "----";
         gameCodeWelcome.textContent = gameCode || "----";
         startBtn.addEventListener("click", startGame);
         questionPoints.addEventListener("click", showAssignModal);
@@ -704,15 +667,6 @@
         console.log("Strike:", sym);
         // Here you would send the strike to the display via Supabase
       }
-
-      // Handle fullscreen changes
-      document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) {
-          fsBtn.innerHTML = '<i class="fas fa-compress mr-1"></i>Ieșire';
-        } else {
-          fsBtn.innerHTML = '<i class="fas fa-expand mr-1"></i>Ecran';
-        }
-      });
 
       // Handle window resize
       window.addEventListener("resize", () => {

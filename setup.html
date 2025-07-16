@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configurare Joc - Ce Spun Românii</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen"
+  >
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2">Configurare Joc</h1>
+        <p class="text-blue-200">Pregătește-ți jocul perfect!</p>
+      </div>
+
+      <!-- Setup Form -->
+      <div class="max-w-2xl mx-auto">
+        <!-- Step 1: Choose Game Type -->
+        <div
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6"
+        >
+          <h2 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-cog mr-2"></i>
+            Pas 1: Tip de Joc
+          </h2>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div
+              class="game-type-option border-2 border-transparent hover:border-green-400 rounded-lg p-4 cursor-pointer transition-all"
+              data-type="quick"
+            >
+              <div class="text-center">
+                <i class="fas fa-bolt text-3xl text-yellow-400 mb-2"></i>
+                <h3 class="text-white font-semibold">Joc Rapid</h3>
+                <p class="text-blue-200 text-sm">Set predefinit de întrebări</p>
+              </div>
+            </div>
+            <div
+              class="game-type-option border-2 border-transparent hover:border-blue-400 rounded-lg p-4 cursor-pointer transition-all"
+              data-type="custom"
+            >
+              <div class="text-center">
+                <i class="fas fa-wrench text-3xl text-blue-400 mb-2"></i>
+                <h3 class="text-white font-semibold">Joc Custom</h3>
+                <p class="text-blue-200 text-sm">Selectează întrebări manual</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Question Selection -->
+        <div
+          id="questionSection"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+        >
+          <h2 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-question-circle mr-2"></i>
+            Pas 2: Selectează Întrebările
+          </h2>
+
+          <!-- Quick Game Sets -->
+          <div id="quickGameSets" class="hidden">
+            <div class="space-y-3">
+              <div class="text-white mb-3">Alege un set predefinit:</div>
+              <div id="availableSets" class="space-y-2">
+                <!-- Sets will be loaded here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Game Questions -->
+          <div id="customGameQuestions" class="hidden">
+            <div class="mb-4">
+              <label class="block text-white font-semibold mb-2"
+                >Filtrează după categorie:</label
+              >
+              <select
+                id="categoryFilter"
+                class="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white"
+              >
+                <option value="">Toate categoriile</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <div class="text-white mb-2">
+                Întrebări selectate: <span id="selectedCount">0</span>
+              </div>
+              <div
+                id="availableQuestions"
+                class="space-y-2 max-h-64 overflow-y-auto"
+              >
+                <!-- Questions will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Team Setup -->
+        <div
+          id="teamSection"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+        >
+          <h2 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-users mr-2"></i>
+            Pas 3: Configurează Echipele
+          </h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-white font-semibold mb-2"
+                >Echipa 1</label
+              >
+              <input
+                type="text"
+                id="team1Name"
+                placeholder="Nume echipa 1"
+                class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label class="block text-white font-semibold mb-2"
+                >Echipa 2</label
+              >
+              <input
+                type="text"
+                id="team2Name"
+                placeholder="Nume echipa 2"
+                class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Game Creation -->
+        <div
+          id="createSection"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+        >
+          <h2 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-rocket mr-2"></i>
+            Pas 4: Creează Jocul
+          </h2>
+          <div class="text-center">
+            <button
+              id="createGameBtn"
+              class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-8 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              <i class="fas fa-play mr-2"></i>
+              CREEAZĂ JOC
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div
+          id="loadingSection"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+        >
+          <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-400 mb-4"></i>
+            <p class="text-white">Se creează jocul...</p>
+          </div>
+        </div>
+
+        <!-- Game Created -->
+        <div
+          id="gameCreatedSection"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+        >
+          <div class="text-center">
+            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-4">Joc Creat!</h2>
+            <div class="bg-black/30 rounded-lg p-4 mb-6">
+              <p class="text-blue-200 mb-2">Codul jocului:</p>
+              <div
+                class="text-4xl font-bold text-yellow-400 mb-2"
+                id="gameCodeDisplay"
+              ></div>
+              <p class="text-sm text-blue-200">
+                Împarte acest cod cu participanții
+              </p>
+            </div>
+            <div class="space-y-4">
+              <button
+                onclick="openControl()"
+                class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all"
+              >
+                <i class="fas fa-gamepad mr-2"></i>
+                DESCHIDE CONTROL MODERATOR
+              </button>
+              <button
+                onclick="openDisplay()"
+                class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all"
+              >
+                <i class="fas fa-tv mr-2"></i>
+                DESCHIDE DISPLAY PUBLIC
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="text-center mt-8">
+        <button
+          onclick="history.back()"
+          class="text-blue-200 hover:text-white transition-colors"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          Înapoi
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+      let gameType = null;
+      let selectedSetId = null;
+      let selectedQuestions = [];
+      let currentGameCode = null;
+
+      // Step 1: Game Type Selection
+      document.querySelectorAll(".game-type-option").forEach((option) => {
+        option.addEventListener("click", function () {
+          // Remove previous selection
+          document
+            .querySelectorAll(".game-type-option")
+            .forEach((opt) =>
+              opt.classList.remove(
+                "border-green-400",
+                "border-blue-400",
+                "bg-white/20"
+              )
+            );
+
+          // Add selection
+          this.classList.add("bg-white/20");
+          if (this.dataset.type === "quick") {
+            this.classList.add("border-green-400");
+          } else {
+            this.classList.add("border-blue-400");
+          }
+
+          gameType = this.dataset.type;
+          showQuestionSection();
+        });
+      });
+
+      async function showQuestionSection() {
+        document.getElementById("questionSection").classList.remove("hidden");
+
+        if (gameType === "quick") {
+          document.getElementById("quickGameSets").classList.remove("hidden");
+          document
+            .getElementById("customGameQuestions")
+            .classList.add("hidden");
+          await loadQuestionSets();
+        } else {
+          document
+            .getElementById("customGameQuestions")
+            .classList.remove("hidden");
+          document.getElementById("quickGameSets").classList.add("hidden");
+          await loadCategories();
+          await loadQuestions();
+        }
+      }
+
+      async function loadQuestionSets() {
+        const setsContainer = document.getElementById("availableSets");
+        setsContainer.innerHTML =
+          '<div class="text-blue-200">Se încarcă seturile...</div>';
+
+        try {
+          const sets = await getQuestionSets();
+
+          if (sets.length === 0) {
+            setsContainer.innerHTML =
+              '<div class="text-red-300">Nu s-au găsit seturi de întrebări.</div>';
+            return;
+          }
+
+          setsContainer.innerHTML = sets
+            .map(
+              (set) => `
+                    <div class="set-option border-2 border-transparent hover:border-yellow-400 rounded-lg p-4 cursor-pointer transition-all bg-white/10" data-set-id="${
+                      set.id
+                    }">
+                        <h3 class="text-white font-semibold">${set.name}</h3>
+                        <p class="text-blue-200 text-sm">${
+                          set.description || "Set de întrebări"
+                        }</p>
+                    </div>
+                `
+            )
+            .join("");
+
+          // Add click handlers
+          document.querySelectorAll(".set-option").forEach((option) => {
+            option.addEventListener("click", function () {
+              document
+                .querySelectorAll(".set-option")
+                .forEach((opt) =>
+                  opt.classList.remove("border-yellow-400", "bg-white/20")
+                );
+              this.classList.add("border-yellow-400", "bg-white/20");
+              selectedSetId = this.dataset.setId;
+              showTeamSection();
+            });
+          });
+        } catch (error) {
+          console.error("Error loading question sets:", error);
+          setsContainer.innerHTML =
+            '<div class="text-red-300">Eroare la încărcarea seturilor de întrebări.</div>';
+        }
+      }
+
+      async function loadCategories() {
+        try {
+          const categories = await getCategories();
+          const categoryFilter = document.getElementById("categoryFilter");
+
+          categoryFilter.innerHTML =
+            '<option value="">Toate categoriile</option>';
+          categories.forEach((category) => {
+            categoryFilter.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+          });
+
+          categoryFilter.addEventListener("change", loadQuestions);
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        }
+      }
+
+      async function loadQuestions() {
+        const questionsContainer =
+          document.getElementById("availableQuestions");
+        questionsContainer.innerHTML =
+          '<div class="text-blue-200">Se încarcă întrebările...</div>';
+
+        try {
+          const categoryId =
+            document.getElementById("categoryFilter").value || null;
+          const questions = await getQuestions(categoryId);
+
+          if (questions.length === 0) {
+            questionsContainer.innerHTML =
+              '<div class="text-red-300">Nu s-au găsit întrebări.</div>';
+            return;
+          }
+
+          questionsContainer.innerHTML = questions
+            .map(
+              (question) => `
+                    <div class="question-option border-2 border-transparent hover:border-blue-400 rounded-lg p-3 cursor-pointer transition-all bg-white/10" data-question-id="${question.id}">
+                        <div class="flex items-center justify-between">
+                            <span class="text-white">${question.text}</span>
+                            <span class="text-blue-200 text-sm">${question.answers.length} răspunsuri</span>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+
+          // Add click handlers
+          document.querySelectorAll(".question-option").forEach((option) => {
+            option.addEventListener("click", function () {
+              const questionId = this.dataset.questionId;
+
+              if (selectedQuestions.includes(questionId)) {
+                // Remove from selection
+                selectedQuestions = selectedQuestions.filter(
+                  (id) => id !== questionId
+                );
+                this.classList.remove("border-blue-400", "bg-blue-500/20");
+              } else {
+                // Add to selection
+                selectedQuestions.push(questionId);
+                this.classList.add("border-blue-400", "bg-blue-500/20");
+              }
+
+              document.getElementById("selectedCount").textContent =
+                selectedQuestions.length;
+
+              if (selectedQuestions.length > 0) {
+                showTeamSection();
+              }
+            });
+          });
+        } catch (error) {
+          console.error("Error loading questions:", error);
+          questionsContainer.innerHTML =
+            '<div class="text-red-300">Eroare la încărcarea întrebărilor.</div>';
+        }
+      }
+
+      function showTeamSection() {
+        document.getElementById("teamSection").classList.remove("hidden");
+
+        // Auto-advance when both teams are filled
+        document
+          .getElementById("team1Name")
+          .addEventListener("input", checkTeamNames);
+        document
+          .getElementById("team2Name")
+          .addEventListener("input", checkTeamNames);
+      }
+
+      function checkTeamNames() {
+        const team1 = document.getElementById("team1Name").value.trim();
+        const team2 = document.getElementById("team2Name").value.trim();
+
+        if (team1 && team2) {
+          document.getElementById("createSection").classList.remove("hidden");
+        }
+      }
+
+      document
+        .getElementById("createGameBtn")
+        .addEventListener("click", createGame);
+
+      async function createGame() {
+        const team1Name = document.getElementById("team1Name").value.trim();
+        const team2Name = document.getElementById("team2Name").value.trim();
+
+        if (!team1Name || !team2Name) {
+          alert("Te rog completează numele ambelor echipe");
+          return;
+        }
+
+        if (gameType === "quick" && !selectedSetId) {
+          alert("Te rog selectează un set de întrebări");
+          return;
+        }
+
+        if (gameType === "custom" && selectedQuestions.length === 0) {
+          alert("Te rog selectează cel puțin o întrebare");
+          return;
+        }
+
+        // Show loading
+        document.getElementById("createSection").classList.add("hidden");
+        document.getElementById("loadingSection").classList.remove("hidden");
+
+        try {
+          // Generate unique game code
+          let gameCode;
+          let attempts = 0;
+
+          do {
+            gameCode = generateGameCode();
+            attempts++;
+          } while (
+            (await checkGameCodeExists(gameCode)) &&
+            attempts < CONFIG.MAX_RETRIES
+          );
+
+          if (attempts >= CONFIG.MAX_RETRIES) {
+            throw new Error("Nu s-a putut genera un cod unic de joc");
+          }
+
+          // Create game in database
+          const gameData = {
+            game_code: gameCode,
+            set_id: gameType === "quick" ? selectedSetId : null,
+            team1_name: team1Name,
+            team2_name: team2Name,
+            team1_score: 0,
+            team2_score: 0,
+            status: "waiting",
+          };
+
+          const createdGame = await createGame(gameData);
+          currentGameCode = gameCode;
+
+          // Show success
+          document.getElementById("loadingSection").classList.add("hidden");
+          document
+            .getElementById("gameCreatedSection")
+            .classList.remove("hidden");
+          document.getElementById("gameCodeDisplay").textContent =
+            currentGameCode;
+        } catch (error) {
+          console.error("Error creating game:", error);
+          alert("Eroare la crearea jocului: " + error.message);
+          document.getElementById("loadingSection").classList.add("hidden");
+          document.getElementById("createSection").classList.remove("hidden");
+        }
+      }
+
+      function generateGameCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+      }
+
+      function openControl() {
+        window.open(`control.html?game=${currentGameCode}`, "_blank");
+      }
+
+      function openDisplay() {
+        window.open(`display.html?game=${currentGameCode}`, "_blank");
+      }
+    </script>
+  </body>
+</html>

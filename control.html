@@ -2,595 +2,382 @@
 <html lang="ro">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Control Panel - Ce Spun Românii</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
     <style>
-      .glass-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      .glass-card:hover {
-        background: rgba(255, 255, 255, 0.15);
-      }
-      .connection-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
+      /* Forțează landscape pe mobil */
+      @media screen and (orientation: portrait) {
+        body::before {
+          content: "";
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: #000;
+          z-index: 9999;
         }
-        50% {
-          opacity: 0.5;
+        body::after {
+          content: "Vă rugăm rotiți dispozitivul în mod landscape.";
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: #fff;
+          font-size: 1.25rem;
+          z-index: 10000;
         }
+        #main {
+          display: none !important;
+        }
+      }
+      .btn-answer.selected {
+        background-color: rgba(72, 187, 120, 0.7);
+      }
+      .btn-pointable {
+        cursor: pointer;
+      }
+      /* Modale */
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 50;
+        align-items: center;
+        justify-content: center;
       }
     </style>
   </head>
   <body
-    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen"
+    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen text-white"
   >
-    <div class="container mx-auto px-4 py-8">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-white mb-2">
-          <i class="fas fa-gamepad mr-3"></i>
-          CONTROL PANEL
-        </h1>
-        <p class="text-blue-200">Moderator - Ce Spun Românii</p>
-      </div>
-
-      <!-- Connection Status -->
+    <div
+      id="main"
+      class="container mx-auto p-4 flex flex-col h-screen justify-between"
+    >
+      <!-- Ecran inițial -->
       <div
-        id="connectionStatus"
-        class="glass-card rounded-xl p-6 mb-6 text-center"
+        id="initScreen"
+        class="flex flex-col items-center justify-center flex-grow space-y-6"
       >
-        <div class="connection-pulse">
-          <i class="fas fa-wifi text-4xl text-yellow-400 mb-4"></i>
-          <h2 class="text-2xl font-bold text-white mb-4">
-            Conectare la joc...
-          </h2>
-          <p class="text-blue-200">Se încarcă datele jocului</p>
+        <div
+          id="gameCodeDisplay"
+          class="text-6xl font-extrabold tracking-widest"
+        >
+          ----
         </div>
+        <button
+          id="startBtn"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1"
+        >
+          <i class="fas fa-play mr-2"></i>START JOC
+        </button>
       </div>
-
-      <!-- Game Info (Hidden initially) -->
-      <div id="gameInfo" class="glass-card rounded-xl p-6 mb-6 hidden">
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="text-center">
-            <h3 class="text-lg font-semibold text-white mb-2">Codul Jocului</h3>
-            <div class="bg-black/30 rounded-lg p-4">
-              <div
-                class="text-4xl font-bold text-yellow-400 mb-2"
-                id="gameCodeDisplay"
-              ></div>
-              <p class="text-sm text-blue-200">
-                Împărtășește acest cod pentru Display
-              </p>
+      <!-- Control Panel -->
+      <div
+        id="controlPanel"
+        class="hidden flex flex-col flex-grow justify-between"
+      >
+        <!-- Bara superioară cu echipe -->
+        <div class="flex justify-between items-center py-4">
+          <!-- Stânga: Echipa 1 -->
+          <div class="flex flex-col items-center">
+            <div id="team1Name" class="text-xl font-semibold">ECHIPA 1</div>
+            <div
+              id="team1Total"
+              class="mt-2 bg-black/30 px-4 py-2 rounded-lg text-3xl font-bold"
+            >
+              0
             </div>
           </div>
-          <div class="text-center">
-            <h3 class="text-lg font-semibold text-white mb-2">Echipele</h3>
-            <div class="space-y-2">
-              <div class="bg-blue-500/20 rounded-lg p-2">
-                <span class="text-white font-semibold" id="team1Name"></span>
-                <span class="text-yellow-400 font-bold ml-2" id="team1Score"
-                  >0</span
-                >
-              </div>
-              <div class="bg-purple-500/20 rounded-lg p-2">
-                <span class="text-white font-semibold" id="team2Name"></span>
-                <span class="text-yellow-400 font-bold ml-2" id="team2Score"
-                  >0</span
-                >
-              </div>
+          <!-- Centru: Puncte Întrebare -->
+          <div class="flex flex-col items-center">
+            <div class="text-lg">Puncte Întrebare</div>
+            <div
+              id="questionPoints"
+              class="btn-pointable mt-2 bg-black/30 px-6 py-2 rounded-lg text-4xl font-extrabold"
+            >
+              0
+            </div>
+          </div>
+          <!-- Dreapta: Echipa 2 -->
+          <div class="flex flex-col items-center">
+            <div id="team2Name" class="text-xl font-semibold">ECHIPA 2</div>
+            <div
+              id="team2Total"
+              class="mt-2 bg-black/30 px-4 py-2 rounded-lg text-3xl font-bold"
+            >
+              0
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Display Connection Instructions -->
-      <div
-        id="displayInstructions"
-        class="glass-card rounded-xl p-6 mb-6 hidden"
-      >
-        <div class="text-center">
-          <i class="fas fa-tv text-3xl text-blue-400 mb-4"></i>
-          <h3 class="text-xl font-bold text-white mb-4">
-            Instrucțiuni pentru Display
-          </h3>
-          <div class="bg-black/30 rounded-lg p-4 mb-4">
-            <p class="text-blue-200 mb-2">
-              1. Deschide pe un dispozitiv separat (TV/proiector):
-            </p>
-            <p class="text-white font-mono text-lg">
-              display.html?game=<span id="gameCodeForDisplay"></span>
-            </p>
+        <!-- Întrebare și răspunsuri -->
+        <div class="flex-grow overflow-auto">
+          <div id="currentQuestion" class="mb-4 text-2xl font-bold text-center">
+            Încărcare...
           </div>
-          <div class="text-left text-blue-200 space-y-2">
-            <p>
-              2. Sau navighează la homepage și introdu codul:
-              <span
-                class="text-yellow-400 font-bold"
-                id="gameCodeForHomepage"
-              ></span>
-            </p>
-            <p>3. Display-ul va afișa tabla de joc pentru spectatori</p>
-          </div>
+          <div id="answersGrid" class="grid grid-cols-2 gap-4"></div>
+        </div>
+        <!-- Navigare și X-uri -->
+        <div class="flex justify-between items-center py-4">
           <button
-            onclick="startGame()"
-            class="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-8 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            id="singleX"
+            class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold"
           >
-            <i class="fas fa-play mr-2"></i>
-            ÎNCEPE JOCUL
+            X
+          </button>
+          <div class="space-x-4">
+            <button
+              id="prevQ"
+              class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold"
+            >
+              <i class="fas fa-arrow-left mr-1"></i>PREV
+            </button>
+            <button
+              id="nextQ"
+              class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
+            >
+              NEXT<i class="fas fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+          <div class="flex space-x-2">
+            <button
+              data-count="1"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold"
+            >
+              X
+            </button>
+            <button
+              data-count="2"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold"
+            >
+              XX
+            </button>
+            <button
+              data-count="3"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold"
+            >
+              XXX
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal alocare puncte -->
+    <div id="assignModal" class="modal flex">
+      <div
+        class="bg-white rounded-2xl p-6 max-w-sm w-full text-center text-black"
+      >
+        <h2 class="text-xl font-bold mb-4">Alege echipa</h2>
+        <p class="mb-6">
+          La ce echipă adaugi cele <span id="modalPoints">0</span> puncte?
+        </p>
+        <div class="flex justify-around">
+          <button
+            id="assignTeam1"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold"
+          >
+            ECHIPA
+          </button>
+          <button
+            id="assignTeam2"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold"
+          >
+            ECHIPA
           </button>
         </div>
       </div>
-
-      <!-- Game Control (Hidden initially) -->
-      <div id="gameControl" class="hidden">
-        <!-- Current Question -->
-        <div class="glass-card rounded-xl p-6 mb-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-white">
-              <i class="fas fa-question-circle mr-2"></i>
-              Întrebare Curentă
-            </h3>
-            <span class="text-blue-200" id="questionCounter">1 / 10</span>
-          </div>
-          <div id="currentQuestion" class="text-center">
-            <div class="bg-black/30 rounded-lg p-6 mb-4">
-              <h4 class="text-2xl font-bold text-white mb-2" id="questionText">
-                Selectează o întrebare pentru a începe
-              </h4>
-            </div>
-            <button
-              id="launchQuestionBtn"
-              onclick="launchQuestion()"
-              class="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 hidden"
-            >
-              <i class="fas fa-rocket mr-2"></i>
-              LANSEAZĂ ÎNTREBARE
-            </button>
-          </div>
-        </div>
-
-        <!-- Answers Grid -->
-        <div class="glass-card rounded-xl p-6 mb-6">
-          <h3 class="text-xl font-bold text-white mb-4">
-            <i class="fas fa-list mr-2"></i>
-            Răspunsuri
-          </h3>
-          <div id="answersGrid" class="grid md:grid-cols-2 gap-3">
-            <!-- Answers will be loaded here -->
-          </div>
-        </div>
-
-        <!-- Score Controls -->
-        <div class="glass-card rounded-xl p-6 mb-6">
-          <h3 class="text-xl font-bold text-white mb-4">
-            <i class="fas fa-trophy mr-2"></i>
-            Controlul Scorului
-          </h3>
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="text-center">
-              <h4
-                class="text-lg font-semibold text-white mb-3"
-                id="scoreTeam1Name"
-              >
-                Echipa 1
-              </h4>
-              <div class="bg-blue-500/20 rounded-lg p-4">
-                <div
-                  class="text-3xl font-bold text-yellow-400 mb-3"
-                  id="scoreTeam1Display"
-                >
-                  0
-                </div>
-                <div class="flex justify-center space-x-2">
-                  <button
-                    onclick="updateScore('team1', -10)"
-                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button
-                    onclick="updateScore('team1', 10)"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    <i class="fas fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="text-center">
-              <h4
-                class="text-lg font-semibold text-white mb-3"
-                id="scoreTeam2Name"
-              >
-                Echipa 2
-              </h4>
-              <div class="bg-purple-500/20 rounded-lg p-4">
-                <div
-                  class="text-3xl font-bold text-yellow-400 mb-3"
-                  id="scoreTeam2Display"
-                >
-                  0
-                </div>
-                <div class="flex justify-center space-x-2">
-                  <button
-                    onclick="updateScore('team2', -10)"
-                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button
-                    onclick="updateScore('team2', 10)"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    <i class="fas fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Question Navigation -->
-        <div class="glass-card rounded-xl p-6">
-          <div class="flex justify-between items-center">
-            <button
-              onclick="previousQuestion()"
-              class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            >
-              <i class="fas fa-arrow-left mr-2"></i>
-              Anterior
-            </button>
-            <div class="text-center">
-              <select
-                id="questionSelect"
-                onchange="selectQuestion()"
-                class="bg-black/30 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                <!-- Questions will be loaded here -->
-              </select>
-            </div>
-            <button
-              onclick="nextQuestion()"
-              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            >
-              Următoarea
-              <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Loading Error -->
+    </div>
+    <!-- Modal următoare întrebare -->
+    <div id="nextModal" class="modal flex">
       <div
-        id="loadingError"
-        class="glass-card rounded-xl p-6 text-center hidden"
+        class="bg-white rounded-2xl p-6 max-w-sm w-full text-center text-black"
       >
-        <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
-        <h3 class="text-xl font-bold text-white mb-2">Eroare de Conectare</h3>
-        <p class="text-blue-200 mb-4">
-          Nu s-a putut încărca jocul. Verifică codul și încearcă din nou.
-        </p>
+        <h2 class="text-xl font-bold mb-4">Următoarea întrebare</h2>
+        <p class="mb-6">Se trece la următoarea întrebare acum.</p>
         <button
-          onclick="retryConnection()"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+          id="nextModalOk"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold"
         >
-          <i class="fas fa-refresh mr-2"></i>
-          Încearcă din nou
+          Continuă
         </button>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/game.js"></script>
     <script>
-      let gameCode = null;
-      let currentGame = null;
-      let gameQuestions = [];
-      let currentQuestionIndex = 0;
-      let currentQuestion = null;
-      let gameSubscription = null;
+      const supabaseClient = supabase.createClient(
+        CONFIG.SUPABASE_URL,
+        CONFIG.SUPABASE_ANON_KEY
+      );
+      const gameCode = new URLSearchParams(window.location.search).get("game");
+      const initScreen = document.getElementById("initScreen");
+      const controlPanel = document.getElementById("controlPanel");
+      const codeDisplay = document.getElementById("gameCodeDisplay");
+      const startBtn = document.getElementById("startBtn");
+      const team1Name = document.getElementById("team1Name");
+      const team2Name = document.getElementById("team2Name");
+      const team1Total = document.getElementById("team1Total");
+      const team2Total = document.getElementById("team2Total");
+      const questionPoints = document.getElementById("questionPoints");
+      const currentQuestionElem = document.getElementById("currentQuestion");
+      const answersGrid = document.getElementById("answersGrid");
+      const prevQ = document.getElementById("prevQ");
+      const nextQ = document.getElementById("nextQ");
+      const singleX = document.getElementById("singleX");
+      const progressiveXBtns = document.querySelectorAll(".progressiveX");
+      const assignModal = document.getElementById("assignModal");
+      const modalPoints = document.getElementById("modalPoints");
+      const assignTeam1 = document.getElementById("assignTeam1");
+      const assignTeam2 = document.getElementById("assignTeam2");
+      const nextModal = document.getElementById("nextModal");
+      const nextModalOk = document.getElementById("nextModalOk");
 
-      // Initialize
-      document.addEventListener("DOMContentLoaded", function () {
-        initializeControl();
+      let questions = [],
+        currentIndex = 0,
+        currentQPoints = 0;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        codeDisplay.textContent = gameCode || "----";
+        startBtn.addEventListener("click", startGame);
+        questionPoints.addEventListener("click", showAssignModal);
+        assignTeam1.addEventListener("click", () => submitPoints("team1"));
+        assignTeam2.addEventListener("click", () => submitPoints("team2"));
+        nextModalOk.addEventListener("click", () => {
+          nextModal.style.display = "none";
+          changeQuestion(currentIndex + 1);
+        });
       });
 
-      async function initializeControl() {
-        // Get game code from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        gameCode = urlParams.get("game");
-
-        if (!gameCode) {
-          showError("Cod de joc lipsă din URL");
-          return;
-        }
-
-        try {
-          await loadGame();
-        } catch (error) {
-          console.error("Error loading game:", error);
-          showError("Eroare la încărcarea jocului");
-        }
-      }
-
-      async function loadGame() {
-        try {
-          // Load game data
-          currentGame = await getGameByCode(gameCode);
-
-          if (!currentGame) {
-            throw new Error("Joc nu a fost găsit");
-          }
-
-          // Load questions for this game
-          if (currentGame.set_id) {
-            // Quick game - load from set
-            const setData = await getQuestionSetWithQuestions(
-              currentGame.set_id
-            );
-            gameQuestions = setData.questions || [];
-          } else {
-            // Custom game - load selected questions
-            // TODO: Implement custom question loading
-            gameQuestions = [];
-          }
-
-          // Hide connection status and show game info
-          document.getElementById("connectionStatus").classList.add("hidden");
-          document.getElementById("gameInfo").classList.remove("hidden");
-          document
-            .getElementById("displayInstructions")
-            .classList.remove("hidden");
-
-          // Populate game info
-          document.getElementById("gameCodeDisplay").textContent =
-            currentGame.game_code;
-          document.getElementById("gameCodeForDisplay").textContent =
-            currentGame.game_code;
-          document.getElementById("gameCodeForHomepage").textContent =
-            currentGame.game_code;
-          document.getElementById("team1Name").textContent =
-            currentGame.team1_name;
-          document.getElementById("team2Name").textContent =
-            currentGame.team2_name;
-          document.getElementById("team1Score").textContent =
-            currentGame.team1_score;
-          document.getElementById("team2Score").textContent =
-            currentGame.team2_score;
-
-          // Setup realtime subscription
-          setupRealtimeSubscription();
-        } catch (error) {
-          console.error("Error loading game:", error);
-          showError("Eroare la încărcarea jocului: " + error.message);
-        }
-      }
-
-      function setupRealtimeSubscription() {
-        if (gameSubscription) {
-          unsubscribeFromGame(gameSubscription);
-        }
-
-        gameSubscription = subscribeToGame(currentGame.id, (payload) => {
-          console.log("Realtime update:", payload);
-          // Handle realtime updates
-          if (payload.table === "games") {
-            updateGameDisplay(payload.new);
-          }
-        });
-      }
-
-      function updateGameDisplay(gameData) {
-        document.getElementById("team1Score").textContent =
-          gameData.team1_score;
-        document.getElementById("team2Score").textContent =
-          gameData.team2_score;
-        document.getElementById("scoreTeam1Display").textContent =
-          gameData.team1_score;
-        document.getElementById("scoreTeam2Display").textContent =
-          gameData.team2_score;
-      }
-
-      function startGame() {
-        if (gameQuestions.length === 0) {
-          showError("Nu există întrebări disponibile pentru acest joc");
-          return;
-        }
-
-        // Hide instructions and show game control
-        document.getElementById("displayInstructions").classList.add("hidden");
-        document.getElementById("gameControl").classList.remove("hidden");
-
-        // Setup score display with team names
-        document.getElementById("scoreTeam1Name").textContent =
-          currentGame.team1_name;
-        document.getElementById("scoreTeam2Name").textContent =
-          currentGame.team2_name;
-        document.getElementById("scoreTeam1Display").textContent =
-          currentGame.team1_score;
-        document.getElementById("scoreTeam2Display").textContent =
-          currentGame.team2_score;
-
-        // Load questions into selector
-        loadQuestionSelector();
-
-        // Load first question
+      async function startGame() {
+        const { data: game } = await supabaseClient
+          .from("games")
+          .select("id,set_id,team1_name,team2_name")
+          .eq("game_code", gameCode)
+          .single();
+        team1Name.textContent = game.team1_name;
+        team2Name.textContent = game.team2_name;
+        assignTeam1.textContent = game.team1_name;
+        assignTeam2.textContent = game.team2_name;
+        team1Total.textContent = "0";
+        team2Total.textContent = "0";
+        const { data: items } = await supabaseClient
+          .from("question_set_items")
+          .select(
+            "order_index,questions(id,text,answers(id,text,points,position))"
+          )
+          .eq("set_id", game.set_id)
+          .order("order_index", { ascending: true });
+        questions = items.map((item) => item.questions || {});
+        initScreen.classList.add("hidden");
+        controlPanel.classList.remove("hidden");
+        prevQ.addEventListener("click", () => changeQuestion(currentIndex - 1));
+        nextQ.addEventListener("click", () => changeQuestion(currentIndex + 1));
+        singleX.addEventListener("click", () => sendStrike("X"));
+        progressiveXBtns.forEach((btn) =>
+          btn.addEventListener("click", () =>
+            sendStrike(btn.dataset.count + "X")
+          )
+        );
         loadQuestion(0);
       }
 
-      function loadQuestionSelector() {
-        const select = document.getElementById("questionSelect");
-        select.innerHTML = gameQuestions
-          .map(
-            (question, index) =>
-              `<option value="${index}">Întrebare ${index + 1}</option>`
-          )
-          .join("");
-      }
+      function loadQuestion(idx) {
+        if (idx < 0 || idx >= questions.length) return;
+        currentIndex = idx;
+        currentQPoints = 0;
+        questionPoints.textContent = "0";
+        const q = questions[idx];
+        currentQuestionElem.textContent = q.text || "...";
 
-      function loadQuestion(index) {
-        if (index < 0 || index >= gameQuestions.length) return;
-
-        currentQuestionIndex = index;
-        currentQuestion = gameQuestions[index];
-
-        document.getElementById("questionText").textContent =
-          currentQuestion.text;
-        document.getElementById("questionCounter").textContent = `${
-          index + 1
-        } / ${gameQuestions.length}`;
-        document.getElementById("questionSelect").value = index;
-        document.getElementById("launchQuestionBtn").classList.remove("hidden");
-
-        // Load answers
-        loadAnswers();
-      }
-
-      function loadAnswers() {
-        const answersGrid = document.getElementById("answersGrid");
-        if (!currentQuestion || !currentQuestion.answers) {
-          answersGrid.innerHTML =
-            '<div class="text-center text-blue-200 col-span-full">Nu există răspunsuri disponibile</div>';
-          return;
-        }
-
-        const answers = currentQuestion.answers.sort(
-          (a, b) => (a.position || 0) - (b.position || 0)
-        );
-
-        answersGrid.innerHTML = answers
-          .map(
-            (answer) => `
-          <div class="bg-black/30 rounded-lg p-3 cursor-pointer hover:bg-black/50 transition-colors answer-card hidden" 
-               data-answer-id="${answer.id}" onclick="revealAnswer('${
-              answer.id
-            }')">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">
-                  ${answer.position || 1}
-                </div>
-                <span class="text-white font-semibold">${answer.text}</span>
-              </div>
-              <span class="text-yellow-400 font-bold">${
-                answer.points
-              } pct</span>
-            </div>
-          </div>
-        `
-          )
-          .join("");
-      }
-
-      function launchQuestion() {
-        // Show answers
-        document.querySelectorAll(".answer-card").forEach((card) => {
-          card.classList.remove("hidden");
+        // 2 coloane: 1-4 sus stânga, 5-8 sus dreapta
+        const slots = Array(8).fill(null);
+        q.answers.forEach((a) => {
+          if (a.position >= 1 && a.position <= 8) slots[a.position - 1] = a;
         });
 
-        // Hide launch button
-        document.getElementById("launchQuestionBtn").classList.add("hidden");
-
-        // Save game state
-        saveGameState(currentGame.id, "question_launched", {
-          question: currentQuestion,
-          question_index: currentQuestionIndex,
+        answersGrid.innerHTML = "";
+        // stânga
+        const leftCol = document.createElement("div");
+        leftCol.className = "flex flex-col space-y-4";
+        slots.slice(0, 4).forEach((a, i) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "btn-answer bg-black/30 p-4 rounded-lg flex justify-between";
+          if (a) {
+            btn.innerHTML = `<span>${i + 1}. ${a.text}</span><span>${
+              a.points
+            }</span>`;
+            btn.addEventListener("click", () => toggleAnswer(btn, a.points));
+          } else {
+            btn.innerHTML = `<span>${i + 1}.</span><span></span>`;
+            btn.disabled = true;
+            btn.classList.add("opacity-50");
+          }
+          leftCol.append(btn);
         });
-      }
-
-      function revealAnswer(answerId) {
-        const answerCard = document.querySelector(
-          `[data-answer-id="${answerId}"]`
-        );
-        if (answerCard) {
-          answerCard.classList.toggle("bg-green-500/20");
-          answerCard.classList.toggle("border-green-500");
-        }
-
-        // Save game state
-        saveGameState(currentGame.id, "answer_revealed", {
-          answer_id: answerId,
-          question_index: currentQuestionIndex,
+        // dreapta
+        const rightCol = document.createElement("div");
+        rightCol.className = "flex flex-col space-y-4";
+        slots.slice(4, 8).forEach((a, i) => {
+          const idx = i + 5;
+          const btn = document.createElement("button");
+          btn.className =
+            "btn-answer bg-black/30 p-4 rounded-lg flex justify-between";
+          if (a) {
+            btn.innerHTML = `<span>${idx}. ${a.text}</span><span>${a.points}</span>`;
+            btn.addEventListener("click", () => toggleAnswer(btn, a.points));
+          } else {
+            btn.innerHTML = `<span>${idx}.</span><span></span>`;
+            btn.disabled = true;
+            btn.classList.add("opacity-50");
+          }
+          rightCol.append(btn);
         });
+        answersGrid.append(leftCol, rightCol);
       }
 
-      async function updateScore(team, points) {
-        try {
-          const newTeam1Score =
-            team === "team1"
-              ? currentGame.team1_score + points
-              : currentGame.team1_score;
-          const newTeam2Score =
-            team === "team2"
-              ? currentGame.team2_score + points
-              : currentGame.team2_score;
-
-          await updateGameScore(currentGame.id, newTeam1Score, newTeam2Score);
-
-          // Update current game object
-          currentGame.team1_score = newTeam1Score;
-          currentGame.team2_score = newTeam2Score;
-
-          // Update display
-          updateGameDisplay(currentGame);
-        } catch (error) {
-          console.error("Error updating score:", error);
-          showError("Eroare la actualizarea scorului");
-        }
+      function toggleAnswer(btn, pts) {
+        const sel = btn.classList.toggle("selected");
+        currentQPoints += sel ? pts : -pts;
+        questionPoints.textContent = currentQPoints;
       }
 
-      function selectQuestion() {
-        const selectedIndex = parseInt(
-          document.getElementById("questionSelect").value
-        );
-        loadQuestion(selectedIndex);
+      function showAssignModal() {
+        if (currentQPoints === 0) return;
+        modalPoints.textContent = currentQPoints;
+        assignModal.style.display = "flex";
       }
 
-      function previousQuestion() {
-        if (currentQuestionIndex > 0) {
-          loadQuestion(currentQuestionIndex - 1);
-        }
+      function submitPoints(team) {
+        if (team === "team1")
+          team1Total.textContent =
+            parseInt(team1Total.textContent) + currentQPoints;
+        else
+          team2Total.textContent =
+            parseInt(team2Total.textContent) + currentQPoints;
+        assignModal.style.display = "none";
+        nextModal.style.display = "flex";
       }
 
-      function nextQuestion() {
-        if (currentQuestionIndex < gameQuestions.length - 1) {
-          loadQuestion(currentQuestionIndex + 1);
-        }
+      function changeQuestion(newIdx) {
+        if (newIdx < 0 || newIdx >= questions.length) return;
+        loadQuestion(newIdx);
       }
 
-      function showError(message) {
-        document.getElementById("connectionStatus").classList.add("hidden");
-        document.getElementById("gameInfo").classList.add("hidden");
-        document.getElementById("displayInstructions").classList.add("hidden");
-        document.getElementById("loadingError").classList.remove("hidden");
-        document.querySelector("#loadingError p").textContent = message;
+      function sendStrike(sym) {
+        console.log("Strike:", sym);
       }
-
-      function retryConnection() {
-        document.getElementById("loadingError").classList.add("hidden");
-        document.getElementById("connectionStatus").classList.remove("hidden");
-        loadGame();
-      }
-
-      // Cleanup on page unload
-      window.addEventListener("beforeunload", function () {
-        if (gameSubscription) {
-          unsubscribeFromGame(gameSubscription);
-        }
-      });
     </script>
   </body>
 </html>

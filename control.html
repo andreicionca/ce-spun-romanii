@@ -31,65 +31,140 @@
           z-index: 9999;
         }
         body::after {
-          content: "Vă rugăm rotiți dispozitivul în mod landscape.";
+          content: "Vă rugăm rotiți dispozitivul în mod landscape pentru a continua.";
           position: fixed;
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
           color: #fff;
-          font-size: 1.25rem;
+          font-size: 1.125rem;
+          text-align: center;
+          padding: 1rem;
           z-index: 10000;
+          max-width: 80%;
         }
         #main {
           display: none !important;
         }
       }
+
       .btn-answer.selected {
         background-color: rgba(72, 187, 120, 0.7);
+        border: 2px solid rgba(72, 187, 120, 1);
       }
+
       .btn-pointable {
         cursor: pointer;
+        transition: all 0.2s ease;
       }
-      /* Modals hidden by default */
+
+      .btn-pointable:hover {
+        transform: scale(1.05);
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Modals */
       .modal {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.7);
         z-index: 50;
         align-items: center;
         justify-content: center;
+        padding: 1rem;
       }
+
       .modal-content {
         position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
       }
+
       .close-modal {
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
         background: transparent;
         border: none;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         cursor: pointer;
+        color: #666;
+        z-index: 1;
+      }
+
+      /* Fullscreen prompt */
+      .fullscreen-prompt {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9998;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      /* Compact mobile styles */
+      @media (max-width: 768px) {
+        .compact-text {
+          font-size: 0.875rem;
+        }
+
+        .compact-button {
+          padding: 0.375rem 0.75rem;
+          font-size: 0.875rem;
+        }
+
+        .compact-score {
+          font-size: 1.5rem;
+        }
+
+        .compact-question {
+          font-size: 1.125rem;
+        }
+      }
+
+      /* Hide scrollbars */
+      body {
+        overflow: hidden;
+      }
+
+      /* Ensure content fits */
+      .fit-content {
+        max-height: 100vh;
+        overflow: hidden;
       }
     </style>
   </head>
   <body
-    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen h-full text-white"
+    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen h-full text-white fit-content"
   >
-    <!-- Auto fullscreen -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        }
-      });
-    </script>
+    <!-- Fullscreen Prompt -->
+    <div id="fullscreenPrompt" class="fullscreen-prompt">
+      <div class="max-w-md">
+        <div class="text-2xl mb-4">📱 Fullscreen necesar</div>
+        <p class="mb-6">
+          Pentru cea mai bună experiență, activați modul fullscreen.
+        </p>
+        <button
+          id="enterFullscreen"
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg"
+        >
+          <i class="fas fa-expand mr-2"></i>Activează Fullscreen
+        </button>
+      </div>
+    </div>
 
-    <!-- Fullscreen toggle -->
+    <!-- Fullscreen toggle button -->
     <button
       id="fullscreenToggle"
-      class="fixed top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full z-50"
+      class="fixed top-2 right-2 bg-white/20 hover:bg-white/30 text-white p-1.5 rounded-full z-40 text-sm"
       title="Toggle Fullscreen"
     >
       <i class="fas fa-expand"></i>
@@ -97,119 +172,122 @@
 
     <div
       id="main"
-      class="container mx-auto max-w-screen-lg px-4 flex flex-col h-screen justify-between"
+      class="container mx-auto max-w-screen-xl px-2 flex flex-col h-screen justify-between"
     >
       <!-- Init Screen -->
       <div
         id="initScreen"
-        class="flex flex-col items-center justify-center flex-grow space-y-6"
+        class="flex flex-col items-center justify-center flex-grow space-y-4"
       >
         <div
           id="gameCodeDisplay"
-          class="text-6xl font-extrabold tracking-widest"
+          class="text-4xl md:text-6xl font-extrabold tracking-widest"
         >
           ----
         </div>
         <button
           id="startBtn"
-          class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 text-sm sm:text-base"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 md:py-3 md:px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 text-sm md:text-base"
         >
           <i class="fas fa-play mr-2"></i>START JOC
         </button>
       </div>
 
       <!-- Control Panel -->
-      <div
-        id="controlPanel"
-        class="hidden flex flex-col flex-grow justify-between"
-      >
-        <!-- Header -->
-        <div class="flex justify-between items-center py-4">
+      <div id="controlPanel" class="hidden flex flex-col h-screen">
+        <!-- Header - Compact -->
+        <div class="flex justify-between items-center py-1 md:py-2">
           <div class="flex flex-col items-center">
-            <div id="team1Name" class="text-lg sm:text-xl font-semibold">
+            <div
+              id="team1Name"
+              class="text-sm md:text-lg font-semibold compact-text"
+            >
               ECHIPA 1
             </div>
             <div
               id="team1Total"
-              class="mt-2 bg-black/30 px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-2xl sm:text-3xl font-bold"
+              class="mt-1 bg-black/30 px-2 py-1 rounded-lg text-xl md:text-2xl font-bold compact-score"
             >
               0
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <div class="text-base sm:text-lg">Puncte Întrebare</div>
+            <div class="text-xs md:text-sm compact-text">Puncte Întrebare</div>
             <div
               id="questionPoints"
-              class="btn-pointable mt-2 bg-black/30 px-4 py-1 sm:py-2 rounded-lg text-2xl sm:text-4xl font-extrabold"
+              class="btn-pointable mt-1 bg-black/30 px-3 py-1 rounded-lg text-2xl md:text-3xl font-extrabold compact-score"
             >
               0
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <div id="team2Name" class="text-lg sm:text-xl font-semibold">
+            <div
+              id="team2Name"
+              class="text-sm md:text-lg font-semibold compact-text"
+            >
               ECHIPA 2
             </div>
             <div
               id="team2Total"
-              class="mt-2 bg-black/30 px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-2xl sm:text-3xl font-bold"
+              class="mt-1 bg-black/30 px-2 py-1 rounded-lg text-xl md:text-2xl font-bold compact-score"
             >
               0
             </div>
           </div>
         </div>
 
-        <!-- Question & Answers -->
-        <div class="flex-grow overflow-hidden">
+        <!-- Question & Answers - Optimized for mobile -->
+        <div class="flex-grow flex flex-col min-h-0">
           <div
             id="currentQuestion"
-            class="mb-2 sm:mb-4 text-xl sm:text-2xl font-bold text-center"
+            class="mb-2 text-sm md:text-xl font-bold text-center compact-question px-2"
           >
             Încărcare...
           </div>
           <div
             id="answersGrid"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4"
+            class="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 flex-grow overflow-hidden"
           ></div>
         </div>
 
-        <!-- Navigation & Strikes -->
-        <div class="flex justify-between items-center py-4">
+        <!-- Navigation & Strikes - Compact -->
+        <div class="flex justify-between items-center py-1 md:py-2">
           <button
             id="singleX"
-            class="bg-red-600 hover:bg-red-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-sm sm:text-base"
+            class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded-lg font-bold text-xs md:text-sm compact-button"
           >
             X
           </button>
-          <div class="space-x-2">
+          <div class="space-x-1">
             <button
               id="prevQ"
-              class="bg-gray-600 hover:bg-gray-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-sm sm:text-base"
+              class="bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded-lg font-semibold text-xs md:text-sm compact-button"
             >
               <i class="fas fa-arrow-left mr-1"></i>PREV
             </button>
             <button
               id="nextQ"
-              class="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-sm sm:text-base"
+              class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-lg font-semibold text-xs md:text-sm compact-button"
             >
               NEXT<i class="fas fa-arrow-right ml-1"></i>
             </button>
           </div>
-          <div class="flex space-x-2">
+          <div class="flex space-x-1">
             <button
               data-count="1"
-              class="progressiveX bg-red-600 hover:bg-red-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-sm sm:text-base"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-2 py-1 rounded-lg font-bold text-xs md:text-sm compact-button"
             >
               X
             </button>
             <button
               data-count="2"
-              class="progressiveX bg-red-600 hover:bg-red-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-sm sm:text-base"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-2 py-1 rounded-lg font-bold text-xs md:text-sm compact-button"
             >
               XX
             </button>
             <button
               data-count="3"
-              class="progressiveX bg-red-600 hover:bg-red-700 px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-sm sm:text-base"
+              class="progressiveX bg-red-600 hover:bg-red-700 px-2 py-1 rounded-lg font-bold text-xs md:text-sm compact-button"
             >
               XXX
             </button>
@@ -221,21 +299,21 @@
     <!-- Assign Modal -->
     <div id="assignModal" class="modal">
       <div
-        class="bg-white rounded-2xl p-6 max-w-sm w-full text-center text-black modal-content"
+        class="bg-white rounded-2xl p-4 md:p-6 w-full max-w-sm text-center text-black modal-content"
       >
         <button class="close-modal" data-modal="assignModal">&times;</button>
-        <h2 class="text-xl font-bold mb-4">Alege echipa</h2>
-        <p class="mb-6">
+        <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4">Alege echipa</h2>
+        <p class="mb-4 md:mb-6 text-sm md:text-base">
           La ce echipă adaugi cele <span id="modalPoints">0</span> puncte?
         </p>
-        <div class="flex justify-around">
+        <div class="flex justify-around space-x-2">
           <button
             id="assignTeam1"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold text-sm sm:text-base"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base flex-1"
           ></button>
           <button
             id="assignTeam2"
-            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold text-sm sm:text-base"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base flex-1"
           ></button>
         </div>
       </div>
@@ -244,14 +322,18 @@
     <!-- Next Question Modal -->
     <div id="nextModal" class="modal">
       <div
-        class="bg-white rounded-2xl p-6 max-w-sm w-full text-center text-black modal-content"
+        class="bg-white rounded-2xl p-4 md:p-6 w-full max-w-sm text-center text-black modal-content"
       >
         <button class="close-modal" data-modal="nextModal">&times;</button>
-        <h2 class="text-xl font-bold mb-4">Următoarea întrebare</h2>
-        <p class="mb-6">Se trece la următoarea întrebare acum.</p>
+        <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4">
+          Următoarea întrebare
+        </h2>
+        <p class="mb-4 md:mb-6 text-sm md:text-base">
+          Se trece la următoarea întrebare acum.
+        </p>
         <button
           id="nextModalOk"
-          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold text-sm sm:text-base"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold text-sm md:text-base"
         >
           Continuă
         </button>
@@ -286,21 +368,50 @@
       const assignTeam2 = document.getElementById("assignTeam2");
       const nextModalOk = document.getElementById("nextModalOk");
       const fsBtn = document.getElementById("fullscreenToggle");
+      const fsPrompt = document.getElementById("fullscreenPrompt");
+      const enterFsBtn = document.getElementById("enterFullscreen");
 
       let questions = [],
         currentIndex = 0,
         currentQPoints = 0;
 
-      // Fullscreen toggle
-      fsBtn.addEventListener("click", () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen();
-          fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+      // Fullscreen management
+      function enterFullscreen() {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement
+            .requestFullscreen()
+            .then(() => {
+              fsPrompt.style.display = "none";
+              fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            })
+            .catch((err) => {
+              console.log("Fullscreen failed:", err);
+              fsPrompt.style.display = "none";
+            });
         } else {
-          document.exitFullscreen();
-          fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+          fsPrompt.style.display = "none";
         }
-      });
+      }
+
+      function exitFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => {
+            fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+          });
+        }
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          enterFullscreen();
+        } else {
+          exitFullscreen();
+        }
+      }
+
+      // Event listeners
+      enterFsBtn.addEventListener("click", enterFullscreen);
+      fsBtn.addEventListener("click", toggleFullscreen);
 
       // Close modals
       document.querySelectorAll(".close-modal").forEach((btn) =>
@@ -309,7 +420,19 @@
         })
       );
 
+      // Close modals on outside click
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.style.display = "none";
+          }
+        });
+      });
+
       document.addEventListener("DOMContentLoaded", () => {
+        // Show fullscreen prompt initially
+        fsPrompt.style.display = "flex";
+
         codeDisplay.textContent = gameCode || "----";
         startBtn.addEventListener("click", startGame);
         questionPoints.addEventListener("click", showAssignModal);
@@ -327,12 +450,14 @@
           .select("id,set_id,team1_name,team2_name")
           .eq("game_code", gameCode)
           .single();
+
         team1Name.textContent = game.team1_name;
         team2Name.textContent = game.team2_name;
         assignTeam1.textContent = game.team1_name;
         assignTeam2.textContent = game.team2_name;
         team1Total.textContent = "0";
         team2Total.textContent = "0";
+
         const { data: items } = await supabaseClient
           .from("question_set_items")
           .select(
@@ -340,40 +465,55 @@
           )
           .eq("set_id", game.set_id)
           .order("order_index", { ascending: true });
+
         questions = items.map((i) => i.questions || {});
+
         initScreen.classList.add("hidden");
         controlPanel.classList.remove("hidden");
+
         prevQ.onclick = () => changeQuestion(currentIndex - 1);
         nextQ.onclick = () => changeQuestion(currentIndex + 1);
         singleX.onclick = () => sendStrike("X");
         progressiveXBtns.forEach(
           (btn) => (btn.onclick = () => sendStrike(btn.dataset.count + "X"))
         );
+
         loadQuestion(0);
       }
 
       function loadQuestion(idx) {
         if (idx < 0 || idx >= questions.length) return;
+
         currentIndex = idx;
         currentQPoints = 0;
         questionPoints.textContent = "0";
+
         const q = questions[idx];
         currentQuestionElem.textContent = q.text || "...";
+
         const slots = Array(8).fill(null);
         q.answers.forEach((a) => {
           if (a.position >= 1 && a.position <= 8) slots[a.position - 1] = a;
         });
+
         answersGrid.innerHTML = "";
-        [0, 4].forEach((start) => {
+
+        // Create columns for desktop, single column for mobile
+        const isMobile = window.innerWidth < 768;
+
+        if (isMobile) {
+          // Single column for mobile
           const col = document.createElement("div");
-          col.className = "flex flex-col space-y-2 sm:space-y-4";
-          slots.slice(start, start + 4).forEach((a, i) => {
-            const num = start + i + 1;
+          col.className = "flex flex-col space-y-1";
+
+          slots.forEach((a, i) => {
+            const num = i + 1;
             const btn = document.createElement("button");
             btn.className =
-              "btn-answer bg-black/30 p-2 sm:p-4 rounded-lg flex justify-between text-sm sm:text-base";
+              "btn-answer bg-black/30 p-2 rounded-lg flex justify-between text-xs transition-all";
+
             if (a) {
-              btn.innerHTML = `<span>${num}. ${a.text}</span><span>${a.points}</span>`;
+              btn.innerHTML = `<span>${num}. ${a.text}</span><span class="font-bold">${a.points}</span>`;
               btn.onclick = () => toggleAnswer(btn, a.points);
             } else {
               btn.innerHTML = `<span>${num}.</span><span></span>`;
@@ -382,8 +522,34 @@
             }
             col.append(btn);
           });
+
           answersGrid.append(col);
-        });
+        } else {
+          // Two columns for desktop
+          [0, 4].forEach((start) => {
+            const col = document.createElement("div");
+            col.className = "flex flex-col space-y-2";
+
+            slots.slice(start, start + 4).forEach((a, i) => {
+              const num = start + i + 1;
+              const btn = document.createElement("button");
+              btn.className =
+                "btn-answer bg-black/30 p-3 rounded-lg flex justify-between text-sm transition-all";
+
+              if (a) {
+                btn.innerHTML = `<span>${num}. ${a.text}</span><span class="font-bold">${a.points}</span>`;
+                btn.onclick = () => toggleAnswer(btn, a.points);
+              } else {
+                btn.innerHTML = `<span>${num}.</span><span></span>`;
+                btn.disabled = true;
+                btn.classList.add("opacity-50");
+              }
+              col.append(btn);
+            });
+
+            answersGrid.append(col);
+          });
+        }
       }
 
       function toggleAnswer(btn, pts) {
@@ -391,28 +557,52 @@
         currentQPoints += sel ? pts : -pts;
         questionPoints.textContent = currentQPoints;
       }
+
       function showAssignModal() {
         if (currentQPoints > 0) {
           modalPoints.textContent = currentQPoints;
           assignModal.style.display = "flex";
         }
       }
+
       function submitPoints(team) {
-        if (team === "team1")
+        if (team === "team1") {
           team1Total.textContent =
             parseInt(team1Total.textContent) + currentQPoints;
-        else
+        } else {
           team2Total.textContent =
             parseInt(team2Total.textContent) + currentQPoints;
+        }
         assignModal.style.display = "none";
         nextModal.style.display = "flex";
       }
+
       function changeQuestion(newIdx) {
-        if (newIdx >= 0 && newIdx < questions.length) loadQuestion(newIdx);
+        if (newIdx >= 0 && newIdx < questions.length) {
+          loadQuestion(newIdx);
+        }
       }
+
       function sendStrike(sym) {
         console.log("Strike:", sym);
+        // Here you would send the strike to the display via Supabase
       }
+
+      // Handle window resize
+      window.addEventListener("resize", () => {
+        if (questions.length > 0) {
+          loadQuestion(currentIndex);
+        }
+      });
+
+      // Handle fullscreen changes
+      document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) {
+          fsBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+          fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+      });
     </script>
   </body>
 </html>

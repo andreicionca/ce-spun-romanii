@@ -49,8 +49,8 @@
       }
 
       .btn-answer.selected {
-        background-color: rgba(72, 187, 120, 0.7);
-        border: 2px solid rgba(72, 187, 120, 1);
+        background-color: rgba(34, 197, 94, 0.3);
+        border: 1px solid rgba(34, 197, 94, 0.6);
       }
 
       .btn-pointable {
@@ -64,7 +64,6 @@
       }
 
       .btn-answer:hover {
-        transform: scale(1.02);
         background-color: rgba(255, 255, 255, 0.05);
       }
 
@@ -73,7 +72,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.8);
         z-index: 50;
         align-items: center;
         justify-content: center;
@@ -94,7 +93,7 @@
         border: none;
         font-size: 1.5rem;
         cursor: pointer;
-        color: #666;
+        color: #999;
         z-index: 1;
       }
 
@@ -107,190 +106,172 @@
       .glass {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.15);
       }
 
-      /* Mobile responsive adjustments */
+      /* Mobile optimizations */
       @media (max-width: 768px) {
-        .mobile-small {
-          font-size: 0.875rem;
-          padding: 0.5rem;
-        }
-        .mobile-text-sm {
-          font-size: 0.75rem;
+        .mobile-mini {
+          font-size: 0.7rem;
+          padding: 0.25rem 0.5rem;
         }
         .mobile-text-xs {
-          font-size: 0.625rem;
+          font-size: 0.6rem;
+        }
+        .mobile-gap-1 {
+          gap: 0.25rem;
+        }
+        .mobile-p-1 {
+          padding: 0.25rem;
+        }
+        .mobile-px-1 {
+          padding-left: 0.25rem;
+          padding-right: 0.25rem;
         }
         .mobile-py-1 {
           padding-top: 0.25rem;
           padding-bottom: 0.25rem;
         }
-        .mobile-px-2 {
-          padding-left: 0.5rem;
-          padding-right: 0.5rem;
-        }
-        .mobile-gap-2 {
-          gap: 0.5rem;
-        }
-        .mobile-mb-2 {
-          margin-bottom: 0.5rem;
-        }
-        .mobile-mb-3 {
-          margin-bottom: 0.75rem;
-        }
-        .mobile-p-2 {
-          padding: 0.5rem;
-        }
-        .mobile-p-3 {
-          padding: 0.75rem;
-        }
-        .mobile-rounded {
-          border-radius: 0.5rem;
+        .mobile-h-6 {
+          height: 1.5rem;
         }
         .mobile-h-8 {
           height: 2rem;
         }
-        .mobile-h-10 {
-          height: 2.5rem;
+        .mobile-rounded-sm {
+          border-radius: 0.375rem;
         }
-        .mobile-text-base {
-          font-size: 1rem;
-        }
-        .mobile-text-lg {
-          font-size: 1.125rem;
+        #main {
+          padding: 0.5rem;
         }
       }
 
       /* Strike buttons styling */
       .strike-btn {
-        min-width: 3rem;
-        font-size: 1.2rem;
+        border: 1px solid rgba(220, 38, 38, 0.9);
         font-weight: bold;
-        border: 2px solid rgba(239, 68, 68, 0.8);
-        background: rgba(239, 68, 68, 0.9);
-        color: white;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
       }
 
       .strike-btn:hover {
-        background: rgba(239, 68, 68, 1);
-        border-color: rgba(239, 68, 68, 1);
+        background: rgba(220, 38, 38, 0.9);
       }
 
+      /* Minimalist styling */
+      .minimal-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        transition: all 0.2s ease;
+      }
+
+      .minimal-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Ensure mobile viewport fits */
       @media (max-width: 768px) {
-        .strike-btn {
-          min-width: 2.5rem;
-          font-size: 1rem;
-          padding: 0.5rem;
+        html,
+        body {
+          height: 100vh;
+          height: 100svh; /* Safari support */
+        }
+
+        #main {
+          height: 100vh;
+          height: 100svh;
+          overflow: hidden;
         }
       }
     </style>
   </head>
-  <body
-    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen h-full text-white"
-  >
+  <body class="bg-gray-900 min-h-screen h-full text-white">
     <div
       id="main"
-      class="flex flex-col h-screen p-2 md:p-4 max-w-screen-xl mx-auto"
+      class="flex flex-col h-screen p-1 md:p-4 max-w-screen-xl mx-auto"
     >
       <!-- Header Bar -->
-      <div class="flex justify-between items-center mb-2 md:mb-4 h-10 md:h-12">
-        <div class="flex items-center space-x-2 md:space-x-3">
+      <div class="flex justify-between items-center mb-1 md:mb-3 h-8 md:h-10">
+        <div class="flex items-center space-x-1 md:space-x-3">
           <button
             id="stopGame"
-            class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 md:px-4 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-colors"
+            class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 md:px-3 md:py-2 rounded text-xs md:text-sm font-semibold transition-colors"
           >
-            <i class="fas fa-stop mr-1 md:mr-2"></i>Stop Joc
+            <i class="fas fa-stop mr-1"></i>Stop Joc
           </button>
-          <div
-            id="gameCodeDisplay"
-            class="text-sm md:text-lg font-bold tracking-wider"
-          >
+          <div id="gameCodeDisplay" class="text-xs md:text-base font-bold">
             ----
           </div>
         </div>
         <button
           id="fullscreenToggle"
-          class="bg-white/20 hover:bg-white/30 text-white px-2 py-1 md:px-4 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-colors"
+          class="minimal-btn px-2 py-1 md:px-3 md:py-2 rounded text-xs md:text-sm font-semibold"
           title="Ecran complet"
         >
-          <i class="fas fa-expand mr-1 md:mr-2"></i>Ecran complet
+          <i class="fas fa-expand mr-1"></i>Ecran
         </button>
       </div>
 
       <!-- Init Screen -->
       <div
         id="initScreen"
-        class="flex flex-col items-center justify-center flex-grow space-y-4 md:space-y-6"
+        class="flex flex-col items-center justify-center flex-grow space-y-2 md:space-y-4"
       >
-        <div class="text-center px-4">
-          <div class="text-lg md:text-2xl font-bold mb-2 md:mb-4">
-            Cod Joc:
-            <span id="gameCodeWelcome" class="text-yellow-400">----</span>
+        <div class="text-center px-2">
+          <div class="text-sm md:text-xl font-bold mb-2">
+            Cod: <span id="gameCodeWelcome" class="text-yellow-400">----</span>
           </div>
-          <div class="glass rounded-lg p-4 md:p-6 max-w-md">
-            <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4">
-              Panou de Control
-            </h2>
-            <div class="text-sm md:text-base space-y-2 text-left">
-              <p><strong>Pentru afișaj public:</strong></p>
-              <p>1. Deschideți <strong>display.html</strong> în browser</p>
-              <p>
-                2. Introduceți codul jocului:
-                <strong id="gameCodeInstructions">----</strong>
-              </p>
-              <p>
-                3. Apăsați <strong>START JOC</strong> mai jos pentru a începe
-              </p>
+          <div class="glass rounded p-2 md:p-4 max-w-xs md:max-w-md">
+            <h2 class="text-sm md:text-lg font-bold mb-2">Panou Control</h2>
+            <div class="text-xs md:text-sm space-y-1 text-left">
+              <p><strong>Pentru afișaj:</strong></p>
+              <p>1. Deschide <strong>display.html</strong></p>
+              <p>2. Cod: <strong id="gameCodeInstructions">----</strong></p>
+              <p>3. Apasă START mai jos</p>
             </div>
           </div>
         </div>
         <button
           id="startBtn"
-          class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 text-base md:text-lg"
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded shadow-lg transition text-sm md:text-base"
         >
-          <i class="fas fa-play mr-2"></i>START JOC
+          <i class="fas fa-play mr-1"></i>START
         </button>
       </div>
 
       <!-- Control Panel -->
-      <div id="controlPanel" class="hidden flex flex-col flex-grow">
+      <div
+        id="controlPanel"
+        class="hidden flex flex-col flex-grow overflow-hidden"
+      >
         <!-- Teams Header -->
-        <div class="flex justify-between items-center mb-3 md:mb-6">
+        <div class="flex justify-between items-center mb-2 md:mb-4">
           <div class="flex flex-col items-center">
-            <div
-              id="team1Name"
-              class="text-sm md:text-xl font-semibold mb-1 md:mb-2"
-            >
+            <div id="team1Name" class="text-xs md:text-base font-semibold mb-1">
               ECHIPA 1
             </div>
             <div
               id="team1Total"
-              class="glass px-3 py-2 md:px-6 md:py-3 rounded-lg text-xl md:text-3xl font-bold"
+              class="glass px-2 py-1 md:px-4 md:py-2 rounded text-lg md:text-2xl font-bold"
             >
               0
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <div class="text-xs md:text-lg mb-1 md:mb-2">Puncte Întrebare</div>
+            <div class="text-xs md:text-sm mb-1">Puncte</div>
             <div
               id="questionPoints"
-              class="btn-pointable glass px-3 py-2 md:px-6 md:py-3 rounded-lg text-2xl md:text-4xl font-extrabold"
+              class="btn-pointable glass px-2 py-1 md:px-4 md:py-2 rounded text-xl md:text-3xl font-bold"
             >
               0
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <div
-              id="team2Name"
-              class="text-sm md:text-xl font-semibold mb-1 md:mb-2"
-            >
+            <div id="team2Name" class="text-xs md:text-base font-semibold mb-1">
               ECHIPA 2
             </div>
             <div
               id="team2Total"
-              class="glass px-3 py-2 md:px-6 md:py-3 rounded-lg text-xl md:text-3xl font-bold"
+              class="glass px-2 py-1 md:px-4 md:py-2 rounded text-lg md:text-2xl font-bold"
             >
               0
             </div>
@@ -298,61 +279,88 @@
         </div>
 
         <!-- Question & Answers -->
-        <div class="flex-grow flex flex-col">
+        <div class="flex-grow flex flex-col overflow-hidden">
           <div
             id="currentQuestion"
-            class="mb-3 md:mb-6 text-base md:text-2xl font-bold text-center px-2 md:px-4"
+            class="mb-2 md:mb-4 text-xs md:text-lg font-bold text-center px-1 md:px-2"
           >
             Încărcare...
           </div>
           <div
             id="answersGrid"
-            class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 flex-grow"
+            class="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 flex-grow overflow-hidden"
           ></div>
         </div>
 
         <!-- Navigation & Strikes -->
-        <div class="flex justify-between items-center mt-3 md:mt-6">
+        <div class="flex justify-between items-center mt-2 md:mt-4">
           <button
             id="singleX"
-            class="strike-btn px-3 py-2 md:px-4 md:py-3 rounded-lg text-base md:text-lg transition-colors"
+            class="strike-btn px-2 py-1 md:px-3 md:py-2 rounded text-sm md:text-base"
           >
-            X
+            ❌
           </button>
-          <div class="space-x-2 md:space-x-3">
+          <div class="space-x-1 md:space-x-2">
             <button
               id="prevQ"
-              class="bg-gray-600 hover:bg-gray-700 px-3 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-lg transition-colors"
+              class="minimal-btn px-2 py-1 md:px-3 md:py-2 rounded font-semibold text-xs md:text-sm"
             >
-              <i class="fas fa-arrow-left mr-1 md:mr-2"></i>PREC
+              <i class="fas fa-arrow-left mr-1"></i> Întrebarea anterioară
             </button>
             <button
               id="nextQ"
-              class="bg-blue-600 hover:bg-blue-700 px-3 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-lg transition-colors"
+              class="minimal-btn px-2 py-1 md:px-3 md:py-2 rounded font-semibold text-xs md:text-sm"
             >
-              URMAT<i class="fas fa-arrow-right ml-1 md:ml-2"></i>
+              Următoarea întrebare <i class="fas fa-arrow-right ml-1"></i>
             </button>
           </div>
-          <div class="flex space-x-1 md:space-x-2">
+          <div class="flex space-x-1">
             <button
               data-count="1"
-              class="progressiveX strike-btn px-2 py-2 md:px-3 md:py-3 rounded-lg text-sm md:text-base transition-colors"
+              class="progressiveX strike-btn px-1 py-1 md:px-2 md:py-2 rounded text-xs md:text-sm"
             >
-              X
+              ❌
             </button>
             <button
               data-count="2"
-              class="progressiveX strike-btn px-2 py-2 md:px-3 md:py-3 rounded-lg text-sm md:text-base transition-colors"
+              class="progressiveX strike-btn px-1 py-1 md:px-2 md:py-2 rounded text-xs md:text-sm"
             >
-              XX
+              ❌❌
             </button>
             <button
               data-count="3"
-              class="progressiveX strike-btn px-2 py-2 md:px-3 md:py-3 rounded-lg text-sm md:text-base transition-colors"
+              class="progressiveX strike-btn px-1 py-1 md:px-2 md:py-2 rounded text-xs md:text-sm"
             >
-              XXX
+              ❌❌❌
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stop Game Modal -->
+    <div id="stopModal" class="modal">
+      <div
+        class="glass rounded-lg p-4 w-full max-w-xs text-center text-white modal-content"
+      >
+        <button class="close-modal text-white" data-modal="stopModal">
+          &times;
+        </button>
+        <h2 class="text-lg font-bold mb-3">Oprește jocul</h2>
+        <p class="mb-4 text-sm">Sigur vrei să oprești jocul?</p>
+        <div class="flex space-x-2">
+          <button
+            id="confirmStop"
+            class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded font-semibold flex-1 text-sm"
+          >
+            Da
+          </button>
+          <button
+            id="cancelStop"
+            class="minimal-btn px-3 py-2 rounded font-semibold flex-1 text-sm"
+          >
+            Nu
+          </button>
         </div>
       </div>
     </div>
@@ -360,23 +368,23 @@
     <!-- Assign Modal -->
     <div id="assignModal" class="modal">
       <div
-        class="glass rounded-2xl p-4 md:p-6 w-full max-w-xs md:max-w-sm text-center text-white modal-content"
+        class="glass rounded-lg p-4 w-full max-w-xs text-center text-white modal-content"
       >
         <button class="close-modal text-white" data-modal="assignModal">
           &times;
         </button>
-        <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4">Alege echipa</h2>
-        <p class="mb-4 md:mb-6 text-sm md:text-base">
-          La ce echipă adaugi cele <span id="modalPoints">0</span> puncte?
+        <h2 class="text-lg font-bold mb-3">Alege echipa</h2>
+        <p class="mb-4 text-sm">
+          Adaugi <span id="modalPoints">0</span> puncte la:
         </p>
-        <div class="flex justify-around space-x-3 md:space-x-4">
+        <div class="flex space-x-2">
           <button
             id="assignTeam1"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold flex-1 text-sm md:text-base"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded font-semibold flex-1 text-sm"
           ></button>
           <button
             id="assignTeam2"
-            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold flex-1 text-sm md:text-base"
+            class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded font-semibold flex-1 text-sm"
           ></button>
         </div>
       </div>
@@ -385,20 +393,16 @@
     <!-- Next Question Modal -->
     <div id="nextModal" class="modal">
       <div
-        class="glass rounded-2xl p-4 md:p-6 w-full max-w-xs md:max-w-sm text-center text-white modal-content"
+        class="glass rounded-lg p-4 w-full max-w-xs text-center text-white modal-content"
       >
         <button class="close-modal text-white" data-modal="nextModal">
           &times;
         </button>
-        <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4">
-          Următoarea întrebare
-        </h2>
-        <p class="mb-4 md:mb-6 text-sm md:text-base">
-          Se trece la următoarea întrebare acum.
-        </p>
+        <h2 class="text-lg font-bold mb-3">Următoarea întrebare</h2>
+        <p class="mb-4 text-sm">Treci la următoarea întrebare?</p>
         <button
           id="nextModalOk"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold text-sm"
         >
           Continuă
         </button>
@@ -420,6 +424,9 @@
       );
       const startBtn = document.getElementById("startBtn");
       const stopBtn = document.getElementById("stopGame");
+      const stopModal = document.getElementById("stopModal");
+      const confirmStop = document.getElementById("confirmStop");
+      const cancelStop = document.getElementById("cancelStop");
       const team1Name = document.getElementById("team1Name");
       const team2Name = document.getElementById("team2Name");
       const team1Total = document.getElementById("team1Total");
@@ -449,20 +456,24 @@
           document.documentElement.requestFullscreen().catch((err) => {
             console.log("Fullscreen failed:", err);
           });
-          fsBtn.innerHTML =
-            '<i class="fas fa-compress mr-1 md:mr-2"></i>Ieșire ecran complet';
+          fsBtn.innerHTML = '<i class="fas fa-compress mr-1"></i>Ieșire';
         } else {
           document.exitFullscreen();
-          fsBtn.innerHTML =
-            '<i class="fas fa-expand mr-1 md:mr-2"></i>Ecran complet';
+          fsBtn.innerHTML = '<i class="fas fa-expand mr-1"></i>Ecran';
         }
       });
 
-      // Stop game
+      // Stop game modal
       stopBtn.addEventListener("click", () => {
-        if (confirm("Sigur vrei să oprești jocul?")) {
-          window.location.href = "index.html";
-        }
+        stopModal.style.display = "flex";
+      });
+
+      confirmStop.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      cancelStop.addEventListener("click", () => {
+        stopModal.style.display = "none";
       });
 
       // Close modals
@@ -557,13 +568,13 @@
         // Create columns
         [0, 4].forEach((start) => {
           const col = document.createElement("div");
-          col.className = "flex flex-col space-y-2 md:space-y-3";
+          col.className = "flex flex-col space-y-1 md:space-y-2";
 
           slots.slice(start, start + 4).forEach((a, i) => {
             const num = start + i + 1;
             const btn = document.createElement("button");
             btn.className =
-              "btn-answer glass p-2 md:p-4 rounded-lg flex justify-between text-sm md:text-lg font-semibold transition-all";
+              "btn-answer glass p-1 md:p-2 rounded flex justify-between text-xs md:text-sm font-semibold transition-all";
 
             if (a) {
               btn.innerHTML = `<span>${num}. ${a.text}</span><span class="font-bold text-yellow-400">${a.points}</span>`;
@@ -619,11 +630,9 @@
       // Handle fullscreen changes
       document.addEventListener("fullscreenchange", () => {
         if (document.fullscreenElement) {
-          fsBtn.innerHTML =
-            '<i class="fas fa-compress mr-1 md:mr-2"></i>Ieșire ecran complet';
+          fsBtn.innerHTML = '<i class="fas fa-compress mr-1"></i>Ieșire';
         } else {
-          fsBtn.innerHTML =
-            '<i class="fas fa-expand mr-1 md:mr-2"></i>Ecran complet';
+          fsBtn.innerHTML = '<i class="fas fa-expand mr-1"></i>Ecran';
         }
       });
     </script>

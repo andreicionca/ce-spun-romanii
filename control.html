@@ -18,6 +18,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <style>
+      /* Mobile-first base styles */
+      html,
+      body {
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+      }
+
+      #main {
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+        padding: 0.25rem;
+      }
+
       /* Landscape lock overlay */
       @media screen and (orientation: portrait) {
         body::before {
@@ -37,7 +52,7 @@
           left: 50%;
           transform: translate(-50%, -50%);
           color: #fff;
-          font-size: 1.125rem;
+          font-size: 1.025rem;
           text-align: center;
           padding: 1rem;
           z-index: 10000;
@@ -48,12 +63,20 @@
         }
       }
 
-      /* Answer button styling */
+      /* Mobile-first glassmorphism */
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* Mobile-first buttons */
       .btn-answer {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.15);
         color: white;
         transition: all 0.2s ease;
+        cursor: pointer;
       }
 
       .btn-answer:not(.selected):hover {
@@ -65,12 +88,13 @@
         border-color: rgba(34, 197, 94, 0.8);
       }
 
-      /* Team selection styling */
+      /* Mobile-first team selection */
       .team-option {
         background: transparent;
         border: 2px solid rgba(255, 255, 255, 0.3);
         color: white;
         transition: all 0.2s ease;
+        cursor: pointer;
       }
 
       .team-option:hover {
@@ -83,7 +107,7 @@
         border-color: rgba(34, 197, 94, 0.8);
       }
 
-      /* Modals */
+      /* Mobile-first modals */
       .modal {
         display: none;
         position: fixed;
@@ -113,42 +137,33 @@
         z-index: 1;
       }
 
-      body {
-        overflow: hidden;
-      }
-
-      /* Glassmorphism effects */
-      .glass {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-      }
-
-      /* Strike buttons */
+      /* Mobile-first strike buttons */
       .strike-btn {
-        background: rgba(220, 38, 38, 0.8);
         border: 1px solid rgba(220, 38, 38, 0.9);
         color: white;
         font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
       .strike-btn:hover {
         background: rgba(220, 38, 38, 0.9);
       }
 
-      /* Minimalist buttons */
+      /* Mobile-first minimal buttons */
       .minimal-btn {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         color: white;
         transition: all 0.2s ease;
+        cursor: pointer;
       }
 
       .minimal-btn:hover {
         background: rgba(255, 255, 255, 0.15);
       }
 
-      /* Clickable elements */
+      /* Mobile-first clickable elements */
       .btn-pointable {
         cursor: pointer;
         transition: all 0.2s ease;
@@ -159,23 +174,7 @@
         background-color: rgba(255, 255, 255, 0.05);
       }
 
-      /* Mobile viewport */
-      @media (max-width: 768px) {
-        html,
-        body {
-          height: 100vh;
-          height: 100svh;
-        }
-
-        #main {
-          height: 100vh;
-          height: 100svh;
-          overflow: hidden;
-          padding: 0.25rem;
-        }
-      }
-
-      /* Score boxes */
+      /* Mobile-first score boxes */
       .score-box {
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.25);
@@ -183,8 +182,9 @@
         text-align: center;
         font-weight: bold;
         transition: all 0.2s ease;
-        padding: 0.75rem 1.5rem;
-        min-width: 5rem;
+        padding: 0.25rem 0.75rem;
+        min-width: 3rem;
+        font-size: 0.875rem;
       }
 
       .score-box:hover {
@@ -192,20 +192,32 @@
         transform: scale(1.02);
       }
 
-      @media (max-width: 768px) {
-        .score-box {
-          padding: 0.25rem 0.75rem;
-          min-width: 3rem;
-          font-size: 0.875rem;
-        }
+      /* Mobile-first answers grid */
+      .answers-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.25rem;
+        height: 100%;
+        overflow-y: auto;
       }
 
-      /* Desktop grid layout */
+      /* Desktop responsive adjustments */
       @media (min-width: 769px) {
-        .desktop-grid {
+        #main {
+          padding: 1rem;
+        }
+
+        .score-box {
+          padding: 0.75rem 1.5rem;
+          min-width: 5rem;
+          font-size: 1rem;
+        }
+
+        .answers-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 1rem;
+          height: 100%;
         }
 
         .desktop-col {
@@ -213,41 +225,35 @@
           flex-direction: column;
           gap: 0.75rem;
         }
-      }
 
-      /* Mobile grid layout */
-      @media (max-width: 768px) {
-        .mobile-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.25rem;
-          overflow-y: auto;
-          max-height: 100%;
+        .btn-answer {
+          padding: 1rem;
+          font-size: 1.125rem;
         }
       }
     </style>
   </head>
   <body class="bg-gray-900 min-h-screen h-full text-white">
-    <div id="main" class="flex flex-col h-screen p-4 max-w-screen-xl mx-auto">
+    <div id="main" class="flex flex-col h-screen max-w-screen-xl mx-auto">
       <!-- Header Bar -->
-      <div class="flex justify-center items-center mb-4 h-10 relative">
+      <div class="flex justify-center items-center mb-2 md:mb-4 h-10 relative">
         <button
           id="stopGame"
-          class="absolute left-0 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-semibold transition-colors"
+          class="absolute left-0 bg-red-600 hover:bg-red-700 text-white px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
         >
           <i class="fas fa-stop mr-1"></i>Stop
         </button>
 
         <div
           id="gameCodeDisplay"
-          class="text-lg font-bold px-4 py-2 glass rounded"
+          class="text-sm md:text-lg font-bold px-2 md:px-4 py-1 md:py-2 glass rounded"
         >
           ----
         </div>
 
         <button
           id="fullscreenToggle"
-          class="absolute right-0 minimal-btn px-3 py-2 rounded text-sm font-semibold"
+          class="absolute right-0 minimal-btn px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold"
           title="Ecran complet"
         >
           <i class="fas fa-expand mr-1"></i>Ecran
@@ -260,22 +266,13 @@
         class="flex flex-col items-center justify-center flex-grow space-y-4"
       >
         <div class="text-center px-4">
-          <div class="text-xl font-bold mb-4">
+          <div class="text-lg md:text-xl font-bold mb-4">
             Cod: <span id="gameCodeWelcome" class="text-yellow-400">----</span>
-          </div>
-          <div class="glass rounded-lg p-6 max-w-md">
-            <h2 class="text-lg font-bold mb-4">Panou Control</h2>
-            <div class="text-sm space-y-2 text-left">
-              <p><strong>Pentru afișaj:</strong></p>
-              <p>1. Deschide <strong>display.html</strong></p>
-              <p>2. Cod: <strong id="gameCodeInstructions">----</strong></p>
-              <p>3. Apasă START mai jos</p>
-            </div>
           </div>
         </div>
         <button
           id="startBtn"
-          class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition text-base"
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg shadow-lg transition text-sm md:text-base"
         >
           <i class="fas fa-play mr-2"></i>START
         </button>
@@ -287,78 +284,87 @@
         class="hidden flex flex-col flex-grow overflow-hidden"
       >
         <!-- Teams Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-3 md:mb-6">
           <div class="flex flex-col items-center">
-            <div id="team1Name" class="text-base md:text-lg font-semibold mb-2">
+            <div
+              id="team1Name"
+              class="text-sm md:text-lg font-semibold mb-1 md:mb-2"
+            >
               ECHIPA 1
             </div>
-            <div id="team1Total" class="score-box text-2xl md:text-3xl">0</div>
+            <div id="team1Total" class="score-box text-lg md:text-3xl">0</div>
           </div>
           <div class="flex flex-col items-center">
-            <div class="text-sm md:text-base mb-2">Puncte</div>
+            <div class="text-xs md:text-base mb-1 md:mb-2">Puncte</div>
             <div
               id="questionPoints"
-              class="btn-pointable score-box text-3xl md:text-4xl"
+              class="btn-pointable score-box text-xl md:text-4xl"
             >
               0
             </div>
           </div>
           <div class="flex flex-col items-center">
-            <div id="team2Name" class="text-base md:text-lg font-semibold mb-2">
+            <div
+              id="team2Name"
+              class="text-sm md:text-lg font-semibold mb-1 md:mb-2"
+            >
               ECHIPA 2
             </div>
-            <div id="team2Total" class="score-box text-2xl md:text-3xl">0</div>
+            <div id="team2Total" class="score-box text-lg md:text-3xl">0</div>
           </div>
         </div>
 
         <!-- Question -->
         <div
           id="currentQuestion"
-          class="mb-6 text-lg md:text-2xl font-bold text-center px-4"
+          class="mb-3 md:mb-6 text-sm md:text-2xl font-bold text-center px-2 md:px-4"
         >
           Încărcare...
         </div>
 
         <!-- Answers Grid -->
         <div class="flex-grow overflow-hidden">
-          <div id="answersGrid" class="h-full"></div>
+          <div id="answersGrid" class="answers-grid"></div>
         </div>
 
         <!-- Navigation & Strikes -->
-        <div class="flex justify-between items-center mt-6">
-          <button id="singleX" class="strike-btn px-4 py-3 rounded text-lg">
+        <div class="flex justify-between items-center mt-3 md:mt-6">
+          <button
+            id="singleX"
+            class="strike-btn px-2 md:px-4 py-2 md:py-3 rounded text-sm md:text-lg"
+          >
             ❌
           </button>
-          <div class="space-x-3">
+          <div class="space-x-2 md:space-x-3">
             <button
               id="prevQ"
-              class="minimal-btn px-6 py-3 rounded font-semibold text-lg"
+              class="minimal-btn px-3 md:px-6 py-2 md:py-3 rounded font-semibold text-sm md:text-lg"
             >
-              <i class="fas fa-arrow-left mr-2"></i>PREC
+              <i class="fas fa-arrow-left mr-1 md:mr-2"></i>PREC
             </button>
             <button
               id="nextQ"
-              class="minimal-btn px-6 py-3 rounded font-semibold text-lg"
+              class="minimal-btn px-3 md:px-6 py-2 md:py-3 rounded font-semibold text-sm md:text-lg"
             >
-              URMAT<i class="fas fa-arrow-right ml-2"></i>
+              URMAT<i class="fas fa-arrow-right ml-1 md:ml-2"></i>
             </button>
           </div>
-          <div class="flex space-x-2">
+          <div class="flex space-x-1 md:space-x-2">
             <button
               data-count="1"
-              class="progressiveX strike-btn px-3 py-3 rounded text-base"
+              class="progressiveX strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
             >
               ❌
             </button>
             <button
               data-count="2"
-              class="progressiveX strike-btn px-3 py-3 rounded text-base"
+              class="progressiveX strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
             >
               ❌❌
             </button>
             <button
               data-count="3"
-              class="progressiveX strike-btn px-3 py-3 rounded text-base"
+              class="progressiveX strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
             >
               ❌❌❌
             </button>
@@ -370,23 +376,23 @@
     <!-- Stop Game Modal -->
     <div id="stopModal" class="modal">
       <div
-        class="glass rounded-lg p-6 w-full max-w-sm text-center text-white modal-content"
+        class="glass rounded-lg p-4 md:p-6 w-full max-w-sm text-center text-white modal-content"
       >
         <button class="close-modal text-white" data-modal="stopModal">
           &times;
         </button>
-        <h2 class="text-xl font-bold mb-4">Oprește jocul</h2>
-        <p class="mb-6 text-base">Sigur vrei să oprești jocul?</p>
+        <h2 class="text-lg md:text-xl font-bold mb-4">Oprește jocul</h2>
+        <p class="mb-6 text-sm md:text-base">Sigur vrei să oprești jocul?</p>
         <div class="flex space-x-4">
           <button
             id="confirmStop"
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold flex-1"
+            class="bg-red-600 hover:bg-red-700 text-white px-4 md:px-6 py-2 md:py-3 rounded font-semibold flex-1 text-sm md:text-base"
           >
             Da
           </button>
           <button
             id="cancelStop"
-            class="minimal-btn px-6 py-3 rounded font-semibold flex-1"
+            class="minimal-btn px-4 md:px-6 py-2 md:py-3 rounded font-semibold flex-1 text-sm md:text-base"
           >
             Nu
           </button>
@@ -397,23 +403,23 @@
     <!-- Assign Modal -->
     <div id="assignModal" class="modal">
       <div
-        class="glass rounded-lg p-6 w-full max-w-sm text-center text-white modal-content"
+        class="glass rounded-lg p-4 md:p-6 w-full max-w-sm text-center text-white modal-content"
       >
         <button class="close-modal text-white" data-modal="assignModal">
           &times;
         </button>
-        <h2 class="text-xl font-bold mb-4">Alege echipa</h2>
-        <p class="mb-6 text-base">
+        <h2 class="text-lg md:text-xl font-bold mb-4">Alege echipa</h2>
+        <p class="mb-6 text-sm md:text-base">
           Adaugi <span id="modalPoints">0</span> puncte la:
         </p>
         <div class="flex space-x-4">
           <button
             id="assignTeam1"
-            class="team-option px-6 py-3 rounded font-semibold flex-1"
+            class="team-option px-4 md:px-6 py-2 md:py-3 rounded font-semibold flex-1 text-sm md:text-base"
           ></button>
           <button
             id="assignTeam2"
-            class="team-option px-6 py-3 rounded font-semibold flex-1"
+            class="team-option px-4 md:px-6 py-2 md:py-3 rounded font-semibold flex-1 text-sm md:text-base"
           ></button>
         </div>
       </div>
@@ -422,16 +428,16 @@
     <!-- Next Question Modal -->
     <div id="nextModal" class="modal">
       <div
-        class="glass rounded-lg p-6 w-full max-w-sm text-center text-white modal-content"
+        class="glass rounded-lg p-4 md:p-6 w-full max-w-sm text-center text-white modal-content"
       >
         <button class="close-modal text-white" data-modal="nextModal">
           &times;
         </button>
-        <h2 class="text-xl font-bold mb-4">Următoarea întrebare</h2>
-        <p class="mb-6 text-base">Treci la următoarea întrebare?</p>
+        <h2 class="text-lg md:text-xl font-bold mb-4">Următoarea întrebare</h2>
+        <p class="mb-6 text-sm md:text-base">Treci la următoarea întrebare?</p>
         <button
           id="nextModalOk"
-          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 md:px-6 py-2 md:py-3 rounded font-semibold text-sm md:text-base"
         >
           Continuă
         </button>
@@ -448,9 +454,7 @@
       const controlPanel = document.getElementById("controlPanel");
       const codeDisplay = document.getElementById("gameCodeDisplay");
       const gameCodeWelcome = document.getElementById("gameCodeWelcome");
-      const gameCodeInstructions = document.getElementById(
-        "gameCodeInstructions"
-      );
+
       const startBtn = document.getElementById("startBtn");
       const stopBtn = document.getElementById("stopGame");
       const stopModal = document.getElementById("stopModal");
@@ -542,7 +546,6 @@
       document.addEventListener("DOMContentLoaded", () => {
         codeDisplay.textContent = gameCode || "----";
         gameCodeWelcome.textContent = gameCode || "----";
-        gameCodeInstructions.textContent = gameCode || "----";
         startBtn.addEventListener("click", startGame);
         questionPoints.addEventListener("click", showAssignModal);
         nextModalOk.addEventListener("click", () => {
@@ -610,10 +613,9 @@
 
         answersGrid.innerHTML = "";
 
-        // Mobile layout
+        // Check if mobile or desktop
         if (window.innerWidth <= 768) {
-          answersGrid.className = "mobile-grid h-full";
-
+          // Mobile layout - 2x4 grid
           slots.forEach((a, i) => {
             const num = i + 1;
             const btn = document.createElement("button");
@@ -631,8 +633,8 @@
             answersGrid.appendChild(btn);
           });
         } else {
-          // Desktop layout
-          answersGrid.className = "desktop-grid h-full";
+          // Desktop layout - 2 columns
+          answersGrid.innerHTML = "";
 
           [0, 4].forEach((start) => {
             const col = document.createElement("div");

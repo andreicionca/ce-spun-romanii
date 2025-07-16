@@ -98,13 +98,14 @@
       }
 
       .team-option:hover {
-        border-color: rgba(255, 255, 255, 0.5);
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(34, 197, 94, 0.3);
+        border-color: rgba(34, 197, 94, 0.8);
       }
 
       .team-option.selected {
-        background-color: rgba(34, 197, 94, 0.3);
-        border-color: rgba(34, 197, 94, 0.8);
+        background-color: rgba(34, 197, 94, 0.5);
+        border-color: rgba(34, 197, 94, 1);
+        color: white;
       }
 
       /* Mobile-first modals */
@@ -176,18 +177,21 @@
 
       /* Mobile-first score boxes */
       .score-box {
-        background: rgba(255, 255, 255, 0.12);
+        text-align: center;
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 0.5rem;
-        text-align: center;
-        font-weight: bold;
+        padding: 0.0625rem 0.25rem;
+        min-width: 1.5rem;
+        font-size: 0.625rem;
+      }
+      .score-box-center {
+        background: rgba(255, 255, 255, 0.12);
+
         transition: all 0.2s ease;
-        padding: 0.25rem 0.75rem;
-        min-width: 3rem;
-        font-size: 0.875rem;
+        font-weight: bold;
       }
 
-      .score-box:hover {
+      .score-box-center:hover {
         background: rgba(255, 255, 255, 0.18);
         transform: scale(1.02);
       }
@@ -202,7 +206,7 @@
       }
 
       /* Desktop responsive adjustments */
-      @media (min-width: 769px) {
+      @media (min-width: 1024px) {
         #main {
           padding: 1rem;
         }
@@ -292,13 +296,13 @@
             >
               ECHIPA 1
             </div>
-            <div id="team1Total" class="score-box text-lg md:text-3xl">0</div>
+            <div id="team1Total" class="score-box text-lg md:text-xl">0</div>
           </div>
           <div class="flex flex-col items-center">
             <div class="text-xs md:text-base mb-1 md:mb-2">Puncte</div>
             <div
               id="questionPoints"
-              class="btn-pointable score-box text-xl md:text-4xl"
+              class="btn-pointable score-box score-box-center text-xl md:text-4xl"
             >
               0
             </div>
@@ -310,7 +314,7 @@
             >
               ECHIPA 2
             </div>
-            <div id="team2Total" class="score-box text-lg md:text-3xl">0</div>
+            <div id="team2Total" class="score-box text-lg md:text-xl">0</div>
           </div>
         </div>
 

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control Panel - Ce Spun Românii</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .glass-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .connection-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen"
+  >
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2">
+          <i class="fas fa-gamepad mr-3"></i>
+          CONTROL PANEL
+        </h1>
+        <p class="text-blue-200">Moderator - Ce Spun Românii</p>
+      </div>
+
+      <!-- Connection Status -->
+      <div
+        id="connectionStatus"
+        class="glass-card rounded-xl p-6 mb-6 text-center"
+      >
+        <div class="connection-pulse">
+          <i class="fas fa-wifi text-4xl text-yellow-400 mb-4"></i>
+          <h2 class="text-2xl font-bold text-white mb-4">
+            Conectare la joc...
+          </h2>
+          <p class="text-blue-200">Se încarcă datele jocului</p>
+        </div>
+      </div>
+
+      <!-- Game Info (Hidden initially) -->
+      <div id="gameInfo" class="glass-card rounded-xl p-6 mb-6 hidden">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="text-center">
+            <h3 class="text-lg font-semibold text-white mb-2">Codul Jocului</h3>
+            <div class="bg-black/30 rounded-lg p-4">
+              <div
+                class="text-4xl font-bold text-yellow-400 mb-2"
+                id="gameCodeDisplay"
+              ></div>
+              <p class="text-sm text-blue-200">
+                Împărtășește acest cod pentru Display
+              </p>
+            </div>
+          </div>
+          <div class="text-center">
+            <h3 class="text-lg font-semibold text-white mb-2">Echipele</h3>
+            <div class="space-y-2">
+              <div class="bg-blue-500/20 rounded-lg p-2">
+                <span class="text-white font-semibold" id="team1Name"></span>
+                <span class="text-yellow-400 font-bold ml-2" id="team1Score"
+                  >0</span
+                >
+              </div>
+              <div class="bg-purple-500/20 rounded-lg p-2">
+                <span class="text-white font-semibold" id="team2Name"></span>
+                <span class="text-yellow-400 font-bold ml-2" id="team2Score"
+                  >0</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Display Connection Instructions -->
+      <div
+        id="displayInstructions"
+        class="glass-card rounded-xl p-6 mb-6 hidden"
+      >
+        <div class="text-center">
+          <i class="fas fa-tv text-3xl text-blue-400 mb-4"></i>
+          <h3 class="text-xl font-bold text-white mb-4">
+            Instrucțiuni pentru Display
+          </h3>
+          <div class="bg-black/30 rounded-lg p-4 mb-4">
+            <p class="text-blue-200 mb-2">
+              1. Deschide pe un dispozitiv separat (TV/proiector):
+            </p>
+            <p class="text-white font-mono text-lg">
+              display.html?game=<span id="gameCodeForDisplay"></span>
+            </p>
+          </div>
+          <div class="text-left text-blue-200 space-y-2">
+            <p>
+              2. Sau navighează la homepage și introdu codul:
+              <span
+                class="text-yellow-400 font-bold"
+                id="gameCodeForHomepage"
+              ></span>
+            </p>
+            <p>3. Display-ul va afișa tabla de joc pentru spectatori</p>
+          </div>
+          <button
+            onclick="startGame()"
+            class="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-8 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            <i class="fas fa-play mr-2"></i>
+            ÎNCEPE JOCUL
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Control (Hidden initially) -->
+      <div id="gameControl" class="hidden">
+        <!-- Current Question -->
+        <div class="glass-card rounded-xl p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-white">
+              <i class="fas fa-question-circle mr-2"></i>
+              Întrebare Curentă
+            </h3>
+            <span class="text-blue-200" id="questionCounter">1 / 10</span>
+          </div>
+          <div id="currentQuestion" class="text-center">
+            <div class="bg-black/30 rounded-lg p-6 mb-4">
+              <h4 class="text-2xl font-bold text-white mb-2" id="questionText">
+                Selectează o întrebare pentru a începe
+              </h4>
+            </div>
+            <button
+              id="launchQuestionBtn"
+              onclick="launchQuestion()"
+              class="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 hidden"
+            >
+              <i class="fas fa-rocket mr-2"></i>
+              LANSEAZĂ ÎNTREBARE
+            </button>
+          </div>
+        </div>
+
+        <!-- Answers Grid -->
+        <div class="glass-card rounded-xl p-6 mb-6">
+          <h3 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-list mr-2"></i>
+            Răspunsuri
+          </h3>
+          <div id="answersGrid" class="grid md:grid-cols-2 gap-3">
+            <!-- Answers will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Score Controls -->
+        <div class="glass-card rounded-xl p-6 mb-6">
+          <h3 class="text-xl font-bold text-white mb-4">
+            <i class="fas fa-trophy mr-2"></i>
+            Controlul Scorului
+          </h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="text-center">
+              <h4
+                class="text-lg font-semibold text-white mb-3"
+                id="scoreTeam1Name"
+              >
+                Echipa 1
+              </h4>
+              <div class="bg-blue-500/20 rounded-lg p-4">
+                <div
+                  class="text-3xl font-bold text-yellow-400 mb-3"
+                  id="scoreTeam1Display"
+                >
+                  0
+                </div>
+                <div class="flex justify-center space-x-2">
+                  <button
+                    onclick="updateScore('team1', -10)"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button
+                    onclick="updateScore('team1', 10)"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <h4
+                class="text-lg font-semibold text-white mb-3"
+                id="scoreTeam2Name"
+              >
+                Echipa 2
+              </h4>
+              <div class="bg-purple-500/20 rounded-lg p-4">
+                <div
+                  class="text-3xl font-bold text-yellow-400 mb-3"
+                  id="scoreTeam2Display"
+                >
+                  0
+                </div>
+                <div class="flex justify-center space-x-2">
+                  <button
+                    onclick="updateScore('team2', -10)"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button
+                    onclick="updateScore('team2', 10)"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Navigation -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex justify-between items-center">
+            <button
+              onclick="previousQuestion()"
+              class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              <i class="fas fa-arrow-left mr-2"></i>
+              Anterior
+            </button>
+            <div class="text-center">
+              <select
+                id="questionSelect"
+                onchange="selectQuestion()"
+                class="bg-black/30 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <!-- Questions will be loaded here -->
+              </select>
+            </div>
+            <button
+              onclick="nextQuestion()"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Următoarea
+              <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Error -->
+      <div
+        id="loadingError"
+        class="glass-card rounded-xl p-6 text-center hidden"
+      >
+        <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+        <h3 class="text-xl font-bold text-white mb-2">Eroare de Conectare</h3>
+        <p class="text-blue-200 mb-4">
+          Nu s-a putut încărca jocul. Verifică codul și încearcă din nou.
+        </p>
+        <button
+          onclick="retryConnection()"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+        >
+          <i class="fas fa-refresh mr-2"></i>
+          Încearcă din nou
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+      let gameCode = null;
+      let currentGame = null;
+      let gameQuestions = [];
+      let currentQuestionIndex = 0;
+      let currentQuestion = null;
+      let gameSubscription = null;
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeControl();
+      });
+
+      async function initializeControl() {
+        // Get game code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        gameCode = urlParams.get("game");
+
+        if (!gameCode) {
+          showError("Cod de joc lipsă din URL");
+          return;
+        }
+
+        try {
+          await loadGame();
+        } catch (error) {
+          console.error("Error loading game:", error);
+          showError("Eroare la încărcarea jocului");
+        }
+      }
+
+      async function loadGame() {
+        try {
+          // Load game data
+          currentGame = await getGameByCode(gameCode);
+
+          if (!currentGame) {
+            throw new Error("Joc nu a fost găsit");
+          }
+
+          // Load questions for this game
+          if (currentGame.set_id) {
+            // Quick game - load from set
+            const setData = await getQuestionSetWithQuestions(
+              currentGame.set_id
+            );
+            gameQuestions = setData.questions || [];
+          } else {
+            // Custom game - load selected questions
+            // TODO: Implement custom question loading
+            gameQuestions = [];
+          }
+
+          // Hide connection status and show game info
+          document.getElementById("connectionStatus").classList.add("hidden");
+          document.getElementById("gameInfo").classList.remove("hidden");
+          document
+            .getElementById("displayInstructions")
+            .classList.remove("hidden");
+
+          // Populate game info
+          document.getElementById("gameCodeDisplay").textContent =
+            currentGame.game_code;
+          document.getElementById("gameCodeForDisplay").textContent =
+            currentGame.game_code;
+          document.getElementById("gameCodeForHomepage").textContent =
+            currentGame.game_code;
+          document.getElementById("team1Name").textContent =
+            currentGame.team1_name;
+          document.getElementById("team2Name").textContent =
+            currentGame.team2_name;
+          document.getElementById("team1Score").textContent =
+            currentGame.team1_score;
+          document.getElementById("team2Score").textContent =
+            currentGame.team2_score;
+
+          // Setup realtime subscription
+          setupRealtimeSubscription();
+        } catch (error) {
+          console.error("Error loading game:", error);
+          showError("Eroare la încărcarea jocului: " + error.message);
+        }
+      }
+
+      function setupRealtimeSubscription() {
+        if (gameSubscription) {
+          unsubscribeFromGame(gameSubscription);
+        }
+
+        gameSubscription = subscribeToGame(currentGame.id, (payload) => {
+          console.log("Realtime update:", payload);
+          // Handle realtime updates
+          if (payload.table === "games") {
+            updateGameDisplay(payload.new);
+          }
+        });
+      }
+
+      function updateGameDisplay(gameData) {
+        document.getElementById("team1Score").textContent =
+          gameData.team1_score;
+        document.getElementById("team2Score").textContent =
+          gameData.team2_score;
+        document.getElementById("scoreTeam1Display").textContent =
+          gameData.team1_score;
+        document.getElementById("scoreTeam2Display").textContent =
+          gameData.team2_score;
+      }
+
+      function startGame() {
+        if (gameQuestions.length === 0) {
+          showError("Nu există întrebări disponibile pentru acest joc");
+          return;
+        }
+
+        // Hide instructions and show game control
+        document.getElementById("displayInstructions").classList.add("hidden");
+        document.getElementById("gameControl").classList.remove("hidden");
+
+        // Setup score display with team names
+        document.getElementById("scoreTeam1Name").textContent =
+          currentGame.team1_name;
+        document.getElementById("scoreTeam2Name").textContent =
+          currentGame.team2_name;
+        document.getElementById("scoreTeam1Display").textContent =
+          currentGame.team1_score;
+        document.getElementById("scoreTeam2Display").textContent =
+          currentGame.team2_score;
+
+        // Load questions into selector
+        loadQuestionSelector();
+
+        // Load first question
+        loadQuestion(0);
+      }
+
+      function loadQuestionSelector() {
+        const select = document.getElementById("questionSelect");
+        select.innerHTML = gameQuestions
+          .map(
+            (question, index) =>
+              `<option value="${index}">Întrebare ${index + 1}</option>`
+          )
+          .join("");
+      }
+
+      function loadQuestion(index) {
+        if (index < 0 || index >= gameQuestions.length) return;
+
+        currentQuestionIndex = index;
+        currentQuestion = gameQuestions[index];
+
+        document.getElementById("questionText").textContent =
+          currentQuestion.text;
+        document.getElementById("questionCounter").textContent = `${
+          index + 1
+        } / ${gameQuestions.length}`;
+        document.getElementById("questionSelect").value = index;
+        document.getElementById("launchQuestionBtn").classList.remove("hidden");
+
+        // Load answers
+        loadAnswers();
+      }
+
+      function loadAnswers() {
+        const answersGrid = document.getElementById("answersGrid");
+        if (!currentQuestion || !currentQuestion.answers) {
+          answersGrid.innerHTML =
+            '<div class="text-center text-blue-200 col-span-full">Nu există răspunsuri disponibile</div>';
+          return;
+        }
+
+        const answers = currentQuestion.answers.sort(
+          (a, b) => (a.position || 0) - (b.position || 0)
+        );
+
+        answersGrid.innerHTML = answers
+          .map(
+            (answer) => `
+          <div class="bg-black/30 rounded-lg p-3 cursor-pointer hover:bg-black/50 transition-colors answer-card hidden" 
+               data-answer-id="${answer.id}" onclick="revealAnswer('${
+              answer.id
+            }')">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">
+                  ${answer.position || 1}
+                </div>
+                <span class="text-white font-semibold">${answer.text}</span>
+              </div>
+              <span class="text-yellow-400 font-bold">${
+                answer.points
+              } pct</span>
+            </div>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      function launchQuestion() {
+        // Show answers
+        document.querySelectorAll(".answer-card").forEach((card) => {
+          card.classList.remove("hidden");
+        });
+
+        // Hide launch button
+        document.getElementById("launchQuestionBtn").classList.add("hidden");
+
+        // Save game state
+        saveGameState(currentGame.id, "question_launched", {
+          question: currentQuestion,
+          question_index: currentQuestionIndex,
+        });
+      }
+
+      function revealAnswer(answerId) {
+        const answerCard = document.querySelector(
+          `[data-answer-id="${answerId}"]`
+        );
+        if (answerCard) {
+          answerCard.classList.toggle("bg-green-500/20");
+          answerCard.classList.toggle("border-green-500");
+        }
+
+        // Save game state
+        saveGameState(currentGame.id, "answer_revealed", {
+          answer_id: answerId,
+          question_index: currentQuestionIndex,
+        });
+      }
+
+      async function updateScore(team, points) {
+        try {
+          const newTeam1Score =
+            team === "team1"
+              ? currentGame.team1_score + points
+              : currentGame.team1_score;
+          const newTeam2Score =
+            team === "team2"
+              ? currentGame.team2_score + points
+              : currentGame.team2_score;
+
+          await updateGameScore(currentGame.id, newTeam1Score, newTeam2Score);
+
+          // Update current game object
+          currentGame.team1_score = newTeam1Score;
+          currentGame.team2_score = newTeam2Score;
+
+          // Update display
+          updateGameDisplay(currentGame);
+        } catch (error) {
+          console.error("Error updating score:", error);
+          showError("Eroare la actualizarea scorului");
+        }
+      }
+
+      function selectQuestion() {
+        const selectedIndex = parseInt(
+          document.getElementById("questionSelect").value
+        );
+        loadQuestion(selectedIndex);
+      }
+
+      function previousQuestion() {
+        if (currentQuestionIndex > 0) {
+          loadQuestion(currentQuestionIndex - 1);
+        }
+      }
+
+      function nextQuestion() {
+        if (currentQuestionIndex < gameQuestions.length - 1) {
+          loadQuestion(currentQuestionIndex + 1);
+        }
+      }
+
+      function showError(message) {
+        document.getElementById("connectionStatus").classList.add("hidden");
+        document.getElementById("gameInfo").classList.add("hidden");
+        document.getElementById("displayInstructions").classList.add("hidden");
+        document.getElementById("loadingError").classList.remove("hidden");
+        document.querySelector("#loadingError p").textContent = message;
+      }
+
+      function retryConnection() {
+        document.getElementById("loadingError").classList.add("hidden");
+        document.getElementById("connectionStatus").classList.remove("hidden");
+        loadGame();
+      }
+
+      // Cleanup on page unload
+      window.addEventListener("beforeunload", function () {
+        if (gameSubscription) {
+          unsubscribeFromGame(gameSubscription);
+        }
+      });
+    </script>
+  </body>
+</html>

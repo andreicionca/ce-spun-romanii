@@ -162,6 +162,17 @@
               />
             </div>
 
+            <!-- Add "All Categories" button -->
+            <div class="mb-4">
+              <button
+                id="allCategoriesBtn"
+                class="category-btn rounded-lg px-4 py-2 cursor-pointer selected"
+              >
+                <i class="fas fa-list mr-2"></i>
+                Toate Categoriile
+              </button>
+            </div>
+
             <div
               id="availableCategories"
               class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6"
@@ -275,20 +286,15 @@
               </p>
             </div>
             <div class="space-y-4">
-              <button
-                onclick="openControl()"
-                class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all"
-              >
-                <i class="fas fa-gamepad mr-2"></i>
-                DESCHIDE CONTROL MODERATOR
-              </button>
-              <button
-                onclick="openDisplay()"
-                class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all"
-              >
-                <i class="fas fa-tv mr-2"></i>
-                DESCHIDE DISPLAY PUBLIC
-              </button>
+              <div class="space-y-4">
+                <button
+                  onclick="openControl()"
+                  class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all"
+                >
+                  <i class="fas fa-gamepad mr-2"></i>
+                  INTRĂ ÎN CONTROL PANEL
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -315,7 +321,7 @@
         class="preview-content rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6"
       >
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-white">Previzualizare Întrebare</h3>
+          <h3 class="text-xl font-bold text-white">Previzualizare</h3>
           <button
             id="closePreview"
             class="text-white hover:text-red-400 transition-colors"
@@ -342,6 +348,7 @@
       let allCategories = [];
       let allQuestions = [];
       let allSets = [];
+      let currentSetQuestions = []; // For set preview
 
       // Initialize
       document.addEventListener("DOMContentLoaded", function () {
@@ -399,6 +406,18 @@
           .getElementById("categorySearch")
           .addEventListener("input", filterCategories);
 
+        // All Categories button
+        document
+          .getElementById("allCategoriesBtn")
+          .addEventListener("click", function () {
+            document
+              .querySelectorAll(".category-option")
+              .forEach((opt) => opt.classList.remove("selected"));
+            this.classList.add("selected");
+            selectedCategory = null;
+            loadQuestions();
+          });
+
         // Team inputs
         document
           .getElementById("team1Name")
@@ -425,6 +444,11 @@
 
       function showQuestionSection() {
         document.getElementById("questionSection").classList.remove("hidden");
+        // Reset selections când schimbi tipul de joc
+        selectedQuestions = [];
+        selectedSetId = null;
+        selectedCategory = null;
+        document.getElementById("selectedCount").textContent = "0";
 
         if (gameType === "quick") {
           document.getElementById("quickGameSets").classList.remove("hidden");
@@ -440,8 +464,93 @@
           loadCategories();
         }
       }
+      async function loadSets() {
+        await loadSetsWithCounts();
+      }
 
-      function loadSets() {
+      // Actualizează filterSets() să folosească displaySets():
+      function filterSets() {
+        const search = document.getElementById("setSearch").value.toLowerCase();
+        const filteredSets = allSets.filter(
+          (set) =>
+            set.name.toLowerCase().includes(search) ||
+            (set.description && set.description.toLowerCase().includes(search))
+        );
+
+        displaySets(filteredSets);
+      }
+      async function showSetPreview(setId) {
+        try {
+          const setData = await getQuestionSetWithQuestions(setId);
+          const questions = setData.questions || [];
+
+          if (questions.length === 0) {
+            showError("Acest set nu conține întrebări.");
+            return;
+          }
+
+          const content = `
+            <div class="mb-4">
+              <h4 class="text-lg font-semibold text-white mb-3">${
+                setData.name
+              }</h4>
+              <p class="text-blue-200 mb-4">${setData.description || ""}</p>
+              <div class="space-y-3 max-h-96 overflow-y-auto">
+                ${questions
+                  .map(
+                    (question, index) => `
+                  <div class="question-card rounded-lg p-3">
+                    <div class="flex items-start justify-between">
+                      <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                          <span class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2">
+                            ${index + 1}
+                          </span>
+                          <span class="text-white font-semibold">${
+                            question.text
+                          }</span>
+                        </div>
+                        <div class="text-blue-200 text-sm ml-8">
+                          ${
+                            question.answers ? question.answers.length : 0
+                          } răspunsuri
+                        </div>
+                      </div>
+                      <button class="text-blue-400 hover:text-blue-300 preview-question-btn ml-2" data-question-id="${
+                        question.id
+                      }">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+            </div>
+          `;
+
+          document.getElementById("previewContent").innerHTML = content;
+          document.getElementById("previewModal").classList.remove("hidden");
+
+          // Add event listeners for individual question preview
+          document.querySelectorAll(".preview-question-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const questionId = this.dataset.questionId;
+              const question = questions.find((q) => q.id === questionId);
+              if (question) {
+                showQuestionPreview(question);
+              }
+            });
+          });
+        } catch (error) {
+          console.error("Error loading set preview:", error);
+          showError("Eroare la încărcarea previzualizării.");
+        }
+      }
+
+      async function loadSetsWithCounts() {
         const container = document.getElementById("availableSets");
 
         if (allSets.length === 0) {
@@ -450,27 +559,64 @@
           return;
         }
 
-        container.innerHTML = allSets
+        // Salvăm seturile cu count-uri pentru a le folosi în filtrare
+        const setsWithCounts = await Promise.all(
+          allSets.map(async (set) => {
+            try {
+              const setData = await getQuestionSetWithQuestions(set.id);
+              return {
+                ...set,
+                questionCount: setData.questions ? setData.questions.length : 0,
+              };
+            } catch (error) {
+              console.error("Error loading set questions:", error);
+              return { ...set, questionCount: 0 };
+            }
+          })
+        );
+
+        // Actualizăm allSets cu count-urile
+        allSets = setsWithCounts;
+
+        // Afișăm seturile
+        displaySets(setsWithCounts);
+      }
+
+      function displaySets(sets) {
+        const container = document.getElementById("availableSets");
+
+        container.innerHTML = sets
           .map(
             (set) => `
-          <div class="category-btn rounded-lg p-4 cursor-pointer set-option" data-set-id="${
-            set.id
-          }">
-            <div class="text-center">
-              <i class="fas fa-folder-open text-2xl text-blue-400 mb-2"></i>
-              <h3 class="text-white font-semibold">${set.name}</h3>
-              <p class="text-blue-200 text-sm">${
-                set.description || "Set de întrebări"
-              }</p>
-              <div class="text-yellow-400 text-xs mt-1">Set predefinit</div>
-            </div>
+        <div class="category-btn rounded-lg p-4 cursor-pointer set-option" data-set-id="${
+          set.id
+        }">
+          <div class="text-center">
+            <i class="fas fa-folder-open text-2xl text-blue-400 mb-2"></i>
+            <h3 class="text-white font-semibold">${set.name}</h3>
+            <p class="text-blue-200 text-sm">${
+              set.description || "Set de întrebări"
+            }</p>
+            <div class="text-yellow-400 text-xs mt-1">${
+              set.questionCount || 0
+            } întrebări</div>
+            <button class="mt-2 text-blue-400 hover:text-blue-300 preview-set-btn" data-set-id="${
+              set.id
+            }">
+              <i class="fas fa-eye mr-1"></i>
+              Previzualizare
+            </button>
           </div>
-        `
+        </div>
+      `
           )
           .join("");
 
+        // Add event listeners for set selection
         document.querySelectorAll(".set-option").forEach((option) => {
-          option.addEventListener("click", function () {
+          option.addEventListener("click", function (e) {
+            if (e.target.closest(".preview-set-btn")) return;
+
             document
               .querySelectorAll(".set-option")
               .forEach((opt) => opt.classList.remove("selected"));
@@ -479,40 +625,13 @@
             showTeamSection();
           });
         });
-      }
 
-      function filterSets() {
-        const search = document.getElementById("setSearch").value.toLowerCase();
-        const filteredSets = allSets.filter(
-          (set) =>
-            set.name.toLowerCase().includes(search) ||
-            set.description.toLowerCase().includes(search)
-        );
-
-        const container = document.getElementById("availableSets");
-        container.innerHTML = filteredSets
-          .map(
-            (set) => `
-          <div class="category-btn rounded-lg p-4 cursor-pointer set-option" data-set-id="${set.id}">
-            <div class="text-center">
-              <i class="fas fa-folder-open text-2xl text-blue-400 mb-2"></i>
-              <h3 class="text-white font-semibold">${set.name}</h3>
-              <p class="text-blue-200 text-sm">${set.description}</p>
-              <div class="text-yellow-400 text-xs mt-1">${set.questions} întrebări</div>
-            </div>
-          </div>
-        `
-          )
-          .join("");
-
-        document.querySelectorAll(".set-option").forEach((option) => {
-          option.addEventListener("click", function () {
-            document
-              .querySelectorAll(".set-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            this.classList.add("selected");
-            selectedSetId = this.dataset.setId;
-            showTeamSection();
+        // Add event listeners for set preview
+        document.querySelectorAll(".preview-set-btn").forEach((btn) => {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const setId = this.dataset.setId;
+            showSetPreview(setId);
           });
         });
       }
@@ -544,6 +663,9 @@
             document
               .querySelectorAll(".category-option")
               .forEach((opt) => opt.classList.remove("selected"));
+            document
+              .getElementById("allCategoriesBtn")
+              .classList.remove("selected");
             this.classList.add("selected");
             selectedCategory = this.dataset.categoryId;
             loadQuestions();
@@ -581,6 +703,9 @@
             document
               .querySelectorAll(".category-option")
               .forEach((opt) => opt.classList.remove("selected"));
+            document
+              .getElementById("allCategoriesBtn")
+              .classList.remove("selected");
             this.classList.add("selected");
             selectedCategory = this.dataset.categoryId;
             loadQuestions();
@@ -594,7 +719,7 @@
           '<div class="text-center text-blue-200 col-span-full">Se încarcă întrebările...</div>';
 
         try {
-          // Load questions based on selected category
+          // Load questions based on selected category (null = all categories)
           const questions = await getQuestions(selectedCategory);
           allQuestions = questions;
 
@@ -607,9 +732,9 @@
           container.innerHTML = questions
             .map(
               (question) => `
-            <div class="question-card rounded-lg p-4 cursor-pointer question-option" data-question-id="${
-              question.id
-            }">
+            <div class="question-card rounded-lg p-4 cursor-pointer question-option ${
+              selectedQuestions.includes(question.id) ? "selected" : ""
+            }" data-question-id="${question.id}">
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <h4 class="text-white font-semibold mb-2">${
@@ -647,7 +772,6 @@
                 selectedQuestions.push(questionId);
                 this.classList.add("selected");
               }
-
               document.getElementById("selectedCount").textContent =
                 selectedQuestions.length;
 
@@ -662,7 +786,10 @@
             btn.addEventListener("click", function (e) {
               e.stopPropagation();
               const questionId = this.dataset.questionId;
-              showPreview(questionId);
+              const question = allQuestions.find((q) => q.id === questionId);
+              if (question) {
+                showQuestionPreview(question);
+              }
             });
           });
         } catch (error) {
@@ -672,8 +799,7 @@
         }
       }
 
-      function showPreview(questionId) {
-        const question = allQuestions.find((q) => q.id === questionId);
+      function showQuestionPreview(question) {
         if (!question || !question.answers) {
           showError("Nu s-au găsit răspunsuri pentru această întrebare.");
           return;
@@ -686,6 +812,7 @@
             }</h4>
             <div class="space-y-2">
               ${question.answers
+                .sort((a, b) => (a.position || 0) - (b.position || 0))
                 .map(
                   (answer, index) => `
                 <div class="answer-bubble rounded-lg p-3 flex items-center justify-between">
@@ -802,7 +929,7 @@
       }
 
       function openControl() {
-        window.open(`control.html?game=${currentGameCode}`, "_blank");
+        window.location.href = `control.html?game=${currentGameCode}`;
       }
 
       function openDisplay() {

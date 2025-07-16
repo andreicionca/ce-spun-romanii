@@ -23,29 +23,44 @@ async function getQuestionSets() {
 
 async function getQuestionSetWithQuestions(setId) {
   try {
-    const { data, error } = await supabaseClient
+    // Obținem mai întâi informațiile despre set
+    const { data: setData, error: setError } = await supabaseClient
+      .from("question_sets")
+      .select("*")
+      .eq("id", setId)
+      .single();
+
+    if (setError) throw setError;
+
+    // Obținem întrebările din set
+    const { data: items, error: itemsError } = await supabaseClient
       .from("question_set_items")
       .select(
         `
-                question_id,
-                order_index,
-                questions (
-                    id,
-                    text,
-                    answers (
-                        id,
-                        text,
-                        points,
-                        position
-                    )
-                )
-            `
+        question_id,
+        order_index,
+        questions (
+          id,
+          text,
+          answers (
+            id,
+            text,
+            points,
+            position
+          )
+        )
+      `
       )
       .eq("set_id", setId)
       .order("order_index", { ascending: true });
 
-    if (error) throw error;
-    return data;
+    if (itemsError) throw itemsError;
+
+    // Formatăm răspunsul în formatul așteptat
+    return {
+      ...setData,
+      questions: items.map((item) => item.questions).filter((q) => q !== null),
+    };
   } catch (error) {
     console.error("Error loading question set details:", error);
     throw error;
@@ -71,36 +86,42 @@ async function getCategories() {
 // === QUESTIONS ===
 async function getQuestions(categoryId = null) {
   try {
-    let query = supabaseClient
-      .from("questions")
-      .select(
-        `
-                id,
-                text,
-                answers (
-                    id,
-                    text,
-                    points,
-                    position
-                ),
-                question_categories (
-                    categories (
-                        id,
-                        name
-                    )
-                )
-            `
-      )
-      .order("created_at", { ascending: false });
+    let query = supabaseClient.from("questions").select(`
+        id,
+        text,
+        answers (
+          id,
+          text,
+          points,
+          position
+        ),
+        question_categories (
+          categories (
+            id,
+            name
+          )
+        )
+      `);
 
     if (categoryId) {
-      query = query.eq("question_categories.category_id", categoryId);
+      // Folosim un query separat pentru filtrarea după categorie
+      const { data: questionIds, error: categoryError } = await supabaseClient
+        .from("question_categories")
+        .select("question_id")
+        .eq("category_id", categoryId);
+
+      if (categoryError) throw categoryError;
+
+      const ids = questionIds.map((item) => item.question_id);
+      query = query.in("id", ids);
     }
+
+    query = query.order("created_at", { ascending: false });
 
     const { data, error } = await query;
 
     if (error) throw error;
-    return data;
+    return data || [];
   } catch (error) {
     console.error("Error loading questions:", error);
     throw error;
@@ -124,19 +145,22 @@ async function createGame(gameData) {
   }
 }
 
+// Alias pentru compatibilitate
+const createGameInDB = createGame;
+
 async function getGameByCode(gameCode) {
   try {
     const { data, error } = await supabaseClient
       .from("games")
       .select(
         `
-                *,
-                question_sets (
-                    id,
-                    name,
-                    description
-                )
-            `
+        *,
+        question_sets (
+          id,
+          name,
+          description
+        )
+      `
       )
       .eq("game_code", gameCode)
       .single();

@@ -12,119 +12,73 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
+
       body {
-        background: linear-gradient(
-          135deg,
-          #1e3a8a 0%,
-          #7c3aed 50%,
-          #1e40af 100%
-        );
-        font-family: "Arial", sans-serif;
+        background-color: #1a1a2e;
+        font-family: "Poppins", sans-serif;
         height: 100vh;
         overflow: hidden;
+        color: white;
       }
 
-      /* Glassmorphism effects */
-      .glass {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+      /* Game board styling */
+      .game-board {
+        background: radial-gradient(circle at center, #2a2a4a 0%, #1a1a2e 100%);
+        border: 8px solid #ffd700;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
       }
 
-      .glass-strong {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(15px);
-        border: 2px solid rgba(255, 255, 255, 0.3);
+      /* Team panels */
+      .team-panel {
+        background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        border: 3px solid #ffd700;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
 
-      /* Question area states */
-      .question-hidden {
-        opacity: 0.4;
-        transform: scale(0.98);
-      }
-
-      .question-visible {
-        opacity: 1;
-        transform: scale(1);
-        background: rgba(34, 197, 94, 0.2);
-        border-color: rgba(34, 197, 94, 0.4);
-        animation: questionReveal 0.6s ease-out;
-      }
-
-      @keyframes questionReveal {
-        0% {
-          background: rgba(255, 215, 0, 0.4);
-          transform: scale(1.02);
-        }
-        100% {
-          background: rgba(34, 197, 94, 0.2);
-          transform: scale(1);
-        }
+      /* Question area */
+      .question-area {
+        background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+        border: 4px solid #ffd700;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
       }
 
       /* Answer slots */
       .answer-slot {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        opacity: 0.3;
-        transition: all 0.4s ease;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        transition: all 0.3s ease;
       }
 
       .answer-slot.exists {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(15, 52, 96, 0.7);
+        border-color: rgba(255, 215, 0, 0.5);
       }
 
       .answer-slot.revealed {
-        background: rgba(34, 197, 94, 0.25);
-        border-color: rgba(34, 197, 94, 0.6);
-        animation: answerReveal 0.6s ease-out;
-        opacity: 1;
+        background: linear-gradient(135deg, #1e9600 0%, #0f9b0f 100%);
+        border-color: #ffd700;
+        box-shadow: 0 0 15px rgba(30, 150, 0, 0.7);
       }
 
-      @keyframes answerReveal {
-        0% {
-          background: rgba(255, 215, 0, 0.6);
-          border-color: rgba(255, 215, 0, 0.8);
-          transform: scale(1.05);
-        }
-        100% {
-          background: rgba(34, 197, 94, 0.25);
-          border-color: rgba(34, 197, 94, 0.6);
-          transform: scale(1);
-        }
-      }
-
-      /* Strike effects */
+      /* Strike indicators */
       .strike-indicator {
         background: rgba(220, 38, 38, 0.2);
-        border: 2px solid rgba(220, 38, 38, 0.4);
-        opacity: 0.3;
+        border: 3px solid rgba(220, 38, 38, 0.5);
         transition: all 0.3s ease;
       }
 
       .strike-indicator.active {
-        opacity: 1;
         background: rgba(220, 38, 38, 0.7);
         border-color: rgba(220, 38, 38, 1);
-        animation: strikeFlash 0.4s ease-out;
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.7);
       }
 
-      @keyframes strikeFlash {
-        0% {
-          transform: scale(1.2);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-
-      /* Buzz flash */
+      /* Buzz effect */
       .buzz-flash {
         position: fixed;
         inset: 0;
-        background: rgba(255, 165, 0, 0.4);
+        background: rgba(255, 165, 0, 0.6);
         opacity: 0;
         pointer-events: none;
         z-index: 50;
@@ -144,17 +98,39 @@
         }
       }
 
+      /* Waiting screen */
+      .waiting-screen {
+        background: radial-gradient(circle at center, #2a2a4a 0%, #1a1a2e 100%);
+        border: 8px solid #ffd700;
+      }
+
+      /* Animations */
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .pulse-slow {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
       /* Connection status */
       .connection-status {
         position: fixed;
-        top: 0.5rem;
-        right: 0.5rem;
+        bottom: 0.5rem; /* Schimbă de la top la bottom */
+        left: 0.5rem; /* Schimbă de la right la left */
         padding: 0.25rem 0.5rem;
         border-radius: 0.25rem;
         font-size: 0.75rem;
         z-index: 40;
       }
 
+      /* Păstrează celelalte stiluri existente */
       .status-connected {
         background: rgba(34, 197, 94, 0.2);
         border: 1px solid rgba(34, 197, 94, 0.5);
@@ -167,9 +143,36 @@
         color: rgb(220, 38, 38);
       }
 
-      /* Waiting screen pulse */
-      .pulse-slow {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      .answer-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px; /* Mărit dimensiunea */
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+        color: #1a1a2e;
+        font-weight: 800;
+        font-size: 18px; /* Mărit dimensiunea fontului */
+        margin-right: 12px;
+        flex-shrink: 0; /* Previntă micșorarea */
+        line-height: 1; /* Asigură aliniere verticală perfectă */
+      }
+
+      /* Ascunde numerele când răspunsul este afișat */
+      .answer-slot.revealed .answer-number {
+        opacity: 0;
+        width: 0;
+        margin-right: 0;
+        transition: all 0.3s ease;
+      }
+
+      /* Points display */
+      .points-display {
+        background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
       }
     </style>
   </head>
@@ -185,11 +188,11 @@
 
     <!-- Waiting Screen -->
     <div id="waitingScreen" class="h-full flex items-center justify-center p-4">
-      <div class="glass-strong rounded-2xl p-8 text-center max-w-2xl">
-        <h1 class="text-5xl font-bold text-white mb-4">Ce Spun Românii</h1>
+      <div class="waiting-screen rounded-2xl p-8 text-center max-w-2xl">
+        <h1 class="text-5xl font-bold text-yellow-400 mb-4">CE SPUN ROMÂNII</h1>
         <div class="text-xl text-blue-200 mb-6">
           Cod joc:
-          <span id="gameCodeDisplay" class="text-yellow-400 font-bold"
+          <span id="gameCodeDisplay" class="text-white font-bold text-2xl"
             >----</span
           >
         </div>
@@ -201,213 +204,190 @@
     </div>
 
     <!-- Game Board -->
-    <div id="gameBoard" class="hidden h-full flex flex-col p-3">
+    <div id="gameBoard" class="hidden h-full flex flex-col p-4 game-board">
       <!-- Header: Teams + Title + Current Points -->
-      <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center justify-between mb-4">
         <!-- Team 1 -->
-        <div class="glass rounded-xl p-3 text-center min-w-32">
-          <div id="team1Name" class="text-lg font-bold text-white mb-1">
+        <div class="team-panel rounded-xl p-3 text-center min-w-32">
+          <div id="team1Name" class="text-xl font-bold text-white mb-1">
             ECHIPA 1
           </div>
-          <div id="team1Score" class="text-2xl font-bold text-yellow-400">
-            0
-          </div>
+          <div id="team1Score" class="text-3xl font-bold points-display">0</div>
         </div>
 
         <!-- Center: Title + Current Points -->
         <div class="text-center mx-4">
-          <h2 class="text-2xl font-bold text-white mb-1">Ce Spun Românii</h2>
-          <div class="glass rounded-lg px-3 py-1">
-            <span class="text-sm text-blue-200">Puncte întrebare: </span>
-            <span id="questionPoints" class="text-lg font-bold text-yellow-400"
+          <div
+            class="bg-blue-900 rounded-lg px-10 py-5 border-2 border-yellow-400"
+          >
+            <span id="questionPoints" class="text-6xl font-bold points-display"
               >0</span
             >
           </div>
         </div>
 
         <!-- Team 2 -->
-        <div class="glass rounded-xl p-3 text-center min-w-32">
-          <div id="team2Name" class="text-lg font-bold text-white mb-1">
+        <div class="team-panel rounded-xl p-3 text-center min-w-32">
+          <div id="team2Name" class="text-xl font-bold text-white mb-1">
             ECHIPA 2
           </div>
-          <div id="team2Score" class="text-2xl font-bold text-yellow-400">
-            0
-          </div>
+          <div id="team2Score" class="text-3xl font-bold points-display">0</div>
         </div>
       </div>
 
       <!-- Question Area -->
       <div
         id="questionArea"
-        class="glass rounded-xl p-4 text-center mb-3 min-h-20 flex items-center justify-center question-hidden transition-all duration-500"
+        class="question-area rounded-xl p-6 text-center mb-4 min-h-24 flex items-center justify-center transition-all duration-500"
       >
-        <div id="questionText" class="text-xl font-bold text-white"></div>
+        <div id="questionText" class="text-2xl font-bold text-white"></div>
       </div>
 
       <!-- Answers Grid + Strikes -->
-      <div class="flex-1 flex gap-3">
+      <div class="flex-1 flex gap-4">
         <!-- Answers Grid -->
-        <div class="flex-1 grid grid-cols-2 gap-2">
+        <div class="flex-1 grid grid-cols-2 gap-3">
           <!-- Left Column (1-4) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="1"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   1
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="2"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   2
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="3"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   3
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="4"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   4
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
           </div>
 
           <!-- Right Column (5-8) -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="5"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   5
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="6"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   6
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="7"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   7
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              class="answer-slot rounded-lg p-3 flex items-center justify-between"
               data-position="8"
             >
               <div class="flex items-center">
                 <div
-                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
                 >
                   8
                 </div>
-                <div class="answer-text text-white text-sm font-medium"></div>
+                <div class="answer-text text-white text-lg font-semibold"></div>
               </div>
-              <div
-                class="answer-points text-yellow-400 font-bold text-sm"
-              ></div>
+              <div class="answer-points text-xl font-bold points-display"></div>
             </div>
           </div>
         </div>
 
         <!-- Strikes Panel -->
-        <div class="w-20 flex flex-col justify-center items-center space-y-3">
-          <div class="text-white text-sm font-bold text-center mb-2">
-            STRIKES
-          </div>
-          <div
-            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
-            data-strike="0"
-          >
-            ❌
-          </div>
-          <div
-            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
-            data-strike="1"
-          >
-            ❌
-          </div>
-          <div
-            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
-            data-strike="2"
-          >
-            ❌
-          </div>
+      </div>
+      <div class="flex justify-center items-center space-x-4 mt-4">
+        <div
+          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          data-strike="0"
+        >
+          ❌
+        </div>
+        <div
+          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          data-strike="1"
+        >
+          ❌
+        </div>
+        <div
+          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          data-strike="2"
+        >
+          ❌
         </div>
       </div>
     </div>
@@ -515,12 +495,11 @@
         }
       }
 
-      // ✅ FIX: Channel name-ul să fie identic cu control.html
       function setupRealtime() {
         console.log("🔗 Setting up realtime for game:", gameId);
 
         const channel = supabaseClient
-          .channel(`game-${gameId}`) // ✅ ACELAȘI NUME ca în control
+          .channel(`game-${gameId}`)
           .on(
             "postgres_changes",
             {
@@ -553,15 +532,12 @@
 
         const newGame = payload.new;
 
-        // Check if game started - MULTIPLE TRIGGERS
+        // Check if game started
         if (waitingScreen && !waitingScreen.classList.contains("hidden")) {
-          // Trigger 1: Current question exists
           if (newGame.current_state && newGame.current_state.current_question) {
             console.log("🚀 Game has started! (trigger: current_question)");
             showGameBoard();
-          }
-          // Trigger 2: Status changed to playing
-          else if (newGame.status === "playing") {
+          } else if (newGame.status === "playing") {
             console.log("🚀 Game has started! (trigger: status playing)");
             showGameBoard();
           }
@@ -598,7 +574,7 @@
         team1Score.textContent = gameState.team1_score || 0;
         team2Score.textContent = gameState.team2_score || 0;
 
-        // Update question points (calculate from revealed answers)
+        // Update question points
         updateQuestionPoints();
 
         // Update question
@@ -626,47 +602,41 @@
 
       function updateQuestion() {
         if (!gameState.current_question) {
-          questionArea.className = questionArea.className.replace(
-            "question-visible",
-            "question-hidden"
-          );
           questionText.textContent = "";
+          questionArea.style.opacity = "0.5";
+          questionArea.style.transform = "scale(0.98)";
           return;
         }
 
         if (gameState.question_displayed) {
           questionText.textContent = gameState.current_question.text || "";
-          questionArea.className = questionArea.className.replace(
-            "question-hidden",
-            "question-visible"
-          );
+          questionArea.style.opacity = "1";
+          questionArea.style.transform = "scale(1)";
+          questionArea.style.background =
+            "linear-gradient(135deg, #0f3460 0%, #16213e 100%)";
+          questionArea.style.borderColor = "#ffd700";
         } else {
-          questionArea.className = questionArea.className.replace(
-            "question-visible",
-            "question-hidden"
-          );
           questionText.textContent = "";
+          questionArea.style.opacity = "0.5";
+          questionArea.style.transform = "scale(0.98)";
         }
       }
 
       function updateAnswers() {
-        // Reset all slots
         answerSlots.forEach((slot) => {
           slot.className =
-            "answer-slot rounded-lg p-2 flex items-center justify-between";
+            "answer-slot rounded-lg p-3 flex items-center justify-between";
           slot.querySelector(".answer-text").textContent = "";
           slot.querySelector(".answer-points").textContent = "";
         });
 
         if (!gameState.current_question) return;
 
-        // Get full question data
         const questionId = gameState.current_question.id;
         const fullQuestion = allQuestions.find((q) => q.id === questionId);
 
         if (!fullQuestion?.answers) return;
 
-        // Show answers
         fullQuestion.answers.forEach((answer) => {
           if (answer.position >= 1 && answer.position <= 8) {
             const slot = document.querySelector(
@@ -675,7 +645,6 @@
             if (slot) {
               slot.classList.add("exists");
 
-              // Check if revealed in state
               const stateAnswer = gameState.current_question.answers?.find(
                 (a) => a && a.position === answer.position
               );

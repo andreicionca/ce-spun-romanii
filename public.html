@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ro" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ce Spun Românii - Public Display</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <style>
+      body {
+        background: linear-gradient(
+          135deg,
+          #1e3a8a 0%,
+          #7c3aed 50%,
+          #1e40af 100%
+        );
+        font-family: "Arial", sans-serif;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Glassmorphism effects */
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      /* Question area states */
+      .question-hidden {
+        opacity: 0.4;
+        transform: scale(0.98);
+      }
+
+      .question-visible {
+        opacity: 1;
+        transform: scale(1);
+        background: rgba(34, 197, 94, 0.2);
+        border-color: rgba(34, 197, 94, 0.4);
+        animation: questionReveal 0.6s ease-out;
+      }
+
+      @keyframes questionReveal {
+        0% {
+          background: rgba(255, 215, 0, 0.4);
+          transform: scale(1.02);
+        }
+        100% {
+          background: rgba(34, 197, 94, 0.2);
+          transform: scale(1);
+        }
+      }
+
+      /* Answer slots */
+      .answer-slot {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        opacity: 0.3;
+        transition: all 0.4s ease;
+      }
+
+      .answer-slot.exists {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .answer-slot.revealed {
+        background: rgba(34, 197, 94, 0.25);
+        border-color: rgba(34, 197, 94, 0.6);
+        animation: answerReveal 0.6s ease-out;
+        opacity: 1;
+      }
+
+      @keyframes answerReveal {
+        0% {
+          background: rgba(255, 215, 0, 0.6);
+          border-color: rgba(255, 215, 0, 0.8);
+          transform: scale(1.05);
+        }
+        100% {
+          background: rgba(34, 197, 94, 0.25);
+          border-color: rgba(34, 197, 94, 0.6);
+          transform: scale(1);
+        }
+      }
+
+      /* Strike effects */
+      .strike-indicator {
+        background: rgba(220, 38, 38, 0.2);
+        border: 2px solid rgba(220, 38, 38, 0.4);
+        opacity: 0.3;
+        transition: all 0.3s ease;
+      }
+
+      .strike-indicator.active {
+        opacity: 1;
+        background: rgba(220, 38, 38, 0.7);
+        border-color: rgba(220, 38, 38, 1);
+        animation: strikeFlash 0.4s ease-out;
+      }
+
+      @keyframes strikeFlash {
+        0% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Buzz flash */
+      .buzz-flash {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 165, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 50;
+      }
+
+      .buzz-flash.active {
+        animation: buzzFlash 0.5s ease-out;
+      }
+
+      @keyframes buzzFlash {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Connection status */
+      .connection-status {
+        position: fixed;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        z-index: 40;
+      }
+
+      .status-connected {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.5);
+        color: rgb(34, 197, 94);
+      }
+
+      .status-error {
+        background: rgba(220, 38, 38, 0.2);
+        border: 1px solid rgba(220, 38, 38, 0.5);
+        color: rgb(220, 38, 38);
+      }
+
+      /* Waiting screen pulse */
+      .pulse-slow {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Buzz Flash Effect -->
+    <div id="buzzFlash" class="buzz-flash"></div>
+
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="connection-status status-error">
+      <i class="fas fa-wifi mr-1"></i>
+      <span id="connectionText">Conectare...</span>
+    </div>
+
+    <!-- Waiting Screen -->
+    <div id="waitingScreen" class="h-full flex items-center justify-center p-4">
+      <div class="glass-strong rounded-2xl p-8 text-center max-w-2xl">
+        <h1 class="text-5xl font-bold text-white mb-4">Ce Spun Românii</h1>
+        <div class="text-xl text-blue-200 mb-6">
+          Cod joc:
+          <span id="gameCodeDisplay" class="text-yellow-400 font-bold"
+            >----</span
+          >
+        </div>
+        <div class="text-blue-200 pulse-slow">
+          <i class="fas fa-spinner fa-spin mr-2"></i>
+          Așteptăm să înceapă jocul...
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Board -->
+    <div id="gameBoard" class="hidden h-full flex flex-col p-3">
+      <!-- Header: Teams + Title + Current Points -->
+      <div class="flex items-center justify-between mb-3">
+        <!-- Team 1 -->
+        <div class="glass rounded-xl p-3 text-center min-w-32">
+          <div id="team1Name" class="text-lg font-bold text-white mb-1">
+            ECHIPA 1
+          </div>
+          <div id="team1Score" class="text-2xl font-bold text-yellow-400">
+            0
+          </div>
+        </div>
+
+        <!-- Center: Title + Current Points -->
+        <div class="text-center mx-4">
+          <h2 class="text-2xl font-bold text-white mb-1">Ce Spun Românii</h2>
+          <div class="glass rounded-lg px-3 py-1">
+            <span class="text-sm text-blue-200">Puncte întrebare: </span>
+            <span id="questionPoints" class="text-lg font-bold text-yellow-400"
+              >0</span
+            >
+          </div>
+        </div>
+
+        <!-- Team 2 -->
+        <div class="glass rounded-xl p-3 text-center min-w-32">
+          <div id="team2Name" class="text-lg font-bold text-white mb-1">
+            ECHIPA 2
+          </div>
+          <div id="team2Score" class="text-2xl font-bold text-yellow-400">
+            0
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Area -->
+      <div
+        id="questionArea"
+        class="glass rounded-xl p-4 text-center mb-3 min-h-20 flex items-center justify-center question-hidden transition-all duration-500"
+      >
+        <div id="questionText" class="text-xl font-bold text-white"></div>
+      </div>
+
+      <!-- Answers Grid + Strikes -->
+      <div class="flex-1 flex gap-3">
+        <!-- Answers Grid -->
+        <div class="flex-1 grid grid-cols-2 gap-2">
+          <!-- Left Column (1-4) -->
+          <div class="space-y-2">
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="1"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  1
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="2"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  2
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="3"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  3
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="4"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  4
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Right Column (5-8) -->
+          <div class="space-y-2">
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="5"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  5
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="6"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  6
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="7"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  7
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+            <div
+              class="answer-slot rounded-lg p-2 flex items-center justify-between"
+              data-position="8"
+            >
+              <div class="flex items-center">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2"
+                >
+                  8
+                </div>
+                <div class="answer-text text-white text-sm font-medium"></div>
+              </div>
+              <div
+                class="answer-points text-yellow-400 font-bold text-sm"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strikes Panel -->
+        <div class="w-20 flex flex-col justify-center items-center space-y-3">
+          <div class="text-white text-sm font-bold text-center mb-2">
+            STRIKES
+          </div>
+          <div
+            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
+            data-strike="0"
+          >
+            ❌
+          </div>
+          <div
+            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
+            data-strike="1"
+          >
+            ❌
+          </div>
+          <div
+            class="strike-indicator w-12 h-12 rounded-full flex items-center justify-center text-xl"
+            data-strike="2"
+          >
+            ❌
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize Supabase
+      const supabaseClient = supabase.createClient(
+        CONFIG.SUPABASE_URL,
+        CONFIG.SUPABASE_ANON_KEY
+      );
+      const gameCode = new URLSearchParams(window.location.search).get("game");
+
+      // DOM Elements
+      const waitingScreen = document.getElementById("waitingScreen");
+      const gameBoard = document.getElementById("gameBoard");
+      const gameCodeDisplay = document.getElementById("gameCodeDisplay");
+      const connectionStatus = document.getElementById("connectionStatus");
+      const connectionText = document.getElementById("connectionText");
+      const buzzFlash = document.getElementById("buzzFlash");
+
+      const team1Name = document.getElementById("team1Name");
+      const team2Name = document.getElementById("team2Name");
+      const team1Score = document.getElementById("team1Score");
+      const team2Score = document.getElementById("team2Score");
+      const questionPoints = document.getElementById("questionPoints");
+
+      const questionArea = document.getElementById("questionArea");
+      const questionText = document.getElementById("questionText");
+      const answerSlots = document.querySelectorAll(".answer-slot");
+      const strikeIndicators = document.querySelectorAll(".strike-indicator");
+
+      // Game State
+      let gameId = null;
+      let gameState = null;
+      let allQuestions = [];
+      let lastBuzzTime = 0;
+
+      // Validation
+      if (!gameCode) {
+        alert("Cod de joc lipsă!");
+        window.location.href = "index.html";
+      }
+
+      // Initialize
+      gameCodeDisplay.textContent = gameCode;
+      initGame();
+
+      async function initGame() {
+        try {
+          updateStatus("connecting");
+
+          // Load game
+          const { data: game, error } = await supabaseClient
+            .from("games")
+            .select(
+              "id,team1_name,team2_name,team1_score,team2_score,current_state,status,set_id"
+            )
+            .eq("game_code", gameCode)
+            .single();
+
+          if (error) {
+            console.error("Game load error:", error);
+            updateStatus("error");
+            return;
+          }
+
+          gameId = game.id;
+          team1Name.textContent = game.team1_name;
+          team2Name.textContent = game.team2_name;
+
+          // Load questions
+          const { data: items, error: itemsError } = await supabaseClient
+            .from("question_set_items")
+            .select(
+              "order_index,questions(id,text,answers(id,text,points,position))"
+            )
+            .eq("set_id", game.set_id)
+            .order("order_index");
+
+          if (itemsError) {
+            console.error("Questions load error:", itemsError);
+            updateStatus("error");
+            return;
+          }
+
+          allQuestions = items.map((i) => i.questions).filter((q) => q?.id);
+          console.log("Questions loaded:", allQuestions.length);
+
+          // Check if game is running
+          if (
+            game.current_state &&
+            Object.keys(game.current_state).length > 0
+          ) {
+            gameState = game.current_state;
+            showGameBoard();
+            updateUI();
+          }
+
+          // Setup realtime
+          setupRealtime();
+          updateStatus("connected");
+        } catch (error) {
+          console.error("Init error:", error);
+          updateStatus("error");
+        }
+      }
+
+      // ✅ FIX: Channel name-ul să fie identic cu control.html
+      function setupRealtime() {
+        console.log("🔗 Setting up realtime for game:", gameId);
+
+        const channel = supabaseClient
+          .channel(`game-${gameId}`) // ✅ ACELAȘI NUME ca în control
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "games",
+              filter: `id=eq.${gameId}`,
+            },
+            handleGameUpdate
+          )
+          .subscribe((status) => {
+            console.log("📡 Realtime status:", status);
+            if (status === "SUBSCRIBED") {
+              console.log("✅ Realtime connected successfully");
+              updateStatus("connected");
+            } else if (status === "CHANNEL_ERROR") {
+              console.log("❌ Realtime connection failed");
+              updateStatus("error");
+            }
+          });
+
+        // Cleanup on page unload
+        window.addEventListener("beforeunload", () => {
+          channel.unsubscribe();
+        });
+      }
+
+      function handleGameUpdate(payload) {
+        console.log("🔄 Game update received");
+
+        const newGame = payload.new;
+
+        // Check if game started - MULTIPLE TRIGGERS
+        if (waitingScreen && !waitingScreen.classList.contains("hidden")) {
+          // Trigger 1: Current question exists
+          if (newGame.current_state && newGame.current_state.current_question) {
+            console.log("🚀 Game has started! (trigger: current_question)");
+            showGameBoard();
+          }
+          // Trigger 2: Status changed to playing
+          else if (newGame.status === "playing") {
+            console.log("🚀 Game has started! (trigger: status playing)");
+            showGameBoard();
+          }
+        }
+
+        // Update state
+        if (newGame.current_state) {
+          const newState = newGame.current_state;
+
+          // Handle buzz strike
+          if (
+            newState.last_buzz_strike &&
+            newState.last_buzz_strike !== lastBuzzTime
+          ) {
+            showBuzzFlash();
+            lastBuzzTime = newState.last_buzz_strike;
+          }
+
+          gameState = newState;
+          updateUI();
+        }
+      }
+
+      function showGameBoard() {
+        waitingScreen.classList.add("hidden");
+        gameBoard.classList.remove("hidden");
+        console.log("Game board shown");
+      }
+
+      function updateUI() {
+        if (!gameState) return;
+
+        // Update scores
+        team1Score.textContent = gameState.team1_score || 0;
+        team2Score.textContent = gameState.team2_score || 0;
+
+        // Update question points (calculate from revealed answers)
+        updateQuestionPoints();
+
+        // Update question
+        updateQuestion();
+
+        // Update answers
+        updateAnswers();
+
+        // Update strikes
+        updateStrikes();
+      }
+
+      function updateQuestionPoints() {
+        if (!gameState.current_question?.answers) {
+          questionPoints.textContent = "0";
+          return;
+        }
+
+        const points = gameState.current_question.answers
+          .filter((a) => a && a.revealed && !gameState.show_mode)
+          .reduce((sum, a) => sum + (a.points || 0), 0);
+
+        questionPoints.textContent = points;
+      }
+
+      function updateQuestion() {
+        if (!gameState.current_question) {
+          questionArea.className = questionArea.className.replace(
+            "question-visible",
+            "question-hidden"
+          );
+          questionText.textContent = "";
+          return;
+        }
+
+        if (gameState.question_displayed) {
+          questionText.textContent = gameState.current_question.text || "";
+          questionArea.className = questionArea.className.replace(
+            "question-hidden",
+            "question-visible"
+          );
+        } else {
+          questionArea.className = questionArea.className.replace(
+            "question-visible",
+            "question-hidden"
+          );
+          questionText.textContent = "";
+        }
+      }
+
+      function updateAnswers() {
+        // Reset all slots
+        answerSlots.forEach((slot) => {
+          slot.className =
+            "answer-slot rounded-lg p-2 flex items-center justify-between";
+          slot.querySelector(".answer-text").textContent = "";
+          slot.querySelector(".answer-points").textContent = "";
+        });
+
+        if (!gameState.current_question) return;
+
+        // Get full question data
+        const questionId = gameState.current_question.id;
+        const fullQuestion = allQuestions.find((q) => q.id === questionId);
+
+        if (!fullQuestion?.answers) return;
+
+        // Show answers
+        fullQuestion.answers.forEach((answer) => {
+          if (answer.position >= 1 && answer.position <= 8) {
+            const slot = document.querySelector(
+              `[data-position="${answer.position}"]`
+            );
+            if (slot) {
+              slot.classList.add("exists");
+
+              // Check if revealed in state
+              const stateAnswer = gameState.current_question.answers?.find(
+                (a) => a && a.position === answer.position
+              );
+
+              if (stateAnswer?.revealed) {
+                slot.classList.add("revealed");
+                slot.querySelector(".answer-text").textContent = answer.text;
+                slot.querySelector(".answer-points").textContent =
+                  answer.points;
+              }
+            }
+          }
+        });
+      }
+
+      function updateStrikes() {
+        if (!gameState.progressive_strikes) return;
+
+        strikeIndicators.forEach((indicator, index) => {
+          if (gameState.progressive_strikes[index]) {
+            indicator.classList.add("active");
+          } else {
+            indicator.classList.remove("active");
+          }
+        });
+      }
+
+      function showBuzzFlash() {
+        buzzFlash.classList.add("active");
+        setTimeout(() => buzzFlash.classList.remove("active"), 500);
+      }
+
+      function updateStatus(status) {
+        if (status === "connected") {
+          connectionStatus.className = "connection-status status-connected";
+          connectionText.innerHTML =
+            '<i class="fas fa-check mr-1"></i>Conectat';
+        } else if (status === "connecting") {
+          connectionStatus.className = "connection-status status-error";
+          connectionText.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-1"></i>Conectare...';
+        } else {
+          connectionStatus.className = "connection-status status-error";
+          connectionText.innerHTML =
+            '<i class="fas fa-exclamation-triangle mr-1"></i>Eroare';
+        }
+      }
+
+      // Handle connection issues
+      window.addEventListener("online", () => {
+        setTimeout(initGame, 1000);
+      });
+
+      window.addEventListener("offline", () => {
+        updateStatus("error");
+      });
+    </script>
+  </body>
+</html>

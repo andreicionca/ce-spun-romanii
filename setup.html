@@ -263,7 +263,7 @@
         >
           <div class="text-center">
             <i class="fas fa-spinner fa-spin text-4xl text-blue-400 mb-4"></i>
-            <p class="text-white">Se creează jocul...</p>
+            <p class="text-white" id="loadingText">Se creează jocul...</p>
           </div>
         </div>
 
@@ -293,6 +293,13 @@
                 >
                   <i class="fas fa-gamepad mr-2"></i>
                   INTRĂ ÎN CONTROL PANEL
+                </button>
+                <button
+                  onclick="openPublic()"
+                  class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all"
+                >
+                  <i class="fas fa-tv mr-2"></i>
+                  DESCHIDE PUBLIC DISPLAY
                 </button>
               </div>
             </div>
@@ -854,6 +861,7 @@
         }
       }
 
+      // ✅ MODIFICARE PRINCIPALĂ - Funcția createGame() cu unified gameData
       async function createGame() {
         const team1Name = document.getElementById("team1Name").value.trim();
         const team2Name = document.getElementById("team2Name").value.trim();
@@ -876,6 +884,8 @@
         // Show loading
         document.getElementById("createSection").classList.add("hidden");
         document.getElementById("loadingSection").classList.remove("hidden");
+        document.getElementById("loadingText").textContent =
+          "Se creează jocul...";
 
         try {
           // Generate unique game code
@@ -895,10 +905,29 @@
             throw new Error("Nu s-a putut genera un cod unic de joc");
           }
 
-          // Create game in database
+          let finalSetId;
+
+          if (gameType === "quick") {
+            // ✅ JOC RAPID - folosește set-ul existent
+            finalSetId = selectedSetId;
+          } else {
+            // ✅ JOC CUSTOM - creează set temporar
+            document.getElementById("loadingText").textContent =
+              "Se creează setul de întrebări...";
+            finalSetId = await createTemporarySet(
+              selectedQuestions,
+              team1Name,
+              team2Name
+            );
+          }
+
+          document.getElementById("loadingText").textContent =
+            "Se finalizează jocul...";
+
+          // ✅ ACELAȘI gameData pentru ambele tipuri!
           const gameData = {
             game_code: gameCode,
-            set_id: gameType === "quick" ? selectedSetId : null,
+            set_id: finalSetId, // Întotdeauna avem set_id!
             team1_name: team1Name,
             team2_name: team2Name,
             team1_score: 0,
@@ -924,6 +953,47 @@
         }
       }
 
+      // ✅ FUNCȚIE NOUĂ - Creează set temporar pentru custom
+      async function createTemporarySet(questionIds, team1, team2) {
+        try {
+          // 1. Creează set-ul
+          const { data: newSet, error: setError } = await supabaseClient
+            .from("question_sets")
+            .insert({
+              name: `Joc Custom: ${team1} vs ${team2}`,
+              description: `Set generat automat pentru jocul custom din ${new Date().toLocaleDateString()}`,
+            })
+            .select("id")
+            .single();
+
+          if (setError) {
+            throw new Error("Eroare la crearea setului: " + setError.message);
+          }
+
+          // 2. Adaugă întrebările în set
+          const setItems = questionIds.map((questionId, index) => ({
+            set_id: newSet.id,
+            question_id: questionId,
+            order_index: index,
+          }));
+
+          const { error: itemsError } = await supabaseClient
+            .from("question_set_items")
+            .insert(setItems);
+
+          if (itemsError) {
+            throw new Error(
+              "Eroare la adăugarea întrebărilor: " + itemsError.message
+            );
+          }
+
+          return newSet.id;
+        } catch (error) {
+          console.error("Error creating temporary set:", error);
+          throw error;
+        }
+      }
+
       function generateGameCode() {
         return Math.floor(100000 + Math.random() * 900000).toString();
       }
@@ -932,8 +1002,8 @@
         window.location.href = `control.html?game=${currentGameCode}`;
       }
 
-      function openDisplay() {
-        window.open(`display.html?game=${currentGameCode}`, "_blank");
+      function openPublic() {
+        window.open(`public.html?game=${currentGameCode}`, "_blank");
       }
     </script>
   </body>

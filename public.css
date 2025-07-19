@@ -23,7 +23,6 @@ body {
   background-color: var(--primary-bg);
   font-family: "Poppins", sans-serif;
   height: 100vh;
-  overflow: hidden;
   color: white;
 }
 

@@ -1,4 +1,4 @@
-// ✅ Public Display Logic - Ce Spun Românii (OPTIMIZED)
+// ✅ Public Display Logic - Ce Spun Românii (OPTIMIZED & FIXED)
 // Synchronized with control panel via Supabase realtime
 
 // Get game code from URL
@@ -9,7 +9,6 @@ let gameId = null;
 let gameState = null;
 let allQuestions = [];
 let lastBuzzTime = 0;
-let introPlayed = false;
 let currentScores = { team1: 0, team2: 0, question: 0 };
 let realtimeSubscription = null;
 
@@ -28,7 +27,6 @@ const DOM = {
   gameCodeDisplay: document.getElementById("gameCodeDisplay"),
 
   // Intro screen
-  introTitle: document.getElementById("introTitle"),
   introTeam1: document.getElementById("introTeam1"),
   introTeam2: document.getElementById("introTeam2"),
 
@@ -88,8 +86,9 @@ function setupModalEventListeners() {
     window.location.href = "index.html";
   });
 
+  // Redirecționează la homepage când jocul este pe pauză
   DOM.pausedOkBtn?.addEventListener("click", () => {
-    DOM.gamePausedModal?.classList.remove("show");
+    window.location.href = "index.html";
   });
 }
 
@@ -126,28 +125,47 @@ async function initGame() {
 
     allQuestions = questionSet.questions;
 
-    // Check game state
-    if (game.current_state && Object.keys(game.current_state).length > 0) {
-      gameState = game.current_state;
+    // Initialize game state and UI based on current status
+    gameState = game.current_state || { status: "waiting" };
 
-      if (gameState.status === "playing") {
-        introPlayed = true;
-        showGameBoard();
-        updateUI();
-      } else if (gameState.status === "paused") {
-        showGamePausedModal();
-      } else if (gameState.status === "finished") {
-        showGameFinishedModal(gameState);
-      }
-    } else {
-      gameState = { status: "waiting" };
-    }
+    // Show appropriate screen based on game status
+    showScreenForStatus(gameState.status);
 
     setupRealtime();
     updateConnectionStatus("connected");
   } catch (error) {
     updateConnectionStatus("error");
     DOM.connectionText.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i>Eroare: ${error.message}`;
+  }
+}
+
+// SIMPLIFIED SCREEN MANAGEMENT
+function showScreenForStatus(status) {
+  // Hide all screens first
+  DOM.waitingScreen?.classList.add("hidden");
+  DOM.introScreen?.classList.add("hidden");
+  DOM.gameBoard?.classList.add("hidden");
+
+  switch (status) {
+    case "waiting":
+      DOM.waitingScreen?.classList.remove("hidden");
+      break;
+
+    case "playing":
+      DOM.gameBoard?.classList.remove("hidden");
+      DOM.gameBoard?.classList.add("fade-in");
+      updateUI();
+      break;
+
+    case "paused":
+      DOM.gameBoard?.classList.remove("hidden");
+      showGamePausedModal();
+      break;
+
+    case "finished":
+      DOM.gameBoard?.classList.remove("hidden");
+      showGameFinishedModal(gameState);
+      break;
   }
 }
 
@@ -191,39 +209,27 @@ function handleGameUpdate(payload) {
     const newGame = payload.new;
     if (!newGame?.current_state) return;
 
-    const newState = newGame.current_state;
+    const oldStatus = gameState?.status;
+    gameState = newGame.current_state;
+    const newStatus = gameState.status;
 
-    // Check if game started and we haven't played intro yet
-    if (!introPlayed && newState.status === "playing") {
-      playIntroAnimation();
-      gameState = newState;
-      return;
-    }
-
-    gameState = newState;
-
-    // Handle status changes
-    if (newState.status === "finished") {
-      showGameFinishedModal(newState);
-      return;
-    }
-
-    if (newState.status === "paused") {
-      showGamePausedModal();
+    // Handle status transitions
+    if (oldStatus !== newStatus) {
+      handleStatusChange(oldStatus, newStatus);
       return;
     }
 
     // Handle buzz strike
     if (
-      newState.last_buzz_strike &&
-      newState.last_buzz_strike !== lastBuzzTime
+      gameState.last_buzz_strike &&
+      gameState.last_buzz_strike !== lastBuzzTime
     ) {
       showBuzzModal();
-      lastBuzzTime = newState.last_buzz_strike;
+      lastBuzzTime = gameState.last_buzz_strike;
     }
 
-    // Update UI if game is active
-    if (introPlayed && newState.status === "playing") {
+    // Update UI if game is playing
+    if (newStatus === "playing") {
       updateUI();
     }
   } catch (error) {
@@ -231,27 +237,39 @@ function handleGameUpdate(payload) {
   }
 }
 
-// SCREEN TRANSITIONS
-async function playIntroAnimation() {
-  if (introPlayed) return;
+function handleStatusChange(oldStatus, newStatus) {
+  switch (newStatus) {
+    case "playing":
+      if (oldStatus === "waiting") {
+        // Show intro animation for new games
+        playIntroAnimation();
+      } else {
+        // Direct transition for resumed games
+        showScreenForStatus("playing");
+      }
+      break;
 
-  introPlayed = true;
+    case "paused":
+      showGamePausedModal();
+      break;
+
+    case "finished":
+      showGameFinishedModal(gameState);
+      break;
+
+    default:
+      showScreenForStatus(newStatus);
+  }
+}
+
+// INTRO ANIMATION (only for new games)
+async function playIntroAnimation() {
   DOM.waitingScreen?.classList.add("hidden");
   DOM.introScreen?.classList.remove("hidden");
 
   setTimeout(() => {
-    showGameBoard();
+    showScreenForStatus("playing");
   }, 5000);
-}
-
-function showGameBoard() {
-  DOM.introScreen?.classList.add("hidden");
-  DOM.gameBoard?.classList.remove("hidden");
-  DOM.gameBoard?.classList.add("fade-in");
-
-  if (gameState) {
-    updateUI();
-  }
 }
 
 // UI UPDATES

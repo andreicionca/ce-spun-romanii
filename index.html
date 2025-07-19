@@ -15,69 +15,87 @@
   >
     <div class="container mx-auto px-4 py-8">
       <!-- Header -->
-      <div class="text-center mb-12">
-        <h1 class="text-6xl font-bold text-white mb-4 drop-shadow-lg">
+      <header class="text-center mb-8 md:mb-12">
+        <h1
+          class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg"
+        >
           CE SPUN ROMÂNII
         </h1>
-        <p class="text-xl text-blue-200 mb-8">Un joc de echipă</p>
-        <div class="flex justify-center mb-8">
-          <i class="fas fa-users text-6xl text-yellow-400 mx-4"></i>
-          <i class="fas fa-trophy text-6xl text-yellow-400 mx-4"></i>
-          <i class="fas fa-star text-6xl text-yellow-400 mx-4"></i>
+        <div class="flex justify-center gap-4 md:gap-8">
+          <i class="fas fa-users text-4xl md:text-6xl text-yellow-400"></i>
+          <i class="fas fa-trophy text-4xl md:text-6xl text-yellow-400"></i>
+          <i class="fas fa-star text-4xl md:text-6xl text-yellow-400"></i>
         </div>
-      </div>
+      </header>
 
       <!-- Main Actions -->
-      <div class="max-w-md mx-auto space-y-6">
-        <!-- Start New Game -->
+      <main class="max-w-md mx-auto space-y-4 md:space-y-6">
+        <!-- Error Message -->
         <div
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
+          id="errorMessage"
+          class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-4 text-red-200 text-center"
+        >
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          <span id="errorText"></span>
+        </div>
+
+        <!-- Start New Game -->
+        <section
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
         >
           <button
-            onclick="startNewGame()"
-            class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            id="startGameBtn"
+            class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 md:py-4 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <i class="fas fa-play mr-3"></i>
+            <i class="fas fa-play mr-2 md:mr-3"></i>
             ÎNCEPE JOC NOU
           </button>
           <p class="text-blue-200 text-sm mt-3 text-center">
             Creează un joc nou cu echipe și întrebări
           </p>
-        </div>
+        </section>
 
         <!-- Join Existing Game -->
-        <div
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
+        <section
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20"
         >
-          <div class="mb-4">
-            <label class="block text-white font-semibold mb-2">
-              <i class="fas fa-key mr-2"></i>
-              Alătură-te la un joc existent
-            </label>
-            <input
-              type="text"
-              id="gameCode"
-              placeholder="Cod joc (6 cifre)"
-              maxlength="6"
-              class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-            />
-          </div>
-          <button
-            onclick="joinGame()"
-            class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-          >
-            <i class="fas fa-sign-in-alt mr-2"></i>
-            INTRĂ ÎN JOC
-          </button>
-        </div>
+          <form id="joinGameForm">
+            <div class="mb-4">
+              <label for="gameCode" class="block text-white font-semibold mb-2">
+                <i class="fas fa-key mr-2"></i>
+                Deschide un joc
+              </label>
+              <input
+                type="text"
+                id="gameCode"
+                name="gameCode"
+                placeholder="Cod joc (6 cifre)"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              id="joinGameBtn"
+              class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              INTRĂ ÎN JOC
+            </button>
+          </form>
+        </section>
 
         <!-- Game Rules -->
-        <div
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
+        <section
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20"
         >
           <button
-            onclick="toggleRules()"
-            class="w-full text-left text-white font-semibold hover:text-blue-200 transition-colors"
+            id="rulesToggle"
+            class="w-full text-left text-white font-semibold hover:text-blue-200 transition-colors focus:outline-none focus:outline-none rounded"
+            aria-expanded="false"
+            aria-controls="rulesContent"
           >
             <i class="fas fa-info-circle mr-2"></i>
             Cum se joacă?
@@ -89,73 +107,28 @@
           <div
             id="rulesContent"
             class="hidden mt-4 text-blue-200 text-sm space-y-2"
+            aria-hidden="true"
           >
             <p>
               • Două echipe concurează pentru a da răspunsurile cele mai
               populare
             </p>
-            <p>
-              • Fiecare răspuns corect aduce puncte în funcție de popularitate
-            </p>
+            <p>• Fiecare răspuns corect aduce puncte</p>
             <p>• Echipa cu cele mai multe puncte câștigă</p>
             <p>• Moderatorul gestionează jocul de pe interfața de control</p>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
 
       <!-- Footer -->
-      <div class="text-center mt-12 text-blue-300">
+      <footer class="text-center mt-8 md:mt-12 text-blue-300">
         <p class="text-sm">
-          <i class="fas fa-heart text-red-400 mr-1"></i>
-          Creat cu drag pentru familia românească
+          <i class="fas fa-copyright mr-1"></i> Dezvoltat de prof. Andrei Cionca
         </p>
-      </div>
+      </footer>
     </div>
-
-    <script>
-      function startNewGame() {
-        window.location.href = "setup.html";
-      }
-
-      function joinGame() {
-        const gameCode = document.getElementById("gameCode").value.trim();
-        if (gameCode.length !== 6 || !/^\d{6}$/.test(gameCode)) {
-          alert("Te rog introdu un cod valid de 6 cifre");
-          return;
-        }
-
-        // Redirect to display with game code
-        window.location.href = `display.html?game=${gameCode}`;
-      }
-
-      function toggleRules() {
-        const content = document.getElementById("rulesContent");
-        const chevron = document.getElementById("rulesChevron");
-
-        if (content.classList.contains("hidden")) {
-          content.classList.remove("hidden");
-          chevron.style.transform = "rotate(180deg)";
-        } else {
-          content.classList.add("hidden");
-          chevron.style.transform = "rotate(0deg)";
-        }
-      }
-
-      // Auto-format game code input
-      document
-        .getElementById("gameCode")
-        .addEventListener("input", function (e) {
-          this.value = this.value.replace(/\D/g, "");
-        });
-
-      // Enter key support for game code
-      document
-        .getElementById("gameCode")
-        .addEventListener("keypress", function (e) {
-          if (e.key === "Enter") {
-            joinGame();
-          }
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase/client.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>

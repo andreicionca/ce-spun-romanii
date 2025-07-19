@@ -16,312 +16,9 @@
     />
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <style>
-      /* Mobile-first base styles */
-      html,
-      body {
-        height: 100vh;
-        height: 100svh;
-        overflow: hidden;
-      }
-
-      #main {
-        height: 100vh;
-        height: 100svh;
-        overflow: hidden;
-        padding: 0.5rem 1rem;
-      }
-
-      /* Landscape lock overlay */
-      @media screen and (orientation: portrait) {
-        body::before {
-          content: "";
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: #000;
-          z-index: 9999;
-        }
-        body::after {
-          content: "Vă rugăm rotiți dispozitivul în mod landscape pentru a continua.";
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: #fff;
-          font-size: 1.025rem;
-          text-align: center;
-          padding: 1rem;
-          z-index: 10000;
-          max-width: 80%;
-        }
-        #main {
-          display: none !important;
-        }
-      }
-
-      /* Glassmorphism */
-      .glass {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-      }
-
-      /* Answer buttons */
-      .btn-answer {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: white;
-        transition: all 0.2s ease;
-        cursor: pointer;
-      }
-
-      .btn-answer:not(.selected):not(.revealed):hover {
-        background-color: rgba(255, 255, 255, 0.15);
-      }
-
-      .btn-answer.selected {
-        background-color: rgba(34, 197, 94, 0.3);
-        border-color: rgba(34, 197, 94, 0.8);
-      }
-
-      .btn-answer.revealed {
-        background-color: rgba(59, 130, 246, 0.3);
-        border-color: rgba(59, 130, 246, 0.8);
-        cursor: default;
-      }
-
-      /* Team selection */
-      .team-option {
-        background: transparent;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        transition: all 0.2s ease;
-        cursor: pointer;
-      }
-
-      .team-option:hover {
-        background-color: rgba(34, 197, 94, 0.3);
-        border-color: rgba(34, 197, 94, 0.8);
-      }
-
-      .team-option.selected {
-        background-color: rgba(34, 197, 94, 0.5);
-        border-color: rgba(34, 197, 94, 1);
-        color: white;
-      }
-
-      /* Modals */
-      .modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 50;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-      }
-
-      .modal-content {
-        position: relative;
-        max-width: 90vw;
-        max-height: 90vh;
-      }
-
-      .close-modal {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        background: transparent;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #999;
-        z-index: 1;
-      }
-
-      /* Strike buttons */
-      .strike-btn {
-        background: rgba(220, 38, 38, 0.2);
-        border: 1px solid rgba(220, 38, 38, 0.5);
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .strike-btn:hover {
-        background: rgba(220, 38, 38, 0.4);
-        border-color: rgba(220, 38, 38, 0.7);
-      }
-
-      .strike-btn.active {
-        background: rgba(220, 38, 38, 0.8);
-        border-color: rgba(220, 38, 38, 1);
-        box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
-      }
-
-      .buzz-strike {
-        background: rgba(255, 165, 0, 0.2);
-        border: 1px solid rgba(255, 165, 0, 0.5);
-      }
-
-      .buzz-strike:hover {
-        background: rgba(255, 165, 0, 0.4);
-      }
-
-      .buzz-strike.flashing {
-        animation: buzz-flash 0.5s ease;
-      }
-
-      @keyframes buzz-flash {
-        0%,
-        100% {
-          background: rgba(255, 165, 0, 0.2);
-        }
-        50% {
-          background: rgba(255, 165, 0, 0.8);
-        }
-      }
-
-      .minimal-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        transition: all 0.2s ease;
-        cursor: pointer;
-      }
-
-      .minimal-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-      }
-
-      /* Show question button - special styling */
-      .show-question-btn {
-        background: rgba(59, 130, 246, 0.2);
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        color: white;
-        transition: all 0.2s ease;
-        cursor: pointer;
-      }
-
-      .show-question-btn:hover {
-        background: rgba(59, 130, 246, 0.3);
-        border-color: rgba(59, 130, 246, 0.6);
-        transform: scale(1.02);
-      }
-
-      /* Pause button */
-      .pause-btn {
-        background: rgba(255, 193, 7, 0.2);
-        border: 1px solid rgba(255, 193, 7, 0.4);
-        color: white;
-        transition: all 0.2s ease;
-        cursor: pointer;
-      }
-
-      .pause-btn:hover {
-        background: rgba(255, 193, 7, 0.3);
-        border-color: rgba(255, 193, 7, 0.6);
-      }
-
-      .btn-pointable {
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .btn-pointable:hover {
-        transform: scale(1.02);
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-
-      /* Score boxes */
-      .score-box {
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 0.5rem;
-        padding: 0.0625rem 0.25rem;
-        min-width: 1.5rem;
-        font-size: 0.625rem;
-      }
-      .score-box-center {
-        background: rgba(255, 255, 255, 0.12);
-        transition: all 0.2s ease;
-        font-weight: bold;
-      }
-
-      .score-box-center:hover {
-        background: rgba(255, 255, 255, 0.18);
-        transform: scale(1.02);
-      }
-
-      /* Answers grid */
-      .answers-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.25rem;
-        height: 100%;
-        overflow-y: auto;
-      }
-
-      /* Desktop responsive adjustments */
-      @media (min-width: 769px) {
-        #main {
-          padding: 1rem;
-        }
-
-        .score-box {
-          padding: 0.75rem 1.5rem;
-          min-width: 5rem;
-          font-size: 1rem;
-        }
-
-        .answers-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          height: 100%;
-        }
-
-        .desktop-col {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .btn-answer {
-          padding: 1rem;
-          font-size: 1.125rem;
-        }
-      }
-
-      /* Game status indicator */
-      .game-status {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: bold;
-      }
-
-      .game-status.playing {
-        background: rgba(34, 197, 94, 0.2);
-        border: 1px solid rgba(34, 197, 94, 0.5);
-        color: rgb(34, 197, 94);
-      }
-
-      .game-status.paused {
-        background: rgba(255, 193, 7, 0.2);
-        border: 1px solid rgba(255, 193, 7, 0.5);
-        color: rgb(255, 193, 7);
-      }
-    </style>
+    <!-- Project files -->
+    <script src="supabase/client.js"></script>
+    <link rel="stylesheet" href="control.css" />
   </head>
   <body class="bg-gray-900 min-h-screen h-full text-white">
     <!-- Game Status Indicator -->
@@ -371,10 +68,13 @@
             <div id="team1Total" class="score-box text-lg md:text-xl">0</div>
           </div>
           <div class="flex flex-col items-center">
-            <div class="text-xs md:text-base mb-1 md:mb-2">Puncte</div>
+            <div
+              id="questionProgress"
+              class="text-xs md:text-base mb-1 md:mb-2"
+            ></div>
             <div
               id="questionPoints"
-              class="btn-pointable score-box score-box-center text-xl md:text-4xl"
+              class="btn-pointable score-box score-box-center text-2xl md:text-4xl"
             >
               0
             </div>
@@ -411,13 +111,20 @@
               id="stopGame"
               class="bg-red-600 hover:bg-red-700 text-white px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold transition-colors"
             >
-              <i class="fas fa-stop mr-1"></i>Stop
+              <i class="fas fa-stop"></i>
             </button>
             <button
               id="pauseGame"
               class="pause-btn px-2 md:px-3 py-2 rounded text-xs md:text-sm font-semibold"
             >
-              <i class="fas fa-pause mr-1"></i>Pauză
+              <i class="fas fa-pause"></i>
+            </button>
+            <button
+              id="buzzStrike"
+              class="buzz-strike px-2 md:px-3 py-2 rounded text-xs md:text-base font-bold"
+              title="Buzz Strike"
+            >
+              <i class="fas fa-x"></i>
             </button>
           </div>
 
@@ -427,7 +134,7 @@
               id="prevQ"
               class="minimal-btn px-3 md:px-4 py-2 md:py-3 rounded font-semibold text-xs md:text-sm"
             >
-              <i class="fas fa-arrow-left mr-1"></i>Ant.
+              <i class="fas fa-arrow-left mr-1"></i>Prec.
             </button>
 
             <button
@@ -447,15 +154,6 @@
 
           <!-- Right side: Strikes -->
           <div class="flex items-center space-x-1 md:space-x-2">
-            <!-- Buzz Strike -->
-            <button
-              id="buzzStrike"
-              class="buzz-strike px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base font-bold"
-              title="Buzz Strike"
-            >
-              ❌
-            </button>
-
             <!-- Progressive Strikes -->
             <div class="flex space-x-1">
               <button
@@ -463,21 +161,22 @@
                 class="progressiveStrike strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
                 title="Strike 1"
               >
-                ❌
+                <i class="fas fa-x"></i>
               </button>
               <button
                 data-strike-index="1"
                 class="progressiveStrike strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
                 title="Strike 2"
               >
-                ❌❌
+                <i class="fas fa-x"></i> <i class="fas fa-x"></i>
               </button>
               <button
                 data-strike-index="2"
                 class="progressiveStrike strike-btn px-2 md:px-3 py-2 md:py-3 rounded text-xs md:text-base"
                 title="Strike 3"
               >
-                ❌❌❌
+                <i class="fas fa-x"></i> <i class="fas fa-x"></i>
+                <i class="fas fa-x"></i>
               </button>
             </div>
           </div>
@@ -541,6 +240,88 @@
       </div>
     </div>
 
+    <!-- Game Paused Success Modal -->
+    <div id="pausedSuccessModal" class="modal">
+      <div
+        class="glass rounded-lg p-4 md:p-6 w-full max-w-md text-center text-white modal-content"
+      >
+        <div class="mb-4">
+          <i class="fas fa-pause text-4xl text-yellow-400 mb-3"></i>
+        </div>
+        <h2 class="text-lg md:text-xl font-bold mb-4">
+          Jocul a fost pus pe pauză
+        </h2>
+        <div class="mb-6">
+          <p class="text-sm md:text-base text-gray-300 mb-4">
+            Progresul a fost salvat automat.
+          </p>
+          <div class="bg-gray-800 rounded-lg p-4 mb-4">
+            <p class="text-xs text-gray-400 mb-2">Pentru a continua jocul:</p>
+            <p class="text-sm text-white mb-2">1. Mergi la pagina principală</p>
+            <p class="text-sm text-white mb-2">2. Introdu codul:</p>
+            <div
+              class="bg-gray-900 rounded px-3 py-2 text-yellow-400 font-bold text-lg"
+              id="pausedGameCode"
+            ></div>
+            <p class="text-sm text-white mt-2">3. Alege "Control Panel"</p>
+          </div>
+        </div>
+        <button
+          id="pausedOkBtn"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold text-sm md:text-base"
+        >
+          <i class="fas fa-home mr-2"></i>Înapoi la meniu
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Stopped Success Modal -->
+    <div id="stoppedSuccessModal" class="modal">
+      <div
+        class="glass rounded-lg p-4 md:p-6 w-full max-w-md text-center text-white modal-content"
+      >
+        <div class="mb-4">
+          <i class="fas fa-flag-checkered text-4xl text-green-400 mb-3"></i>
+        </div>
+        <h2 class="text-lg md:text-xl font-bold mb-4">Jocul s-a încheiat</h2>
+        <div class="mb-6">
+          <div class="text-sm md:text-base text-gray-300 mb-4">
+            Scorul final:
+          </div>
+          <div
+            class="flex justify-between items-center bg-gray-800 rounded-lg p-4"
+          >
+            <div class="text-center">
+              <div id="finalTeam1Name" class="text-sm font-semibold mb-1">
+                ECHIPA 1
+              </div>
+              <div
+                id="finalTeam1Score"
+                class="text-2xl font-bold text-blue-400"
+              >
+                0
+              </div>
+            </div>
+            <div class="text-gray-500 text-xl">VS</div>
+            <div class="text-center">
+              <div id="finalTeam2Name" class="text-sm font-semibold mb-1">
+                ECHIPA 2
+              </div>
+              <div id="finalTeam2Score" class="text-2xl font-bold text-red-400">
+                0
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          id="stoppedOkBtn"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold text-sm md:text-base"
+        >
+          <i class="fas fa-home mr-2"></i>Înapoi la meniu
+        </button>
+      </div>
+    </div>
+
     <!-- Assign Modal -->
     <div id="assignModal" class="modal">
       <div
@@ -566,809 +347,6 @@
       </div>
     </div>
 
-    <script>
-      const supabaseClient = supabase.createClient(
-        CONFIG.SUPABASE_URL,
-        CONFIG.SUPABASE_ANON_KEY
-      );
-      const gameCode = new URLSearchParams(window.location.search).get("game");
-
-      // DOM Elements
-      const initScreen = document.getElementById("initScreen");
-      const controlPanel = document.getElementById("controlPanel");
-      const gameCodeWelcome = document.getElementById("gameCodeWelcome");
-      const resumeInfo = document.getElementById("resumeInfo");
-      const startBtn = document.getElementById("startBtn");
-      const startBtnText = document.getElementById("startBtnText");
-      const gameStatus = document.getElementById("gameStatus");
-      const statusText = document.getElementById("statusText");
-
-      const stopBtn = document.getElementById("stopGame");
-      const pauseBtn = document.getElementById("pauseGame");
-      const stopModal = document.getElementById("stopModal");
-      const pauseModal = document.getElementById("pauseModal");
-      const confirmStop = document.getElementById("confirmStop");
-      const cancelStop = document.getElementById("cancelStop");
-      const confirmPause = document.getElementById("confirmPause");
-      const cancelPause = document.getElementById("cancelPause");
-
-      const team1Name = document.getElementById("team1Name");
-      const team2Name = document.getElementById("team2Name");
-      const team1Total = document.getElementById("team1Total");
-      const team2Total = document.getElementById("team2Total");
-      const questionPoints = document.getElementById("questionPoints");
-      const currentQuestionElem = document.getElementById("currentQuestion");
-      const answersGrid = document.getElementById("answersGrid");
-      const prevQ = document.getElementById("prevQ");
-      const nextQ = document.getElementById("nextQ");
-      const showQuestionBtn = document.getElementById("showQuestionBtn");
-
-      const buzzStrike = document.getElementById("buzzStrike");
-      const progressiveStrikes =
-        document.querySelectorAll(".progressiveStrike");
-
-      const assignModal = document.getElementById("assignModal");
-      const modalPoints = document.getElementById("modalPoints");
-      const assignTeam1 = document.getElementById("assignTeam1");
-      const assignTeam2 = document.getElementById("assignTeam2");
-
-      // Game State
-      let questions = [];
-      let currentIndex = 0;
-      let currentQPoints = 0;
-      let selectedTeam = null;
-      let gameId = null;
-      let showMode = false;
-
-      // ✅ State-driven system
-      let gameState = {
-        current_question_index: 0,
-        current_question: null,
-        team1_score: 0,
-        team2_score: 0,
-        show_mode: false,
-        progressive_strikes: [false, false, false], // Independent strikes
-        question_displayed: false,
-        paused: false,
-        total_questions: 0,
-        answered_questions: [],
-        last_buzz_strike: null,
-      };
-
-      // ✅ Master function for state updates - FIXED with better error handling
-      async function updateGameState(updates = {}) {
-        gameState = { ...gameState, ...updates };
-
-        try {
-          const { data, error } = await supabaseClient
-            .from("games")
-            .update({
-              current_state: gameState,
-              team1_score: gameState.team1_score,
-              team2_score: gameState.team2_score,
-            })
-            .eq("id", gameId)
-            .select(); // ✅ Add select() to get updated data
-
-          if (error) {
-            console.error("Database update error:", error);
-            throw error;
-          }
-
-          console.log("Game state updated successfully:", gameState);
-          console.log("Database confirmed:", data);
-
-          return data;
-        } catch (error) {
-          console.error("Error updating game state:", error);
-          throw error;
-        }
-      }
-
-      // ✅ Restore UI from state
-      async function restoreUIFromState() {
-        console.log("Restoring UI from state:", gameState);
-
-        // Restore basic info
-        currentIndex = gameState.current_question_index || 0;
-        showMode = gameState.show_mode || false;
-
-        // Restore scores
-        team1Total.textContent = gameState.team1_score || 0;
-        team2Total.textContent = gameState.team2_score || 0;
-
-        // Restore current question
-        if (gameState.current_question && questions.length > 0) {
-          currentQuestionElem.textContent =
-            gameState.current_question.text ||
-            questions[currentIndex]?.text ||
-            "...";
-
-          // Restore answers with their revealed state
-          restoreAnswersFromState();
-        }
-
-        // Restore progressive strikes
-        updateStrikesUI();
-
-        // Restore question points
-        currentQPoints = calculateCurrentPoints();
-        questionPoints.textContent = currentQPoints;
-
-        // Update game status
-        updateGameStatusUI();
-
-        console.log("UI restored successfully");
-      }
-
-      // ✅ Restore answers grid from state
-      function restoreAnswersFromState() {
-        if (
-          !gameState.current_question ||
-          !gameState.current_question.answers
-        ) {
-          return;
-        }
-
-        const slots = Array(8).fill(null);
-        const stateAnswers = gameState.current_question.answers;
-
-        // Map state answers to slots
-        stateAnswers.forEach((answer) => {
-          if (answer && answer.position >= 1 && answer.position <= 8) {
-            slots[answer.position - 1] = answer;
-          }
-        });
-
-        answersGrid.innerHTML = "";
-
-        if (window.innerWidth <= 768) {
-          // Mobile layout
-          slots.forEach((answer, i) => {
-            const num = i + 1;
-            const btn = document.createElement("button");
-            btn.className =
-              "btn-answer p-1 rounded flex justify-between text-xs font-semibold";
-
-            if (answer) {
-              btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="text-yellow-400">${answer.points}</span>`;
-              btn.onclick = () => toggleAnswer(btn, answer.points);
-              btn.dataset.text = answer.text;
-              btn.dataset.points = answer.points;
-
-              // Restore revealed state
-              if (answer.revealed) {
-                btn.classList.add(showMode ? "revealed" : "selected");
-              }
-            } else {
-              btn.innerHTML = `<span>${num}.</span><span></span>`;
-              btn.disabled = true;
-              btn.classList.add("opacity-50");
-            }
-            answersGrid.appendChild(btn);
-          });
-        } else {
-          // Desktop layout
-          [0, 4].forEach((start) => {
-            const col = document.createElement("div");
-            col.className = "desktop-col";
-
-            slots.slice(start, start + 4).forEach((answer, i) => {
-              const num = start + i + 1;
-              const btn = document.createElement("button");
-              btn.className =
-                "btn-answer p-4 rounded-lg flex justify-between text-lg font-semibold";
-
-              if (answer) {
-                btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="font-bold text-yellow-400">${answer.points}</span>`;
-                btn.onclick = () => toggleAnswer(btn, answer.points);
-                btn.dataset.text = answer.text;
-                btn.dataset.points = answer.points;
-
-                // Restore revealed state
-                if (answer.revealed) {
-                  btn.classList.add(showMode ? "revealed" : "selected");
-                }
-              } else {
-                btn.innerHTML = `<span>${num}.</span><span></span>`;
-                btn.disabled = true;
-                btn.classList.add("opacity-50");
-              }
-              col.appendChild(btn);
-            });
-            answersGrid.appendChild(col);
-          });
-        }
-      }
-
-      // ✅ Calculate current points from selected answers
-      function calculateCurrentPoints() {
-        if (
-          !gameState.current_question ||
-          !gameState.current_question.answers
-        ) {
-          return 0;
-        }
-
-        return gameState.current_question.answers.reduce((total, answer) => {
-          return (
-            total + (answer && answer.revealed && !showMode ? answer.points : 0)
-          );
-        }, 0);
-      }
-
-      // ✅ Update strikes UI
-      function updateStrikesUI() {
-        progressiveStrikes.forEach((btn, index) => {
-          if (gameState.progressive_strikes[index]) {
-            btn.classList.add("active");
-          } else {
-            btn.classList.remove("active");
-          }
-        });
-      }
-
-      // ✅ Update game status UI
-      function updateGameStatusUI() {
-        if (gameState.paused) {
-          gameStatus.className = "game-status paused";
-          statusText.innerHTML = '<i class="fas fa-pause mr-1"></i>Pe pauză';
-        } else {
-          gameStatus.className = "game-status playing";
-          statusText.innerHTML =
-            '<i class="fas fa-play mr-1"></i>În desfășurare';
-        }
-        gameStatus.classList.remove("hidden");
-      }
-
-      // Validation
-      if (!gameCode) {
-        alert("Cod de joc lipsă! Accesează această pagină prin setup.");
-        window.location.href = "index.html";
-      }
-
-      // ✅ Initialize
-      document.addEventListener("DOMContentLoaded", () => {
-        gameCodeWelcome.textContent = gameCode || "----";
-        setupEventListeners();
-      });
-
-      function setupEventListeners() {
-        startBtn.addEventListener("click", startGame);
-        questionPoints.addEventListener("click", showAssignModal);
-        showQuestionBtn.addEventListener("click", showQuestionOnDisplay);
-
-        // Control buttons
-        stopBtn.addEventListener(
-          "click",
-          () => (stopModal.style.display = "flex")
-        );
-        pauseBtn.addEventListener(
-          "click",
-          () => (pauseModal.style.display = "flex")
-        );
-
-        // Modal confirmations
-        confirmStop.addEventListener("click", async () => {
-          await saveGameProgress();
-          window.location.href = "index.html";
-        });
-        cancelStop.addEventListener(
-          "click",
-          () => (stopModal.style.display = "none")
-        );
-
-        confirmPause.addEventListener("click", pauseGame);
-        cancelPause.addEventListener(
-          "click",
-          () => (pauseModal.style.display = "none")
-        );
-
-        // Team assignment
-        assignTeam1.addEventListener("click", () => selectTeam("team1"));
-        assignTeam2.addEventListener("click", () => selectTeam("team2"));
-
-        // Navigation
-        prevQ.addEventListener("click", () => changeQuestion(currentIndex - 1));
-        nextQ.addEventListener("click", () => changeQuestion(currentIndex + 1));
-
-        // Strikes
-        buzzStrike.addEventListener("click", sendBuzzStrike);
-        progressiveStrikes.forEach((btn, index) => {
-          btn.addEventListener("click", () => toggleProgressiveStrike(index));
-        });
-
-        // Close modals
-        document.querySelectorAll(".close-modal").forEach((btn) =>
-          btn.addEventListener("click", () => {
-            document.getElementById(btn.dataset.modal).style.display = "none";
-          })
-        );
-
-        // Close modals on outside click
-        document.querySelectorAll(".modal").forEach((modal) => {
-          modal.addEventListener("click", (e) => {
-            if (e.target === modal) {
-              modal.style.display = "none";
-            }
-          });
-        });
-      }
-
-      // ✅ Main start game function - FIXED for proper realtime sync
-      async function startGame() {
-        try {
-          console.log("Starting game with code:", gameCode);
-
-          const { data: game, error: gameError } = await supabaseClient
-            .from("games")
-            .select(
-              "id,set_id,team1_name,team2_name,team1_score,team2_score,current_state"
-            )
-            .eq("game_code", gameCode)
-            .single();
-
-          if (gameError) {
-            console.error("Game fetch error:", gameError);
-            alert("Jocul nu a fost găsit. Verifică codul.");
-            return;
-          }
-
-          console.log("Game loaded:", game);
-
-          gameId = game.id;
-          team1Name.textContent = game.team1_name;
-          team2Name.textContent = game.team2_name;
-          assignTeam1.textContent = game.team1_name;
-          assignTeam2.textContent = game.team2_name;
-
-          // ✅ Load questions from set_id (unified approach)
-          const { data: items, error: itemsError } = await supabaseClient
-            .from("question_set_items")
-            .select(
-              "order_index,questions(id,text,answers(id,text,points,position))"
-            )
-            .eq("set_id", game.set_id)
-            .order("order_index", { ascending: true });
-
-          if (itemsError) {
-            console.error("Questions fetch error:", itemsError);
-            alert("Eroare la încărcarea întrebărilor.");
-            return;
-          }
-
-          if (!items || items.length === 0) {
-            alert("Nu s-au găsit întrebări pentru acest joc!");
-            return;
-          }
-
-          questions = items
-            .map((i) => i.questions || {})
-            .filter((q) => q && q.id);
-
-          console.log("Questions loaded:", questions.length);
-
-          // ✅ Check if resuming existing game or starting new
-          if (
-            game.current_state &&
-            Object.keys(game.current_state).length > 0
-          ) {
-            // RESUME existing game
-            gameState = { ...game.current_state };
-            gameState.total_questions = questions.length;
-
-            console.log("Resuming game from state:", gameState);
-            await restoreUIFromState();
-          } else {
-            // START new game - CREATE INITIAL STATE
-            console.log("Starting new game");
-
-            gameState = {
-              current_question_index: 0,
-              current_question: null,
-              team1_score: game.team1_score || 0,
-              team2_score: game.team2_score || 0,
-              show_mode: false,
-              progressive_strikes: [false, false, false],
-              question_displayed: false,
-              paused: false,
-              total_questions: questions.length,
-              answered_questions: [],
-              last_buzz_strike: null,
-            };
-
-            // Load first question and CREATE initial state
-            await loadQuestion(0);
-          }
-
-          // ✅ FORCE UPDATE game status to playing - this will trigger realtime
-          const { error: statusError } = await supabaseClient
-            .from("games")
-            .update({
-              status: "playing",
-              current_state: gameState, // ✅ Ensure state is written
-            })
-            .eq("id", gameId);
-
-          if (statusError) {
-            console.error("Error updating game status:", statusError);
-          } else {
-            console.log("Game status updated to playing with state");
-          }
-
-          // Show control panel
-          initScreen.classList.add("hidden");
-          controlPanel.classList.remove("hidden");
-          updateGameStatusUI();
-        } catch (error) {
-          console.error("Error starting game:", error);
-          alert("Eroare la pornirea jocului. Verifică codul.");
-        }
-      }
-
-      // ✅ Load question function - FIXED to ensure state is updated
-      async function loadQuestion(idx) {
-        if (idx < 0 || idx >= questions.length) return;
-
-        currentIndex = idx;
-        currentQPoints = 0;
-        questionPoints.textContent = "0";
-        showMode = false;
-
-        const q = questions[idx];
-        currentQuestionElem.textContent = q.text || "...";
-
-        // Prepare answers for state
-        const answersForState = [];
-        if (q.answers) {
-          q.answers.forEach((a) => {
-            if (a.position >= 1 && a.position <= 8) {
-              answersForState[a.position - 1] = {
-                id: a.id,
-                text: a.text,
-                points: a.points,
-                position: a.position,
-                revealed: false,
-              };
-            }
-          });
-        }
-
-        // ✅ Update state AND wait for completion
-        await updateGameState({
-          current_question_index: idx,
-          current_question: {
-            id: q.id,
-            text: q.text,
-            answers: answersForState,
-          },
-          question_displayed: false,
-          show_mode: false,
-        });
-
-        // Generate UI
-        generateAnswersGrid(answersForState);
-
-        console.log("Question loaded and state updated:", idx);
-      }
-
-      // ✅ Generate answers grid
-      function generateAnswersGrid(answersForState) {
-        const slots = Array(8).fill(null);
-        answersForState.forEach((answer, index) => {
-          if (answer) {
-            slots[index] = answer;
-          }
-        });
-
-        answersGrid.innerHTML = "";
-
-        if (window.innerWidth <= 768) {
-          // Mobile layout
-          slots.forEach((answer, i) => {
-            const num = i + 1;
-            const btn = document.createElement("button");
-            btn.className =
-              "btn-answer p-1 rounded flex justify-between text-xs font-semibold";
-
-            if (answer) {
-              btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="text-yellow-400">${answer.points}</span>`;
-              btn.onclick = () => toggleAnswer(btn, answer.points);
-              btn.dataset.text = answer.text;
-              btn.dataset.points = answer.points;
-            } else {
-              btn.innerHTML = `<span>${num}.</span><span></span>`;
-              btn.disabled = true;
-              btn.classList.add("opacity-50");
-            }
-            answersGrid.appendChild(btn);
-          });
-        } else {
-          // Desktop layout
-          [0, 4].forEach((start) => {
-            const col = document.createElement("div");
-            col.className = "desktop-col";
-
-            slots.slice(start, start + 4).forEach((answer, i) => {
-              const num = start + i + 1;
-              const btn = document.createElement("button");
-              btn.className =
-                "btn-answer p-4 rounded-lg flex justify-between text-lg font-semibold";
-
-              if (answer) {
-                btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="font-bold text-yellow-400">${answer.points}</span>`;
-                btn.onclick = () => toggleAnswer(btn, answer.points);
-                btn.dataset.text = answer.text;
-                btn.dataset.points = answer.points;
-              } else {
-                btn.innerHTML = `<span>${num}.</span><span></span>`;
-                btn.disabled = true;
-                btn.classList.add("opacity-50");
-              }
-              col.appendChild(btn);
-            });
-            answersGrid.appendChild(col);
-          });
-        }
-      }
-
-      // ✅ Toggle answer function
-      async function toggleAnswer(btn, pts) {
-        const answerText = btn.dataset.text;
-
-        if (showMode) {
-          // Show mode: only reveal/hide answers, no points calculation
-          const isRevealed = btn.classList.toggle("revealed");
-
-          // Update state
-          const updatedAnswers = gameState.current_question.answers.map((a) =>
-            a && a.text === answerText ? { ...a, revealed: isRevealed } : a
-          );
-
-          await updateGameState({
-            current_question: {
-              ...gameState.current_question,
-              answers: updatedAnswers,
-            },
-          });
-        } else {
-          // Normal mode - calculate points for selected answers
-          if (btn.classList.contains("revealed")) return;
-
-          const sel = btn.classList.toggle("selected");
-          currentQPoints += sel ? pts : -pts;
-          questionPoints.textContent = currentQPoints;
-
-          // Update state
-          const updatedAnswers = gameState.current_question.answers.map((a) =>
-            a && a.text === answerText ? { ...a, revealed: sel } : a
-          );
-
-          await updateGameState({
-            current_question: {
-              ...gameState.current_question,
-              answers: updatedAnswers,
-            },
-          });
-        }
-      }
-
-      // ✅ Show question on display
-      async function showQuestionOnDisplay() {
-        console.log("Showing question on display:", currentIndex);
-
-        if (
-          questions.length === 0 ||
-          currentIndex < 0 ||
-          currentIndex >= questions.length
-        ) {
-          console.log("No valid question to display");
-          return;
-        }
-
-        try {
-          await updateGameState({
-            question_displayed: true,
-          });
-
-          console.log("Question display command sent successfully");
-
-          // Visual feedback
-          showQuestionBtn.style.background = "rgba(34, 197, 94, 0.3)";
-          showQuestionBtn.innerHTML =
-            '<i class="fas fa-check mr-1"></i>Afișată';
-
-          setTimeout(() => {
-            showQuestionBtn.style.background = "rgba(59, 130, 246, 0.2)";
-            showQuestionBtn.innerHTML =
-              '<i class="fas fa-tv mr-1"></i>Afișează';
-          }, 2000);
-        } catch (error) {
-          console.error("Error showing question on display:", error);
-
-          showQuestionBtn.style.background = "rgba(220, 38, 38, 0.3)";
-          showQuestionBtn.innerHTML = '<i class="fas fa-times mr-1"></i>Eroare';
-
-          setTimeout(() => {
-            showQuestionBtn.style.background = "rgba(59, 130, 246, 0.2)";
-            showQuestionBtn.innerHTML =
-              '<i class="fas fa-tv mr-1"></i>Afișează';
-          }, 2000);
-        }
-      }
-
-      // ✅ Show assign modal
-      function showAssignModal() {
-        if (currentQPoints > 0) {
-          modalPoints.textContent = currentQPoints;
-          selectedTeam = null;
-          document.querySelectorAll(".team-option").forEach((btn) => {
-            btn.classList.remove("selected");
-          });
-          assignModal.style.display = "flex";
-        }
-      }
-
-      // ✅ Select team
-      function selectTeam(team) {
-        selectedTeam = team;
-        document.querySelectorAll(".team-option").forEach((btn) => {
-          btn.classList.remove("selected");
-        });
-        if (team === "team1") {
-          assignTeam1.classList.add("selected");
-        } else {
-          assignTeam2.classList.add("selected");
-        }
-        setTimeout(() => submitPoints(team), 300);
-      }
-
-      // ✅ Submit points
-      async function submitPoints(team) {
-        const points = currentQPoints;
-
-        if (team === "team1") {
-          const newScore = parseInt(team1Total.textContent) + points;
-          team1Total.textContent = newScore;
-        } else {
-          const newScore = parseInt(team2Total.textContent) + points;
-          team2Total.textContent = newScore;
-        }
-
-        assignModal.style.display = "none";
-
-        // Reset points but keep selections for show mode
-        currentQPoints = 0;
-        questionPoints.textContent = "0";
-
-        // Enter show mode automatically
-        showMode = true;
-
-        await updateGameState({
-          team1_score: parseInt(team1Total.textContent),
-          team2_score: parseInt(team2Total.textContent),
-          show_mode: true,
-        });
-      }
-
-      // ✅ Change question
-      async function changeQuestion(newIdx) {
-        if (newIdx >= 0 && newIdx < questions.length) {
-          // Exit show mode when changing questions
-          showMode = false;
-          await loadQuestion(newIdx);
-        }
-      }
-
-      // ✅ Toggle progressive strike (independent)
-      async function toggleProgressiveStrike(index) {
-        gameState.progressive_strikes[index] =
-          !gameState.progressive_strikes[index];
-
-        await updateGameState({
-          progressive_strikes: [...gameState.progressive_strikes],
-        });
-
-        updateStrikesUI();
-        console.log(
-          "Progressive strike toggled:",
-          index,
-          gameState.progressive_strikes[index]
-        );
-      }
-
-      // ✅ Send buzz strike (momentary)
-      async function sendBuzzStrike() {
-        console.log("Buzz strike sent");
-
-        await updateGameState({
-          last_buzz_strike: Date.now(),
-        });
-
-        // Visual feedback
-        buzzStrike.classList.add("flashing");
-        setTimeout(() => {
-          buzzStrike.classList.remove("flashing");
-        }, 500);
-      }
-
-      // ✅ Pause game
-      async function pauseGame() {
-        try {
-          await updateGameState({
-            paused: true,
-            paused_at: new Date().toISOString(),
-          });
-
-          await supabaseClient
-            .from("games")
-            .update({ status: "paused" })
-            .eq("id", gameId);
-
-          pauseModal.style.display = "none";
-
-          // Show paused message and redirect
-          alert(
-            "Jocul a fost pus pe pauză. Poți reveni oricând cu același cod."
-          );
-          window.location.href = `index.html`;
-        } catch (error) {
-          console.error("Error pausing game:", error);
-          alert("Eroare la punerea pe pauză.");
-        }
-      }
-
-      // ✅ Save game progress
-      async function saveGameProgress() {
-        if (!gameId) return;
-
-        try {
-          await updateGameState({
-            status: "finished",
-          });
-
-          await supabaseClient
-            .from("games")
-            .update({
-              team1_score: parseInt(team1Total.textContent),
-              team2_score: parseInt(team2Total.textContent),
-              status: "finished",
-            })
-            .eq("id", gameId);
-        } catch (error) {
-          console.error("Error saving game progress:", error);
-        }
-      }
-
-      // ✅ Handle window resize
-      window.addEventListener("resize", () => {
-        if (questions.length > 0 && gameState.current_question) {
-          restoreAnswersFromState();
-        }
-      });
-
-      // ✅ Check for existing game state on load
-      window.addEventListener("load", async () => {
-        try {
-          const { data: game } = await supabaseClient
-            .from("games")
-            .select("current_state,status")
-            .eq("game_code", gameCode)
-            .single();
-
-          if (
-            game?.current_state &&
-            Object.keys(game.current_state).length > 0
-          ) {
-            if (game.current_state.paused) {
-              resumeInfo.classList.remove("hidden");
-              startBtnText.textContent = "CONTINUĂ";
-            }
-          }
-        } catch (error) {
-          console.log("No existing game state found");
-        }
-      });
-    </script>
+    <script src="control.js"></script>
   </body>
 </html>

@@ -9,105 +9,47 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-    <style>
-      .search-input {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      .search-input:focus {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(59, 130, 246, 0.5);
-      }
-      .category-btn {
-        background: linear-gradient(
-          135deg,
-          rgba(59, 130, 246, 0.2),
-          rgba(147, 51, 234, 0.2)
-        );
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-      }
-      .category-btn:hover {
-        background: linear-gradient(
-          135deg,
-          rgba(59, 130, 246, 0.3),
-          rgba(147, 51, 234, 0.3)
-        );
-        transform: translateY(-2px);
-      }
-      .category-btn.selected {
-        background: linear-gradient(
-          135deg,
-          rgba(34, 197, 94, 0.3),
-          rgba(59, 130, 246, 0.3)
-        );
-        border-color: rgba(34, 197, 94, 0.5);
-      }
-      .question-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-      }
-      .question-card:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateY(-2px);
-      }
-      .question-card.selected {
-        background: rgba(34, 197, 94, 0.2);
-        border-color: rgba(34, 197, 94, 0.5);
-      }
-      .preview-modal {
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(5px);
-      }
-      .preview-content {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      .answer-bubble {
-        background: linear-gradient(
-          135deg,
-          rgba(59, 130, 246, 0.2),
-          rgba(147, 51, 234, 0.2)
-        );
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-    </style>
+    <link rel="stylesheet" href="setup.css" />
   </head>
   <body
     class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen"
   >
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-6 md:py-8">
       <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-white mb-2">Configurare Joc</h1>
-        <p class="text-blue-200">Pregătește-ți jocul perfect!</p>
+      <div class="text-center mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-4xl font-bold text-white mb-2">
+          Configurare Joc
+        </h1>
+        <p class="text-blue-200 text-sm md:text-base">
+          Pregătește-ți jocul perfect!
+        </p>
       </div>
 
       <!-- Setup Form -->
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-4xl mx-auto space-y-4 md:space-y-6">
         <!-- Step 1: Choose Game Type -->
         <div
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20"
         >
-          <h2 class="text-xl font-bold text-white mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-white mb-4">
             <i class="fas fa-cog mr-2"></i>
             Pas 1: Tip de Joc
           </h2>
-          <div class="grid md:grid-cols-2 gap-4">
+          <div class="grid gap-3 md:grid-cols-2 md:gap-4">
             <div
               class="game-type-option category-btn rounded-lg p-4 cursor-pointer"
               data-type="quick"
             >
               <div class="text-center">
-                <i class="fas fa-bolt text-3xl text-yellow-400 mb-2"></i>
-                <h3 class="text-white font-semibold">Joc Rapid</h3>
-                <p class="text-blue-200 text-sm">Set predefinit de întrebări</p>
+                <i
+                  class="fas fa-bolt text-2xl md:text-3xl text-yellow-400 mb-2"
+                ></i>
+                <h3 class="text-white font-semibold text-sm md:text-base">
+                  Joc Rapid
+                </h3>
+                <p class="text-blue-200 text-xs md:text-sm">
+                  Alege unul dintre seturile de întrebări disponibile
+                </p>
               </div>
             </div>
             <div
@@ -115,9 +57,15 @@
               data-type="custom"
             >
               <div class="text-center">
-                <i class="fas fa-wrench text-3xl text-blue-400 mb-2"></i>
-                <h3 class="text-white font-semibold">Joc Custom</h3>
-                <p class="text-blue-200 text-sm">Selectează întrebări manual</p>
+                <i
+                  class="fas fa-wrench text-2xl md:text-3xl text-blue-400 mb-2"
+                ></i>
+                <h3 class="text-white font-semibold text-sm md:text-base">
+                  Joc Personalizat
+                </h3>
+                <p class="text-blue-200 text-xs md:text-sm">
+                  Selectează întrebările pentru jocul tău
+                </p>
               </div>
             </div>
           </div>
@@ -126,9 +74,9 @@
         <!-- Step 2: Question Selection -->
         <div
           id="questionSection"
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hidden"
         >
-          <h2 class="text-xl font-bold text-white mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-white mb-4">
             <i class="fas fa-question-circle mr-2"></i>
             Pas 2: Selectează Întrebările
           </h2>
@@ -145,7 +93,7 @@
             </div>
             <div
               id="availableSets"
-              class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
+              class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 md:gap-4"
             >
               <!-- Sets will be loaded here -->
             </div>
@@ -162,7 +110,7 @@
               />
             </div>
 
-            <!-- Add "All Categories" button -->
+            <!-- All Categories button -->
             <div class="mb-4">
               <button
                 id="allCategoriesBtn"
@@ -175,15 +123,17 @@
 
             <div
               id="availableCategories"
-              class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6"
+              class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 md:gap-3 mb-6"
             >
               <!-- Categories will be loaded here -->
             </div>
 
             <div class="mb-4">
               <div class="flex items-center justify-between">
-                <h3 class="text-white font-semibold">Întrebări disponibile</h3>
-                <div class="text-blue-200">
+                <h3 class="text-white font-semibold text-sm md:text-base">
+                  Întrebări disponibile
+                </h3>
+                <div class="text-blue-200 text-sm">
                   Selectate:
                   <span id="selectedCount" class="text-yellow-400 font-bold"
                     >0</span
@@ -194,7 +144,7 @@
 
             <div
               id="availableQuestions"
-              class="grid md:grid-cols-2 gap-4 max-h-96 overflow-y-auto"
+              class="grid gap-3 md:grid-cols-2 md:gap-4 max-h-80 md:max-h-96 overflow-y-auto"
             >
               <!-- Questions will be loaded here -->
             </div>
@@ -204,15 +154,16 @@
         <!-- Step 3: Team Setup -->
         <div
           id="teamSection"
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hidden"
         >
-          <h2 class="text-xl font-bold text-white mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-white mb-4">
             <i class="fas fa-users mr-2"></i>
             Pas 3: Configurează Echipele
           </h2>
-          <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
             <div>
-              <label class="block text-white font-semibold mb-2"
+              <label
+                class="block text-white font-semibold mb-2 text-sm md:text-base"
                 >Echipa 1</label
               >
               <input
@@ -223,7 +174,8 @@
               />
             </div>
             <div>
-              <label class="block text-white font-semibold mb-2"
+              <label
+                class="block text-white font-semibold mb-2 text-sm md:text-base"
                 >Echipa 2</label
               >
               <input
@@ -239,16 +191,16 @@
         <!-- Step 4: Game Creation -->
         <div
           id="createSection"
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hidden"
         >
-          <h2 class="text-xl font-bold text-white mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-white mb-4">
             <i class="fas fa-rocket mr-2"></i>
             Pas 4: Creează Jocul
           </h2>
           <div class="text-center">
             <button
               id="createGameBtn"
-              class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-8 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              class="w-full md:w-auto bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-8 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 min-h-[56px]"
             >
               <i class="fas fa-play mr-2"></i>
               CREEAZĂ JOC
@@ -259,59 +211,67 @@
         <!-- Loading -->
         <div
           id="loadingSection"
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hidden"
         >
           <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-400 mb-4"></i>
-            <p class="text-white" id="loadingText">Se creează jocul...</p>
+            <i
+              class="fas fa-spinner fa-spin text-3xl md:text-4xl text-blue-400 mb-4"
+            ></i>
+            <p class="text-white text-sm md:text-base" id="loadingText">
+              Se creează jocul...
+            </p>
           </div>
         </div>
 
         <!-- Game Created -->
         <div
           id="gameCreatedSection"
-          class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 mb-6 hidden"
+          class="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 hidden"
         >
           <div class="text-center">
-            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
-            <h2 class="text-2xl font-bold text-white mb-4">Joc Creat!</h2>
+            <i
+              class="fas fa-check-circle text-3xl md:text-4xl text-green-400 mb-4"
+            ></i>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-4">
+              Joc Creat!
+            </h2>
             <div class="bg-black/30 rounded-lg p-4 mb-6">
-              <p class="text-blue-200 mb-2">Codul jocului:</p>
+              <p class="text-blue-200 mb-2 text-sm md:text-base">
+                Codul jocului:
+              </p>
               <div
-                class="text-4xl font-bold text-yellow-400 mb-2"
+                class="text-3xl md:text-4xl font-bold text-yellow-400 mb-2"
                 id="gameCodeDisplay"
               ></div>
-              <p class="text-sm text-blue-200">
+              <p class="text-xs md:text-sm text-blue-200">
                 Împarte acest cod cu participanții
               </p>
             </div>
-            <div class="space-y-4">
-              <div class="space-y-4">
-                <button
-                  onclick="openControl()"
-                  class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all"
-                >
-                  <i class="fas fa-gamepad mr-2"></i>
-                  INTRĂ ÎN CONTROL PANEL
-                </button>
-                <button
-                  onclick="openPublic()"
-                  class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all"
-                >
-                  <i class="fas fa-tv mr-2"></i>
-                  DESCHIDE PUBLIC DISPLAY
-                </button>
-              </div>
+            <div class="space-y-3 md:space-y-4">
+              <button
+                id="openControlBtn"
+                class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all min-h-[56px]"
+              >
+                <i class="fas fa-gamepad mr-2"></i>
+                INTRĂ ÎN CONTROL PANEL
+              </button>
+              <button
+                id="openPublicBtn"
+                class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all min-h-[56px]"
+              >
+                <i class="fas fa-tv mr-2"></i>
+                DESCHIDE PUBLIC DISPLAY
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Back Button -->
-      <div class="text-center mt-8">
+      <div class="text-center mt-6 md:mt-8">
         <button
           onclick="history.back()"
-          class="text-blue-200 hover:text-white transition-colors"
+          class="text-blue-200 hover:text-white transition-colors min-h-[44px] px-4 py-2"
         >
           <i class="fas fa-arrow-left mr-2"></i>
           Înapoi
@@ -325,15 +285,17 @@
       class="fixed inset-0 preview-modal hidden flex items-center justify-center z-50 p-4"
     >
       <div
-        class="preview-content rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6"
+        class="preview-content rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6"
       >
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-white">Previzualizare</h3>
+          <h3 class="text-lg md:text-xl font-bold text-white">
+            Previzualizare
+          </h3>
           <button
             id="closePreview"
-            class="text-white hover:text-red-400 transition-colors"
+            class="text-white hover:text-red-400 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            <i class="fas fa-times text-2xl"></i>
+            <i class="fas fa-times text-xl md:text-2xl"></i>
           </button>
         </div>
         <div id="previewContent">
@@ -342,669 +304,9 @@
       </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/game.js"></script>
-    <script>
-      let gameType = null;
-      let selectedSetId = null;
-      let selectedQuestions = [];
-      let selectedCategory = null;
-      let currentGameCode = null;
-      let allCategories = [];
-      let allQuestions = [];
-      let allSets = [];
-      let currentSetQuestions = []; // For set preview
-
-      // Initialize
-      document.addEventListener("DOMContentLoaded", function () {
-        setupEventListeners();
-        loadInitialData();
-      });
-
-      async function loadInitialData() {
-        try {
-          // Load categories and sets in parallel
-          const [categories, sets] = await Promise.all([
-            getCategories(),
-            getQuestionSets(),
-          ]);
-
-          allCategories = categories;
-          allSets = sets;
-        } catch (error) {
-          console.error("Error loading initial data:", error);
-          showError("Eroare la încărcarea datelor. Reîncarcă pagina.");
-        }
-      }
-
-      function showError(message) {
-        // Create error notification
-        const errorDiv = document.createElement("div");
-        errorDiv.className =
-          "fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50";
-        errorDiv.textContent = message;
-        document.body.appendChild(errorDiv);
-
-        setTimeout(() => {
-          errorDiv.remove();
-        }, 5000);
-      }
-
-      function setupEventListeners() {
-        // Game type selection
-        document.querySelectorAll(".game-type-option").forEach((option) => {
-          option.addEventListener("click", function () {
-            document
-              .querySelectorAll(".game-type-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            this.classList.add("selected");
-            gameType = this.dataset.type;
-            showQuestionSection();
-          });
-        });
-
-        // Search inputs
-        document
-          .getElementById("setSearch")
-          .addEventListener("input", filterSets);
-        document
-          .getElementById("categorySearch")
-          .addEventListener("input", filterCategories);
-
-        // All Categories button
-        document
-          .getElementById("allCategoriesBtn")
-          .addEventListener("click", function () {
-            document
-              .querySelectorAll(".category-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            this.classList.add("selected");
-            selectedCategory = null;
-            loadQuestions();
-          });
-
-        // Team inputs
-        document
-          .getElementById("team1Name")
-          .addEventListener("input", checkTeamNames);
-        document
-          .getElementById("team2Name")
-          .addEventListener("input", checkTeamNames);
-
-        // Create game button
-        document
-          .getElementById("createGameBtn")
-          .addEventListener("click", createGame);
-
-        // Preview modal
-        document
-          .getElementById("closePreview")
-          .addEventListener("click", closePreview);
-        document
-          .getElementById("previewModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closePreview();
-          });
-      }
-
-      function showQuestionSection() {
-        document.getElementById("questionSection").classList.remove("hidden");
-        // Reset selections când schimbi tipul de joc
-        selectedQuestions = [];
-        selectedSetId = null;
-        selectedCategory = null;
-        document.getElementById("selectedCount").textContent = "0";
-
-        if (gameType === "quick") {
-          document.getElementById("quickGameSets").classList.remove("hidden");
-          document
-            .getElementById("customGameQuestions")
-            .classList.add("hidden");
-          loadSets();
-        } else {
-          document
-            .getElementById("customGameQuestions")
-            .classList.remove("hidden");
-          document.getElementById("quickGameSets").classList.add("hidden");
-          loadCategories();
-        }
-      }
-      async function loadSets() {
-        await loadSetsWithCounts();
-      }
-
-      // Actualizează filterSets() să folosească displaySets():
-      function filterSets() {
-        const search = document.getElementById("setSearch").value.toLowerCase();
-        const filteredSets = allSets.filter(
-          (set) =>
-            set.name.toLowerCase().includes(search) ||
-            (set.description && set.description.toLowerCase().includes(search))
-        );
-
-        displaySets(filteredSets);
-      }
-      async function showSetPreview(setId) {
-        try {
-          const setData = await getQuestionSetWithQuestions(setId);
-          const questions = setData.questions || [];
-
-          if (questions.length === 0) {
-            showError("Acest set nu conține întrebări.");
-            return;
-          }
-
-          const content = `
-            <div class="mb-4">
-              <h4 class="text-lg font-semibold text-white mb-3">${
-                setData.name
-              }</h4>
-              <p class="text-blue-200 mb-4">${setData.description || ""}</p>
-              <div class="space-y-3 max-h-96 overflow-y-auto">
-                ${questions
-                  .map(
-                    (question, index) => `
-                  <div class="question-card rounded-lg p-3">
-                    <div class="flex items-start justify-between">
-                      <div class="flex-1">
-                        <div class="flex items-center mb-2">
-                          <span class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2">
-                            ${index + 1}
-                          </span>
-                          <span class="text-white font-semibold">${
-                            question.text
-                          }</span>
-                        </div>
-                        <div class="text-blue-200 text-sm ml-8">
-                          ${
-                            question.answers ? question.answers.length : 0
-                          } răspunsuri
-                        </div>
-                      </div>
-                      <button class="text-blue-400 hover:text-blue-300 preview-question-btn ml-2" data-question-id="${
-                        question.id
-                      }">
-                        <i class="fas fa-eye"></i>
-                      </button>
-                    </div>
-                  </div>
-                `
-                  )
-                  .join("")}
-              </div>
-            </div>
-          `;
-
-          document.getElementById("previewContent").innerHTML = content;
-          document.getElementById("previewModal").classList.remove("hidden");
-
-          // Add event listeners for individual question preview
-          document.querySelectorAll(".preview-question-btn").forEach((btn) => {
-            btn.addEventListener("click", function (e) {
-              e.stopPropagation();
-              const questionId = this.dataset.questionId;
-              const question = questions.find((q) => q.id === questionId);
-              if (question) {
-                showQuestionPreview(question);
-              }
-            });
-          });
-        } catch (error) {
-          console.error("Error loading set preview:", error);
-          showError("Eroare la încărcarea previzualizării.");
-        }
-      }
-
-      async function loadSetsWithCounts() {
-        const container = document.getElementById("availableSets");
-
-        if (allSets.length === 0) {
-          container.innerHTML =
-            '<div class="text-center text-blue-200 col-span-full">Se încarcă seturile...</div>';
-          return;
-        }
-
-        // Salvăm seturile cu count-uri pentru a le folosi în filtrare
-        const setsWithCounts = await Promise.all(
-          allSets.map(async (set) => {
-            try {
-              const setData = await getQuestionSetWithQuestions(set.id);
-              return {
-                ...set,
-                questionCount: setData.questions ? setData.questions.length : 0,
-              };
-            } catch (error) {
-              console.error("Error loading set questions:", error);
-              return { ...set, questionCount: 0 };
-            }
-          })
-        );
-
-        // Actualizăm allSets cu count-urile
-        allSets = setsWithCounts;
-
-        // Afișăm seturile
-        displaySets(setsWithCounts);
-      }
-
-      function displaySets(sets) {
-        const container = document.getElementById("availableSets");
-
-        container.innerHTML = sets
-          .map(
-            (set) => `
-        <div class="category-btn rounded-lg p-4 cursor-pointer set-option" data-set-id="${
-          set.id
-        }">
-          <div class="text-center">
-            <i class="fas fa-folder-open text-2xl text-blue-400 mb-2"></i>
-            <h3 class="text-white font-semibold">${set.name}</h3>
-            <p class="text-blue-200 text-sm">${
-              set.description || "Set de întrebări"
-            }</p>
-            <div class="text-yellow-400 text-xs mt-1">${
-              set.questionCount || 0
-            } întrebări</div>
-            <button class="mt-2 text-blue-400 hover:text-blue-300 preview-set-btn" data-set-id="${
-              set.id
-            }">
-              <i class="fas fa-eye mr-1"></i>
-              Previzualizare
-            </button>
-          </div>
-        </div>
-      `
-          )
-          .join("");
-
-        // Add event listeners for set selection
-        document.querySelectorAll(".set-option").forEach((option) => {
-          option.addEventListener("click", function (e) {
-            if (e.target.closest(".preview-set-btn")) return;
-
-            document
-              .querySelectorAll(".set-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            this.classList.add("selected");
-            selectedSetId = this.dataset.setId;
-            showTeamSection();
-          });
-        });
-
-        // Add event listeners for set preview
-        document.querySelectorAll(".preview-set-btn").forEach((btn) => {
-          btn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            const setId = this.dataset.setId;
-            showSetPreview(setId);
-          });
-        });
-      }
-
-      function loadCategories() {
-        const container = document.getElementById("availableCategories");
-
-        if (allCategories.length === 0) {
-          container.innerHTML =
-            '<div class="text-center text-blue-200 col-span-full">Se încarcă categoriile...</div>';
-          return;
-        }
-
-        container.innerHTML = allCategories
-          .map(
-            (category) => `
-          <button class="category-btn rounded-lg p-3 cursor-pointer category-option" data-category-id="${category.id}">
-            <div class="text-center">
-              <i class="fas fa-tag text-blue-400 mb-1"></i>
-              <div class="text-white font-semibold text-sm">${category.name}</div>
-            </div>
-          </button>
-        `
-          )
-          .join("");
-
-        document.querySelectorAll(".category-option").forEach((option) => {
-          option.addEventListener("click", function () {
-            document
-              .querySelectorAll(".category-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            document
-              .getElementById("allCategoriesBtn")
-              .classList.remove("selected");
-            this.classList.add("selected");
-            selectedCategory = this.dataset.categoryId;
-            loadQuestions();
-          });
-        });
-
-        // Load all questions initially
-        loadQuestions();
-      }
-
-      function filterCategories() {
-        const search = document
-          .getElementById("categorySearch")
-          .value.toLowerCase();
-        const filteredCategories = allCategories.filter((category) =>
-          category.name.toLowerCase().includes(search)
-        );
-
-        const container = document.getElementById("availableCategories");
-        container.innerHTML = filteredCategories
-          .map(
-            (category) => `
-          <button class="category-btn rounded-lg p-3 cursor-pointer category-option" data-category-id="${category.id}">
-            <div class="text-center">
-              <i class="fas fa-tag text-blue-400 mb-1"></i>
-              <div class="text-white font-semibold text-sm">${category.name}</div>
-            </div>
-          </button>
-        `
-          )
-          .join("");
-
-        document.querySelectorAll(".category-option").forEach((option) => {
-          option.addEventListener("click", function () {
-            document
-              .querySelectorAll(".category-option")
-              .forEach((opt) => opt.classList.remove("selected"));
-            document
-              .getElementById("allCategoriesBtn")
-              .classList.remove("selected");
-            this.classList.add("selected");
-            selectedCategory = this.dataset.categoryId;
-            loadQuestions();
-          });
-        });
-      }
-
-      async function loadQuestions() {
-        const container = document.getElementById("availableQuestions");
-        container.innerHTML =
-          '<div class="text-center text-blue-200 col-span-full">Se încarcă întrebările...</div>';
-
-        try {
-          // Load questions based on selected category (null = all categories)
-          const questions = await getQuestions(selectedCategory);
-          allQuestions = questions;
-
-          if (questions.length === 0) {
-            container.innerHTML =
-              '<div class="text-center text-blue-200 col-span-full">Nu s-au găsit întrebări pentru această categorie.</div>';
-            return;
-          }
-
-          container.innerHTML = questions
-            .map(
-              (question) => `
-            <div class="question-card rounded-lg p-4 cursor-pointer question-option ${
-              selectedQuestions.includes(question.id) ? "selected" : ""
-            }" data-question-id="${question.id}">
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <h4 class="text-white font-semibold mb-2">${
-                    question.text
-                  }</h4>
-                  <div class="text-blue-200 text-sm">${
-                    question.answers ? question.answers.length : 0
-                  } răspunsuri</div>
-                </div>
-                <div class="ml-4">
-                  <button class="text-blue-400 hover:text-blue-300 preview-btn" data-question-id="${
-                    question.id
-                  }">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          `
-            )
-            .join("");
-
-          // Add event listeners for question selection
-          document.querySelectorAll(".question-option").forEach((option) => {
-            option.addEventListener("click", function (e) {
-              if (e.target.closest(".preview-btn")) return;
-
-              const questionId = this.dataset.questionId;
-              if (selectedQuestions.includes(questionId)) {
-                selectedQuestions = selectedQuestions.filter(
-                  (id) => id !== questionId
-                );
-                this.classList.remove("selected");
-              } else {
-                selectedQuestions.push(questionId);
-                this.classList.add("selected");
-              }
-              document.getElementById("selectedCount").textContent =
-                selectedQuestions.length;
-
-              if (selectedQuestions.length > 0) {
-                showTeamSection();
-              }
-            });
-          });
-
-          // Add event listeners for preview buttons
-          document.querySelectorAll(".preview-btn").forEach((btn) => {
-            btn.addEventListener("click", function (e) {
-              e.stopPropagation();
-              const questionId = this.dataset.questionId;
-              const question = allQuestions.find((q) => q.id === questionId);
-              if (question) {
-                showQuestionPreview(question);
-              }
-            });
-          });
-        } catch (error) {
-          console.error("Error loading questions:", error);
-          container.innerHTML =
-            '<div class="text-center text-red-300 col-span-full">Eroare la încărcarea întrebărilor.</div>';
-        }
-      }
-
-      function showQuestionPreview(question) {
-        if (!question || !question.answers) {
-          showError("Nu s-au găsit răspunsuri pentru această întrebare.");
-          return;
-        }
-
-        const content = `
-          <div class="mb-4">
-            <h4 class="text-lg font-semibold text-white mb-3">${
-              question.text
-            }</h4>
-            <div class="space-y-2">
-              ${question.answers
-                .sort((a, b) => (a.position || 0) - (b.position || 0))
-                .map(
-                  (answer, index) => `
-                <div class="answer-bubble rounded-lg p-3 flex items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">
-                      ${answer.position || index + 1}
-                    </div>
-                    <span class="text-white">${answer.text}</span>
-                  </div>
-                  <span class="text-yellow-400 font-bold">${
-                    answer.points
-                  } pct</span>
-                </div>
-              `
-                )
-                .join("")}
-            </div>
-          </div>
-        `;
-
-        document.getElementById("previewContent").innerHTML = content;
-        document.getElementById("previewModal").classList.remove("hidden");
-      }
-
-      function closePreview() {
-        document.getElementById("previewModal").classList.add("hidden");
-      }
-
-      function showTeamSection() {
-        document.getElementById("teamSection").classList.remove("hidden");
-      }
-
-      function checkTeamNames() {
-        const team1 = document.getElementById("team1Name").value.trim();
-        const team2 = document.getElementById("team2Name").value.trim();
-
-        if (team1 && team2) {
-          document.getElementById("createSection").classList.remove("hidden");
-        }
-      }
-
-      // ✅ MODIFICARE PRINCIPALĂ - Funcția createGame() cu unified gameData
-      async function createGame() {
-        const team1Name = document.getElementById("team1Name").value.trim();
-        const team2Name = document.getElementById("team2Name").value.trim();
-
-        if (!team1Name || !team2Name) {
-          showError("Te rog completează numele ambelor echipe");
-          return;
-        }
-
-        if (gameType === "quick" && !selectedSetId) {
-          showError("Te rog selectează un set de întrebări");
-          return;
-        }
-
-        if (gameType === "custom" && selectedQuestions.length === 0) {
-          showError("Te rog selectează cel puțin o întrebare");
-          return;
-        }
-
-        // Show loading
-        document.getElementById("createSection").classList.add("hidden");
-        document.getElementById("loadingSection").classList.remove("hidden");
-        document.getElementById("loadingText").textContent =
-          "Se creează jocul...";
-
-        try {
-          // Generate unique game code
-          let gameCode;
-          let attempts = 0;
-          const maxRetries = 10;
-
-          do {
-            gameCode = generateGameCode();
-            attempts++;
-          } while (
-            (await checkGameCodeExists(gameCode)) &&
-            attempts < maxRetries
-          );
-
-          if (attempts >= maxRetries) {
-            throw new Error("Nu s-a putut genera un cod unic de joc");
-          }
-
-          let finalSetId;
-
-          if (gameType === "quick") {
-            // ✅ JOC RAPID - folosește set-ul existent
-            finalSetId = selectedSetId;
-          } else {
-            // ✅ JOC CUSTOM - creează set temporar
-            document.getElementById("loadingText").textContent =
-              "Se creează setul de întrebări...";
-            finalSetId = await createTemporarySet(
-              selectedQuestions,
-              team1Name,
-              team2Name
-            );
-          }
-
-          document.getElementById("loadingText").textContent =
-            "Se finalizează jocul...";
-
-          // ✅ ACELAȘI gameData pentru ambele tipuri!
-          const gameData = {
-            game_code: gameCode,
-            set_id: finalSetId, // Întotdeauna avem set_id!
-            team1_name: team1Name,
-            team2_name: team2Name,
-            team1_score: 0,
-            team2_score: 0,
-            status: "waiting",
-          };
-
-          await createGameInDB(gameData);
-          currentGameCode = gameCode;
-
-          // Show success
-          document.getElementById("loadingSection").classList.add("hidden");
-          document
-            .getElementById("gameCreatedSection")
-            .classList.remove("hidden");
-          document.getElementById("gameCodeDisplay").textContent =
-            currentGameCode;
-        } catch (error) {
-          console.error("Error creating game:", error);
-          showError("Eroare la crearea jocului: " + error.message);
-          document.getElementById("loadingSection").classList.add("hidden");
-          document.getElementById("createSection").classList.remove("hidden");
-        }
-      }
-
-      // ✅ FUNCȚIE NOUĂ - Creează set temporar pentru custom
-      async function createTemporarySet(questionIds, team1, team2) {
-        try {
-          // 1. Creează set-ul
-          const { data: newSet, error: setError } = await supabaseClient
-            .from("question_sets")
-            .insert({
-              name: `Joc Custom: ${team1} vs ${team2}`,
-              description: `Set generat automat pentru jocul custom din ${new Date().toLocaleDateString()}`,
-            })
-            .select("id")
-            .single();
-
-          if (setError) {
-            throw new Error("Eroare la crearea setului: " + setError.message);
-          }
-
-          // 2. Adaugă întrebările în set
-          const setItems = questionIds.map((questionId, index) => ({
-            set_id: newSet.id,
-            question_id: questionId,
-            order_index: index,
-          }));
-
-          const { error: itemsError } = await supabaseClient
-            .from("question_set_items")
-            .insert(setItems);
-
-          if (itemsError) {
-            throw new Error(
-              "Eroare la adăugarea întrebărilor: " + itemsError.message
-            );
-          }
-
-          return newSet.id;
-        } catch (error) {
-          console.error("Error creating temporary set:", error);
-          throw error;
-        }
-      }
-
-      function generateGameCode() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-      }
-
-      function openControl() {
-        window.location.href = `control.html?game=${currentGameCode}`;
-      }
-
-      function openPublic() {
-        window.open(`public.html?game=${currentGameCode}`, "_blank");
-      }
-    </script>
+    <script src="supabase/client.js"></script>
+    <script src="setup.js"></script>
   </body>
 </html>

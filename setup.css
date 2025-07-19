@@ -1,0 +1,306 @@
+/* Search Input Styles */
+.search-input {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+}
+
+/* Category Button Styles */
+.category-btn {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(147, 51, 234, 0.2)
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  min-height: 56px;
+}
+
+.category-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(147, 51, 234, 0.3)
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+.category-btn.selected {
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.3),
+    rgba(59, 130, 246, 0.3)
+  );
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+.category-btn:active {
+  transform: translateY(0);
+}
+
+/* Question Card Styles */
+.question-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.question-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.question-card.selected {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+.question-card:active {
+  transform: translateY(0);
+}
+
+/* Preview Modal Styles */
+.preview-modal {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.preview-content {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Answer Bubble Styles */
+.answer-bubble {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(147, 51, 234, 0.2)
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.answer-bubble:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(147, 51, 234, 0.3)
+  );
+}
+
+/* Loading Animation */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom Scrollbar */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Button Focus States */
+button:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Game Type Option States */
+.game-type-option {
+  position: relative;
+  overflow: hidden;
+}
+
+.game-type-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.game-type-option:hover::before {
+  left: 100%;
+}
+
+/* Set Option Preview Button */
+.preview-set-btn,
+.preview-btn,
+.preview-question-btn {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.preview-set-btn:hover,
+.preview-btn:hover,
+.preview-question-btn:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: scale(1.05);
+}
+
+/* Error Notification */
+.error-notification {
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Success State */
+.success-state {
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .category-btn {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .question-card {
+    min-height: 60px;
+  }
+
+  .preview-modal {
+    padding: 16px;
+  }
+
+  .preview-content {
+    max-height: 85vh;
+  }
+
+  /* Improved touch targets */
+  .preview-set-btn,
+  .preview-btn,
+  .preview-question-btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .category-btn {
+    min-height: 52px;
+  }
+
+  .question-card {
+    min-height: 75px;
+  }
+}
+
+/* Desktop Enhancements */
+@media (min-width: 1025px) {
+  .category-btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .question-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .preview-content {
+    max-height: 80vh;
+  }
+}

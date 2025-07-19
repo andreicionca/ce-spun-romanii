@@ -1,0 +1,270 @@
+/* Mobile-first base styles */
+html,
+body {
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+#main {
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  padding: 0.5rem 1rem;
+}
+
+/* Landscape lock overlay */
+@media screen and (orientation: portrait) {
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+  }
+  body::after {
+    content: "Vă rugăm rotiți dispozitivul în mod landscape pentru a continua.";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 1.025rem;
+    text-align: center;
+    padding: 1rem;
+    z-index: 10000;
+    max-width: 80%;
+  }
+  #main {
+    display: none !important;
+  }
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Answer buttons */
+.btn-answer {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-answer:not(.selected):not(.revealed):hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-answer.selected {
+  background-color: rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.8);
+}
+
+.btn-answer.revealed {
+  background-color: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.8);
+  cursor: default;
+}
+
+/* Team selection */
+.team-option {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.team-option:hover {
+  background-color: rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.8);
+}
+
+.team-option.selected {
+  background-color: rgba(34, 197, 94, 0.5);
+  border-color: rgba(34, 197, 94, 1);
+  color: white;
+}
+
+/* Modals */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.close-modal {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+  z-index: 1;
+}
+
+/* Strike buttons */
+.strike-btn {
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.strike-btn:hover {
+  background: rgba(220, 38, 38, 0.4);
+  border-color: rgba(220, 38, 38, 0.7);
+}
+
+.strike-btn.active {
+  background: rgba(220, 38, 38, 0.8);
+  border-color: rgba(220, 38, 38, 1);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.buzz-strike {
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  color: tomato;
+}
+
+.buzz-strike:active {
+  background: rgba(220, 38, 38, 0.8);
+  border-color: rgba(220, 38, 38, 1);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.buzz-strike.flashing {
+  animation: buzz-flash 0.5s ease;
+}
+
+.minimal-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.minimal-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Show question button - special styling */
+.show-question-btn {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.show-question-btn:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.6);
+  transform: scale(1.02);
+}
+
+/* Pause button */
+.pause-btn {
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.pause-btn:hover {
+  background: rgba(255, 193, 7, 0.3);
+  border-color: rgba(255, 193, 7, 0.6);
+}
+
+.btn-pointable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-pointable:hover {
+  transform: scale(1.02);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Score boxes */
+.score-box {
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  padding: 0.0625rem 0.5rem;
+  min-width: 1.5rem;
+  font-size: 0.625rem;
+}
+.score-box-center {
+  background: rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+.score-box-center:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.02);
+}
+
+/* Answers grid */
+.answers-grid {
+  display: flex;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+.grid-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Desktop responsive adjustments */
+@media (min-width: 769px) {
+  #main {
+    padding: 1rem;
+  }
+  .answers-grid {
+    gap: 1rem;
+  }
+  .grid-col {
+    gap: 0.5rem;
+  }
+
+  .score-box {
+    padding: 0.75rem 1.5rem;
+    min-width: 5rem;
+    font-size: 1rem;
+  }
+
+  .btn-answer {
+    padding: 1rem;
+    font-size: 1.125rem;
+  }
+}

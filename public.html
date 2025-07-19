@@ -4,182 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ce Spun Românii - Public Display</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
-
-      body {
-        background-color: #1a1a2e;
-        font-family: "Poppins", sans-serif;
-        height: 100vh;
-        overflow: hidden;
-        color: white;
-      }
-
-      /* Game board styling */
-      .game-board {
-        background: radial-gradient(circle at center, #2a2a4a 0%, #1a1a2e 100%);
-        border: 8px solid #ffd700;
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-      }
-
-      /* Team panels */
-      .team-panel {
-        background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
-        border: 3px solid #ffd700;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      }
-
-      /* Question area */
-      .question-area {
-        background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-        border: 4px solid #ffd700;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-      }
-
-      /* Answer slots */
-      .answer-slot {
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid rgba(255, 215, 0, 0.3);
-        transition: all 0.3s ease;
-      }
-
-      .answer-slot.exists {
-        background: rgba(15, 52, 96, 0.7);
-        border-color: rgba(255, 215, 0, 0.5);
-      }
-
-      .answer-slot.revealed {
-        background: linear-gradient(135deg, #1e9600 0%, #0f9b0f 100%);
-        border-color: #ffd700;
-        box-shadow: 0 0 15px rgba(30, 150, 0, 0.7);
-      }
-
-      /* Strike indicators */
-      .strike-indicator {
-        background: rgba(220, 38, 38, 0.2);
-        border: 3px solid rgba(220, 38, 38, 0.5);
-        transition: all 0.3s ease;
-      }
-
-      .strike-indicator.active {
-        background: rgba(220, 38, 38, 0.7);
-        border-color: rgba(220, 38, 38, 1);
-        box-shadow: 0 0 15px rgba(220, 38, 38, 0.7);
-      }
-
-      /* Buzz effect */
-      .buzz-flash {
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 165, 0, 0.6);
-        opacity: 0;
-        pointer-events: none;
-        z-index: 50;
-      }
-
-      .buzz-flash.active {
-        animation: buzzFlash 0.5s ease-out;
-      }
-
-      @keyframes buzzFlash {
-        0%,
-        100% {
-          opacity: 0;
-        }
-        50% {
-          opacity: 1;
-        }
-      }
-
-      /* Waiting screen */
-      .waiting-screen {
-        background: radial-gradient(circle at center, #2a2a4a 0%, #1a1a2e 100%);
-        border: 8px solid #ffd700;
-      }
-
-      /* Animations */
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-
-      .pulse-slow {
-        animation: pulse 2s ease-in-out infinite;
-      }
-
-      /* Connection status */
-      .connection-status {
-        position: fixed;
-        bottom: 0.5rem; /* Schimbă de la top la bottom */
-        left: 0.5rem; /* Schimbă de la right la left */
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        z-index: 40;
-      }
-
-      /* Păstrează celelalte stiluri existente */
-      .status-connected {
-        background: rgba(34, 197, 94, 0.2);
-        border: 1px solid rgba(34, 197, 94, 0.5);
-        color: rgb(34, 197, 94);
-      }
-
-      .status-error {
-        background: rgba(220, 38, 38, 0.2);
-        border: 1px solid rgba(220, 38, 38, 0.5);
-        color: rgb(220, 38, 38);
-      }
-
-      .answer-number {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px; /* Mărit dimensiunea */
-        height: 32px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-        color: #1a1a2e;
-        font-weight: 800;
-        font-size: 18px; /* Mărit dimensiunea fontului */
-        margin-right: 12px;
-        flex-shrink: 0; /* Previntă micșorarea */
-        line-height: 1; /* Asigură aliniere verticală perfectă */
-      }
-
-      /* Ascunde numerele când răspunsul este afișat */
-      .answer-slot.revealed .answer-number {
-        opacity: 0;
-        width: 0;
-        margin-right: 0;
-        transition: all 0.3s ease;
-      }
-
-      /* Points display */
-      .points-display {
-        background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800;
-      }
-    </style>
+    <!-- Project files -->
+    <script src="supabase/client.js"></script>
+    <link rel="stylesheet" href="public.css" />
   </head>
-  <body>
-    <!-- Buzz Flash Effect -->
-    <div id="buzzFlash" class="buzz-flash"></div>
-
+  <body class="bg-gray-900 min-h-screen h-full text-white overflow-hidden">
     <!-- Connection Status -->
     <div id="connectionStatus" class="connection-status status-error">
       <i class="fas fa-wifi mr-1"></i>
@@ -188,519 +26,406 @@
 
     <!-- Waiting Screen -->
     <div id="waitingScreen" class="h-full flex items-center justify-center p-4">
-      <div class="waiting-screen rounded-2xl p-8 text-center max-w-2xl">
-        <h1 class="text-5xl font-bold text-yellow-400 mb-4">CE SPUN ROMÂNII</h1>
-        <div class="text-xl text-blue-200 mb-6">
+      <div
+        class="waiting-container rounded-2xl p-6 md:p-8 text-center max-w-sm md:max-w-2xl"
+      >
+        <h1 class="text-3xl md:text-5xl font-bold text-yellow-400 mb-4">
+          CE SPUN ROMÂNII
+        </h1>
+        <div class="text-lg md:text-xl text-blue-200 mb-6">
           Cod joc:
-          <span id="gameCodeDisplay" class="text-white font-bold text-2xl"
+          <span
+            id="gameCodeDisplay"
+            class="text-white font-bold text-xl md:text-2xl"
             >----</span
           >
         </div>
-        <div class="text-blue-200 pulse-slow">
+        <div class="text-blue-200 pulse-animation">
           <i class="fas fa-spinner fa-spin mr-2"></i>
           Așteptăm să înceapă jocul...
         </div>
       </div>
     </div>
 
-    <!-- Game Board -->
-    <div id="gameBoard" class="hidden h-full flex flex-col p-4 game-board">
-      <!-- Header: Teams + Title + Current Points -->
-      <div class="flex items-center justify-between mb-4">
-        <!-- Team 1 -->
-        <div class="team-panel rounded-xl p-3 text-center min-w-32">
-          <div id="team1Name" class="text-xl font-bold text-white mb-1">
-            ECHIPA 1
-          </div>
-          <div id="team1Score" class="text-3xl font-bold points-display">0</div>
+    <!-- Intro Animation Screen -->
+    <div
+      id="introScreen"
+      class="hidden h-full flex items-center justify-center intro-animation"
+    >
+      <div class="text-center">
+        <!-- Title -->
+        <div
+          id="introTitle"
+          class="intro-title text-4xl md:text-6xl lg:text-8xl font-bold text-yellow-400 mb-8"
+        >
+          CE SPUN ROMÂNII
         </div>
 
-        <!-- Center: Title + Current Points -->
-        <div class="text-center mx-4">
+        <!-- Teams -->
+        <div
+          class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-16"
+        >
           <div
-            class="bg-blue-900 rounded-lg px-10 py-5 border-2 border-yellow-400"
+            id="introTeam1"
+            class="intro-team text-xl md:text-3xl font-bold text-white"
           >
-            <span id="questionPoints" class="text-6xl font-bold points-display"
+            ECHIPA 1
+          </div>
+          <div class="text-2xl md:text-4xl text-gray-400 font-bold">VS</div>
+          <div
+            id="introTeam2"
+            class="intro-team text-xl md:text-3xl font-bold text-white"
+          >
+            ECHIPA 2
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Board -->
+    <div id="gameBoard" class="hidden h-full flex flex-col p-3 md:p-4 lg:p-6">
+      <!-- Header: Teams + Current Points -->
+      <div class="flex items-center justify-between mb-4 md:mb-6">
+        <!-- Team 1 -->
+        <div
+          class="team-panel rounded-lg md:rounded-xl p-2 md:p-3 text-center flex-1 max-w-24 md:max-w-32"
+        >
+          <div
+            id="team1Name"
+            class="text-xs md:text-lg font-bold text-white mb-1"
+          >
+            ECHIPA 1
+          </div>
+          <div
+            id="team1Score"
+            class="text-xl md:text-3xl font-bold points-display score-counter"
+          >
+            0
+          </div>
+        </div>
+
+        <!-- Center: Current Points -->
+        <div class="flex-1 text-center mx-2 md:mx-4">
+          <div
+            class="current-points-container rounded-lg px-4 md:px-10 py-3 md:py-5 border-2 border-yellow-400"
+          >
+            <span
+              id="questionPoints"
+              class="text-3xl md:text-6xl font-bold points-display score-counter"
               >0</span
             >
           </div>
         </div>
 
         <!-- Team 2 -->
-        <div class="team-panel rounded-xl p-3 text-center min-w-32">
-          <div id="team2Name" class="text-xl font-bold text-white mb-1">
+        <div
+          class="team-panel rounded-lg md:rounded-xl p-2 md:p-3 text-center flex-1 max-w-24 md:max-w-32"
+        >
+          <div
+            id="team2Name"
+            class="text-xs md:text-lg font-bold text-white mb-1"
+          >
             ECHIPA 2
           </div>
-          <div id="team2Score" class="text-3xl font-bold points-display">0</div>
+          <div
+            id="team2Score"
+            class="text-xl md:text-3xl font-bold points-display score-counter"
+          >
+            0
+          </div>
         </div>
       </div>
 
       <!-- Question Area -->
       <div
         id="questionArea"
-        class="question-area rounded-xl p-6 text-center mb-4 min-h-24 flex items-center justify-center transition-all duration-500"
+        class="question-area rounded-lg md:rounded-xl p-4 md:p-6 text-center mb-4 md:mb-6 min-h-16 md:min-h-24 flex items-center justify-center transition-all duration-500 opacity-0 hidden"
       >
-        <div id="questionText" class="text-2xl font-bold text-white"></div>
+        <div
+          id="questionText"
+          class="text-lg md:text-2xl lg:text-3xl font-bold text-white"
+        ></div>
       </div>
 
-      <!-- Answers Grid + Strikes -->
-      <div class="flex-1 flex gap-4">
-        <!-- Answers Grid -->
-        <div class="flex-1 grid grid-cols-2 gap-3">
-          <!-- Left Column (1-4) -->
-          <div class="space-y-3">
-            <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="1"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  1
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
+      <!-- Answers Grid -->
+      <div class="flex-1 grid grid-cols-2 gap-2 md:gap-3 lg:gap-4 mb-4 md:mb-6">
+        <!-- Left Column (1-4) -->
+        <div class="space-y-2 md:space-y-3">
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="1"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">1</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="2"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  2
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
-            </div>
-            <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="3"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  3
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
-            </div>
-            <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="4"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  4
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
-            </div>
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
           </div>
 
-          <!-- Right Column (5-8) -->
-          <div class="space-y-3">
-            <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="5"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  5
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="2"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">2</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="6"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  6
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="3"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">3</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="7"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  7
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="4"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">4</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
             </div>
             <div
-              class="answer-slot rounded-lg p-3 flex items-center justify-between"
-              data-position="8"
-            >
-              <div class="flex items-center">
-                <div
-                  class="answer-number w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3"
-                >
-                  8
-                </div>
-                <div class="answer-text text-white text-lg font-semibold"></div>
-              </div>
-              <div class="answer-points text-xl font-bold points-display"></div>
-            </div>
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
           </div>
         </div>
 
-        <!-- Strikes Panel -->
+        <!-- Right Column (5-8) -->
+        <div class="space-y-2 md:space-y-3">
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="5"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">5</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
+            </div>
+            <div
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="6"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">6</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
+            </div>
+            <div
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="7"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">7</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
+            </div>
+            <div
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+
+          <div
+            class="answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between"
+            data-position="8"
+          >
+            <div class="flex items-center flex-1">
+              <div class="answer-number">8</div>
+              <div
+                class="answer-text text-sm md:text-lg font-semibold truncate"
+              ></div>
+            </div>
+            <div
+              class="answer-points text-lg md:text-xl font-bold points-display ml-2"
+            ></div>
+          </div>
+        </div>
       </div>
-      <div class="flex justify-center items-center space-x-4 mt-4">
+
+      <!-- Strikes Panel -->
+      <div class="flex justify-center items-center space-x-3 md:space-x-4">
         <div
-          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          class="strike-indicator rounded-full flex items-center justify-center text-lg md:text-2xl"
           data-strike="0"
         >
-          ❌
+          <i class="fas fa-x"></i>
         </div>
         <div
-          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          class="strike-indicator rounded-full flex items-center justify-center text-lg md:text-2xl"
           data-strike="1"
         >
-          ❌
+          <i class="fas fa-x"></i>
         </div>
         <div
-          class="strike-indicator w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+          class="strike-indicator rounded-full flex items-center justify-center text-lg md:text-2xl"
           data-strike="2"
         >
-          ❌
+          <i class="fas fa-x"></i>
         </div>
       </div>
     </div>
 
-    <script>
-      // Initialize Supabase
-      const supabaseClient = supabase.createClient(
-        CONFIG.SUPABASE_URL,
-        CONFIG.SUPABASE_ANON_KEY
-      );
-      const gameCode = new URLSearchParams(window.location.search).get("game");
+    <!-- Buzz Strike Modal -->
+    <div id="buzzModal" class="modal">
+      <div class="modal-content buzz-modal-content">
+        <div class="buzz-x text-red-500">
+          <i class="fas fa-x"></i>
+        </div>
+      </div>
+    </div>
 
-      // DOM Elements
-      const waitingScreen = document.getElementById("waitingScreen");
-      const gameBoard = document.getElementById("gameBoard");
-      const gameCodeDisplay = document.getElementById("gameCodeDisplay");
-      const connectionStatus = document.getElementById("connectionStatus");
-      const connectionText = document.getElementById("connectionText");
-      const buzzFlash = document.getElementById("buzzFlash");
+    <!-- Progressive Strike Modal -->
+    <div id="strikeModal" class="modal">
+      <div class="modal-content strike-modal-content">
+        <div id="strikeDisplay" class="strike-x text-red-500">
+          <i class="fas fa-x"></i>
+        </div>
+      </div>
+    </div>
 
-      const team1Name = document.getElementById("team1Name");
-      const team2Name = document.getElementById("team2Name");
-      const team1Score = document.getElementById("team1Score");
-      const team2Score = document.getElementById("team2Score");
-      const questionPoints = document.getElementById("questionPoints");
+    <!-- Game Finished Modal -->
+    <div id="gameFinishedModal" class="modal">
+      <div class="modal-content game-finished-content">
+        <div class="text-center p-6 md:p-8">
+          <div class="mb-6">
+            <i
+              class="fas fa-trophy text-6xl md:text-8xl text-yellow-400 mb-4"
+            ></i>
+            <h2 class="text-2xl md:text-4xl font-bold text-white mb-2">
+              JOCUL S-A ÎNCHEIAT!
+            </h2>
+          </div>
 
-      const questionArea = document.getElementById("questionArea");
-      const questionText = document.getElementById("questionText");
-      const answerSlots = document.querySelectorAll(".answer-slot");
-      const strikeIndicators = document.querySelectorAll(".strike-indicator");
+          <div class="mb-6">
+            <div class="text-lg md:text-xl text-gray-300 mb-4">
+              Scorul final:
+            </div>
+            <div
+              class="flex justify-between items-center bg-gray-800 rounded-lg p-4 md:p-6 mb-4"
+            >
+              <div class="text-center flex-1">
+                <div
+                  id="finalTeam1Name"
+                  class="text-sm md:text-lg font-semibold mb-2 text-white"
+                >
+                  ECHIPA 1
+                </div>
+                <div
+                  id="finalTeam1Score"
+                  class="text-3xl md:text-5xl font-bold points-display"
+                >
+                  0
+                </div>
+              </div>
+              <div class="text-gray-500 text-2xl md:text-4xl mx-4">VS</div>
+              <div class="text-center flex-1">
+                <div
+                  id="finalTeam2Name"
+                  class="text-sm md:text-lg font-semibold mb-2 text-white"
+                >
+                  ECHIPA 2
+                </div>
+                <div
+                  id="finalTeam2Score"
+                  class="text-3xl md:text-5xl font-bold points-display"
+                >
+                  0
+                </div>
+              </div>
+            </div>
+            <div
+              id="winnerAnnouncement"
+              class="text-xl md:text-2xl font-bold text-yellow-400"
+            ></div>
+          </div>
 
-      // Game State
-      let gameId = null;
-      let gameState = null;
-      let allQuestions = [];
-      let lastBuzzTime = 0;
+          <button
+            id="newGameBtn"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold text-sm md:text-base transition-colors"
+          >
+            <i class="fas fa-home mr-2"></i>Înapoi la meniu
+          </button>
+        </div>
+      </div>
+    </div>
 
-      // Validation
-      if (!gameCode) {
-        alert("Cod de joc lipsă!");
-        window.location.href = "index.html";
-      }
+    <!-- Game Paused Modal -->
+    <div id="gamePausedModal" class="modal">
+      <div class="modal-content game-paused-content">
+        <div class="text-center p-6 md:p-8">
+          <div class="mb-6">
+            <i
+              class="fas fa-pause text-6xl md:text-8xl text-yellow-400 mb-4"
+            ></i>
+            <h2 class="text-2xl md:text-4xl font-bold text-white mb-2">
+              JOCUL A FOST PUS PE PAUZĂ
+            </h2>
+          </div>
 
-      // Initialize
-      gameCodeDisplay.textContent = gameCode;
-      initGame();
+          <div class="mb-6">
+            <p class="text-lg md:text-xl text-gray-300 mb-4">
+              Progresul a fost salvat automat.
+            </p>
 
-      async function initGame() {
-        try {
-          updateStatus("connecting");
+            <div class="bg-gray-800 rounded-lg p-4 md:p-6 mb-4">
+              <p class="text-sm text-gray-400 mb-3">Pentru a continua jocul:</p>
+              <div class="space-y-2 text-sm md:text-base text-white">
+                <p>1. Mergi la pagina principală</p>
+                <p>2. Introdu codul:</p>
+                <div
+                  class="bg-gray-900 rounded px-4 py-3 text-yellow-400 font-bold text-xl md:text-2xl my-3"
+                  id="pausedGameCode"
+                ></div>
+                <p>3. Alege "Control Panel" sau "Display"</p>
+              </div>
+            </div>
+          </div>
 
-          // Load game
-          const { data: game, error } = await supabaseClient
-            .from("games")
-            .select(
-              "id,team1_name,team2_name,team1_score,team2_score,current_state,status,set_id"
-            )
-            .eq("game_code", gameCode)
-            .single();
+          <button
+            id="pausedOkBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold text-sm md:text-base transition-colors"
+          >
+            <i class="fas fa-check mr-2"></i>Am înțeles
+          </button>
+        </div>
+      </div>
+    </div>
 
-          if (error) {
-            console.error("Game load error:", error);
-            updateStatus("error");
-            return;
-          }
-
-          gameId = game.id;
-          team1Name.textContent = game.team1_name;
-          team2Name.textContent = game.team2_name;
-
-          // Load questions
-          const { data: items, error: itemsError } = await supabaseClient
-            .from("question_set_items")
-            .select(
-              "order_index,questions(id,text,answers(id,text,points,position))"
-            )
-            .eq("set_id", game.set_id)
-            .order("order_index");
-
-          if (itemsError) {
-            console.error("Questions load error:", itemsError);
-            updateStatus("error");
-            return;
-          }
-
-          allQuestions = items.map((i) => i.questions).filter((q) => q?.id);
-          console.log("Questions loaded:", allQuestions.length);
-
-          // Check if game is running
-          if (
-            game.current_state &&
-            Object.keys(game.current_state).length > 0
-          ) {
-            gameState = game.current_state;
-            showGameBoard();
-            updateUI();
-          }
-
-          // Setup realtime
-          setupRealtime();
-          updateStatus("connected");
-        } catch (error) {
-          console.error("Init error:", error);
-          updateStatus("error");
-        }
-      }
-
-      function setupRealtime() {
-        console.log("🔗 Setting up realtime for game:", gameId);
-
-        const channel = supabaseClient
-          .channel(`game-${gameId}`)
-          .on(
-            "postgres_changes",
-            {
-              event: "UPDATE",
-              schema: "public",
-              table: "games",
-              filter: `id=eq.${gameId}`,
-            },
-            handleGameUpdate
-          )
-          .subscribe((status) => {
-            console.log("📡 Realtime status:", status);
-            if (status === "SUBSCRIBED") {
-              console.log("✅ Realtime connected successfully");
-              updateStatus("connected");
-            } else if (status === "CHANNEL_ERROR") {
-              console.log("❌ Realtime connection failed");
-              updateStatus("error");
-            }
-          });
-
-        // Cleanup on page unload
-        window.addEventListener("beforeunload", () => {
-          channel.unsubscribe();
-        });
-      }
-
-      function handleGameUpdate(payload) {
-        console.log("🔄 Game update received");
-
-        const newGame = payload.new;
-
-        // Check if game started
-        if (waitingScreen && !waitingScreen.classList.contains("hidden")) {
-          if (newGame.current_state && newGame.current_state.current_question) {
-            console.log("🚀 Game has started! (trigger: current_question)");
-            showGameBoard();
-          } else if (newGame.status === "playing") {
-            console.log("🚀 Game has started! (trigger: status playing)");
-            showGameBoard();
-          }
-        }
-
-        // Update state
-        if (newGame.current_state) {
-          const newState = newGame.current_state;
-
-          // Handle buzz strike
-          if (
-            newState.last_buzz_strike &&
-            newState.last_buzz_strike !== lastBuzzTime
-          ) {
-            showBuzzFlash();
-            lastBuzzTime = newState.last_buzz_strike;
-          }
-
-          gameState = newState;
-          updateUI();
-        }
-      }
-
-      function showGameBoard() {
-        waitingScreen.classList.add("hidden");
-        gameBoard.classList.remove("hidden");
-        console.log("Game board shown");
-      }
-
-      function updateUI() {
-        if (!gameState) return;
-
-        // Update scores
-        team1Score.textContent = gameState.team1_score || 0;
-        team2Score.textContent = gameState.team2_score || 0;
-
-        // Update question points
-        updateQuestionPoints();
-
-        // Update question
-        updateQuestion();
-
-        // Update answers
-        updateAnswers();
-
-        // Update strikes
-        updateStrikes();
-      }
-
-      function updateQuestionPoints() {
-        if (!gameState.current_question?.answers) {
-          questionPoints.textContent = "0";
-          return;
-        }
-
-        const points = gameState.current_question.answers
-          .filter((a) => a && a.revealed && !gameState.show_mode)
-          .reduce((sum, a) => sum + (a.points || 0), 0);
-
-        questionPoints.textContent = points;
-      }
-
-      function updateQuestion() {
-        if (!gameState.current_question) {
-          questionText.textContent = "";
-          questionArea.style.opacity = "0.5";
-          questionArea.style.transform = "scale(0.98)";
-          return;
-        }
-
-        if (gameState.question_displayed) {
-          questionText.textContent = gameState.current_question.text || "";
-          questionArea.style.opacity = "1";
-          questionArea.style.transform = "scale(1)";
-          questionArea.style.background =
-            "linear-gradient(135deg, #0f3460 0%, #16213e 100%)";
-          questionArea.style.borderColor = "#ffd700";
-        } else {
-          questionText.textContent = "";
-          questionArea.style.opacity = "0.5";
-          questionArea.style.transform = "scale(0.98)";
-        }
-      }
-
-      function updateAnswers() {
-        answerSlots.forEach((slot) => {
-          slot.className =
-            "answer-slot rounded-lg p-3 flex items-center justify-between";
-          slot.querySelector(".answer-text").textContent = "";
-          slot.querySelector(".answer-points").textContent = "";
-        });
-
-        if (!gameState.current_question) return;
-
-        const questionId = gameState.current_question.id;
-        const fullQuestion = allQuestions.find((q) => q.id === questionId);
-
-        if (!fullQuestion?.answers) return;
-
-        fullQuestion.answers.forEach((answer) => {
-          if (answer.position >= 1 && answer.position <= 8) {
-            const slot = document.querySelector(
-              `[data-position="${answer.position}"]`
-            );
-            if (slot) {
-              slot.classList.add("exists");
-
-              const stateAnswer = gameState.current_question.answers?.find(
-                (a) => a && a.position === answer.position
-              );
-
-              if (stateAnswer?.revealed) {
-                slot.classList.add("revealed");
-                slot.querySelector(".answer-text").textContent = answer.text;
-                slot.querySelector(".answer-points").textContent =
-                  answer.points;
-              }
-            }
-          }
-        });
-      }
-
-      function updateStrikes() {
-        if (!gameState.progressive_strikes) return;
-
-        strikeIndicators.forEach((indicator, index) => {
-          if (gameState.progressive_strikes[index]) {
-            indicator.classList.add("active");
-          } else {
-            indicator.classList.remove("active");
-          }
-        });
-      }
-
-      function showBuzzFlash() {
-        buzzFlash.classList.add("active");
-        setTimeout(() => buzzFlash.classList.remove("active"), 500);
-      }
-
-      function updateStatus(status) {
-        if (status === "connected") {
-          connectionStatus.className = "connection-status status-connected";
-          connectionText.innerHTML =
-            '<i class="fas fa-check mr-1"></i>Conectat';
-        } else if (status === "connecting") {
-          connectionStatus.className = "connection-status status-error";
-          connectionText.innerHTML =
-            '<i class="fas fa-spinner fa-spin mr-1"></i>Conectare...';
-        } else {
-          connectionStatus.className = "connection-status status-error";
-          connectionText.innerHTML =
-            '<i class="fas fa-exclamation-triangle mr-1"></i>Eroare';
-        }
-      }
-
-      // Handle connection issues
-      window.addEventListener("online", () => {
-        setTimeout(initGame, 1000);
-      });
-
-      window.addEventListener("offline", () => {
-        updateStatus("error");
-      });
-    </script>
+    <!-- Scripts -->
+    <script src="public.js"></script>
   </body>
 </html>

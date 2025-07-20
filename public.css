@@ -26,6 +26,38 @@ body {
   color: white;
 }
 
+/* Landscape lock overlay - ca în control.css */
+@media screen and (orientation: portrait) {
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+  }
+  body::after {
+    content: "Vă rugăm rotiți dispozitivul în mod landscape 🔄 pentru putea continua.";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 1.025rem;
+    text-align: center;
+    padding: 1rem;
+    z-index: 10000;
+    max-width: 80%;
+  }
+  #gameBoard,
+  #waitingScreen,
+  #introScreen {
+    display: none !important;
+  }
+}
+
 /* ===================
    CONNECTION STATUS
    =================== */
@@ -288,8 +320,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background: linear-gradient(
     135deg,
@@ -298,7 +330,7 @@ body {
   );
   color: var(--primary-bg);
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   line-height: 1;
   transition: all 0.3s ease;
   opacity: 1;
@@ -336,9 +368,9 @@ body {
 /* Responsive answer number sizing */
 @media (min-width: 768px) {
   .answer-number {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.3rem;
+    width: 3rem;
+    height: 3rem;
+    font-size: 2rem;
   }
   .answer-slot {
     min-height: 4rem; /* Desktop */

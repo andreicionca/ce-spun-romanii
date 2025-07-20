@@ -24,7 +24,7 @@ body {
     z-index: 9999;
   }
   body::after {
-    content: "Vă rugăm rotiți dispozitivul în mod landscape pentru a continua.";
+    content: "Vă rugăm rotiți dispozitivul în mod landscape 🔄 pentru putea continua.";
     position: fixed;
     top: 50%;
     left: 50%;

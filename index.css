@@ -1,0 +1,301 @@
+/* Ce Spun Românii - Modern Homepage Styles */
+
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
+
+/* CSS Variables - matching the game theme */
+:root {
+  --primary-bg: #1a1a2e;
+  --secondary-bg: #2a2a4a;
+  --accent-gold: #ffd700;
+  --accent-gold-light: #ffaa00;
+  --team-panel-bg: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+  --glassmorphism-bg: rgba(255, 255, 255, 0.08);
+  --glassmorphism-border: rgba(255, 255, 255, 0.15);
+  --glassmorphism-hover: rgba(255, 255, 255, 0.12);
+}
+
+/* Base styles */
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--primary-bg);
+  background-image: radial-gradient(
+      circle at 20% 80%,
+      rgba(120, 119, 198, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 215, 0, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(42, 42, 74, 0.6) 0%,
+      transparent 50%
+    );
+  min-height: 100vh;
+  color: white;
+}
+
+/* Game cards with glassmorphism */
+.game-card {
+  background: var(--glassmorphism-bg);
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--glassmorphism-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.1),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.game-card:hover {
+  background: var(--glassmorphism-hover);
+  border-color: var(--accent-gold);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.game-card:hover::before {
+  left: 100%;
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--accent-gold) 0%,
+    var(--accent-gold-light) 100%
+  );
+  color: var(--primary-bg);
+  font-weight: 800;
+  transition: all 0.3s ease;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    var(--accent-gold-light) 0%,
+    var(--accent-gold) 100%
+  );
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-secondary {
+  background: var(--glassmorphism-bg);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--glassmorphism-border);
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-gold);
+  color: var(--primary-bg);
+  border-color: var(--accent-gold);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Input field styles */
+.input-field {
+  background: var(--glassmorphism-bg);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--glassmorphism-border);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.input-field::placeholder {
+  color: rgba(255, 215, 0, 0.6);
+}
+
+.input-field.valid {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Remove number input spinner */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Rules content */
+.rules-content {
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Error styling */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Îmbunătățiri pentru error message */
+.error-alert {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+  transition: all 0.3s ease;
+}
+
+.error-alert:hover {
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Highlight pentru input invalid */
+.input-field.error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Animație fade-in pentru error message */
+.error-alert:not(.hidden) {
+  animation: fadeInSlide 0.4s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .game-card {
+    padding: 1rem;
+  }
+
+  #dynamicWord {
+    min-width: 150px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus {
+  outline: none;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+input,
+.game-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar for rules content */
+.rules-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rules-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.rules-content::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 3px;
+}
+
+.rules-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold-light);
+}

@@ -321,7 +321,9 @@ function updateQuestion() {
     hideQuestion();
     return;
   }
-
+  if (DOM.questionArea.classList.contains("revealed")) {
+    return;
+  }
   showQuestion(gameState.current_question.text);
 }
 

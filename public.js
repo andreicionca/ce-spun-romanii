@@ -11,6 +11,9 @@ let allQuestions = [];
 let lastBuzzTime = 0;
 let currentScores = { team1: 0, team2: 0, question: 0 };
 let realtimeSubscription = null;
+// Tracking pentru animații
+let currentQuestionId = null;
+let revealedAnswers = new Set(); // Track care răspunsuri sunt deja revealed
 
 // DOM Elements
 const DOM = {
@@ -340,47 +343,97 @@ function hideQuestion() {
 }
 
 function updateAnswers() {
-  // Reset all answer slots
-  DOM.answerSlots.forEach((slot) => {
-    slot.className =
-      "answer-slot rounded-lg p-2 md:p-3 flex items-center justify-between";
-    const answerText = slot.querySelector(".answer-text");
-    const answerPoints = slot.querySelector(".answer-points");
-    if (answerText) answerText.textContent = "";
-    if (answerPoints) answerPoints.textContent = "";
-  });
+  const questionId = gameState.current_question?.id;
 
+  // Dacă e o întrebare nouă, resetează tot și animează sloturile
+  if (questionId && questionId !== currentQuestionId) {
+    currentQuestionId = questionId;
+    revealedAnswers.clear();
+
+    // Reset all slots
+    DOM.answerSlots.forEach((slot) => {
+      slot.className = "answer-slot rounded-lg px-2 md:p-2";
+      const answerText = slot.querySelector(".answer-text");
+      const answerPoints = slot.querySelector(".answer-points");
+      if (answerText) answerText.textContent = "";
+      if (answerPoints) answerPoints.textContent = "";
+    });
+
+    // Animează progresiv sloturile care au răspunsuri
+    animateQuestionSlots(questionId);
+    return;
+  }
+
+  // Pentru aceeași întrebare, verifică doar răspunsurile nou revealed
   if (!gameState.current_question) return;
 
-  const questionId = gameState.current_question.id;
-  const fullQuestion = allQuestions.find((q) => q.id === questionId);
-  if (!fullQuestion?.answers) return;
+  gameState.current_question.answers?.forEach((stateAnswer) => {
+    if (
+      stateAnswer?.revealed &&
+      stateAnswer.position >= 1 &&
+      stateAnswer.position <= 8
+    ) {
+      const answerKey = `${questionId}-${stateAnswer.position}`;
 
-  // Process each answer
-  fullQuestion.answers.forEach((answer) => {
-    if (answer.position >= 1 && answer.position <= 8) {
-      const slot = document.querySelector(
-        `[data-position="${answer.position}"]`
-      );
-      if (slot) {
-        slot.classList.add("exists");
-
-        const stateAnswer = gameState.current_question.answers?.find(
-          (a) => a?.position === answer.position
-        );
-
-        if (stateAnswer?.revealed) {
-          setTimeout(() => {
-            slot.classList.add("revealed");
-            const answerText = slot.querySelector(".answer-text");
-            const answerPoints = slot.querySelector(".answer-points");
-            if (answerText) answerText.textContent = answer.text;
-            if (answerPoints) answerPoints.textContent = answer.points;
-          }, (answer.position - 1) * 100);
-        }
+      if (!revealedAnswers.has(answerKey)) {
+        revealedAnswers.add(answerKey);
+        animateAnswerReveal(stateAnswer.position, questionId);
       }
     }
   });
+}
+
+function animateQuestionSlots(questionId) {
+  const fullQuestion = allQuestions.find((q) => q.id === questionId);
+  if (!fullQuestion?.answers) return;
+
+  // Ascunde toate sloturile care nu au răspunsuri
+  for (let position = 1; position <= 8; position++) {
+    const slot = document.querySelector(`[data-position="${position}"]`);
+    if (slot) {
+      const hasAnswer = fullQuestion.answers.some(
+        (a) => a.position === position
+      );
+      if (!hasAnswer) {
+        slot.classList.add("hidden-slot");
+      } else {
+        slot.classList.remove("hidden-slot");
+      }
+    }
+  }
+
+  // Animează doar sloturile care au răspunsuri
+  fullQuestion.answers.forEach((answer, index) => {
+    if (answer.position >= 1 && answer.position <= 8) {
+      setTimeout(() => {
+        const slot = document.querySelector(
+          `[data-position="${answer.position}"]`
+        );
+        if (slot) {
+          slot.classList.add("slot-reveal");
+          setTimeout(() => {
+            slot.classList.add("exists");
+            slot.classList.remove("slot-reveal");
+          }, 400);
+        }
+      }, index * 150);
+    }
+  });
+}
+
+function animateAnswerReveal(position, questionId) {
+  const fullQuestion = allQuestions.find((q) => q.id === questionId);
+  const answer = fullQuestion?.answers?.find((a) => a.position === position);
+  if (!answer) return;
+
+  const slot = document.querySelector(`[data-position="${position}"]`);
+  if (slot) {
+    slot.classList.add("revealed");
+    const answerText = slot.querySelector(".answer-text");
+    const answerPoints = slot.querySelector(".answer-points");
+    if (answerText) answerText.textContent = answer.text;
+    if (answerPoints) answerPoints.textContent = answer.points;
+  }
 }
 
 function updateStrikes() {

@@ -225,16 +225,39 @@ body {
 }
 
 /* ===================
-   ANSWERS GRID
+   ANSWERS GRID test
    =================== */
 .answer-slot {
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 215, 0, 0.2);
   transition: all 0.4s ease;
-  min-height: 3rem;
+  min-height: 2rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
 }
 
+/* Animație pentru apariția progresivă a sloturilor */
+.answer-slot.slot-reveal {
+  animation: slotReveal 0.4s ease-out;
+}
+
+@keyframes slotReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    background: rgba(15, 52, 96, 0.3);
+  }
+}
 .answer-slot.exists {
+  opacity: 1;
   background: rgba(15, 52, 96, 0.3);
   border-color: rgba(255, 215, 0, 0.4);
 }
@@ -249,25 +272,24 @@ body {
 @keyframes answerReveal {
   0% {
     opacity: 0;
-    transform: scale(0.9);
     background: rgba(15, 52, 96, 0.3);
-  }
-  50% {
-    transform: scale(1.05);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
     background: var(--answer-revealed-bg);
   }
 }
 
 .answer-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background: linear-gradient(
     135deg,
@@ -276,24 +298,33 @@ body {
   );
   color: var(--primary-bg);
   font-weight: 800;
-  font-size: 0.875rem;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
+  font-size: 1.5rem;
   line-height: 1;
+  transition: all 0.3s ease;
+  opacity: 1;
+  z-index: 10;
+}
+
+.answer-slot.revealed .answer-number {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.answer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
   transition: all 0.3s ease;
 }
 
-/* Hide numbers when answer is revealed */
-.answer-slot.revealed .answer-number {
-  opacity: 0;
-  width: 0;
-  margin-right: 0;
-  transform: scale(0);
+.answer-slot.revealed .answer-content {
+  opacity: 1;
 }
-
 .answer-text {
   flex: 1;
-  text-align: left;
+  text-align: center;
   transition: all 0.3s ease;
 }
 
@@ -305,10 +336,12 @@ body {
 /* Responsive answer number sizing */
 @media (min-width: 768px) {
   .answer-number {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-    margin-right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.3rem;
+  }
+  .answer-slot {
+    min-height: 4rem; /* Desktop */
   }
 }
 
@@ -583,23 +616,6 @@ body {
 /* ===================
    RESPONSIVE HELPERS
    =================== */
-@media (max-width: 767px) {
-  /* Smaller text on mobile for better fit */
-  .answer-text {
-    font-size: 0.75rem;
-    line-height: 1.2;
-  }
-
-  .answer-points {
-    font-size: 0.875rem;
-  }
-
-  /* Tighter spacing on mobile */
-  .answer-slot {
-    padding: 0.5rem;
-    min-height: 2.5rem;
-  }
-}
 
 @media (min-width: 1024px) {
   /* Enhanced effects on desktop */
@@ -610,9 +626,8 @@ body {
   .current-points-container:hover {
     transform: scale(1.02);
   }
-
-  .answer-slot:hover:not(.revealed) {
-    background: rgba(15, 52, 96, 0.4);
-    border-color: rgba(255, 215, 0, 0.6);
-  }
+}
+/* Slot ascuns complet */
+.answer-slot.hidden-slot {
+  display: none !important;
 }

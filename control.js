@@ -298,6 +298,7 @@ async function loadQuestion(idx) {
     });
   }
 
+  // RESETARE COMPLETĂ A STĂRII PENTRU NOUA ÎNTREBARE
   await updateGameState({
     status: "playing",
     current_question_index: idx,
@@ -306,8 +307,20 @@ async function loadQuestion(idx) {
       text: q.text,
       answers: answersForState,
     },
-    question_displayed: false,
+    question_displayed: false, // RESETEAZĂ afișarea întrebării
     show_mode: false,
+    progressive_strikes: [false, false, false], // RESETEAZĂ strikes-urile
+    last_buzz_strike: null, // RESETEAZĂ buzz strike
+  });
+
+  // RESETARE UI PENTRU BUTONUL DE AFIȘARE
+  DOM.showQuestionBtn.style.background = "rgba(59, 130, 246, 0.2)";
+  DOM.showQuestionBtn.innerHTML =
+    '<i class="fas fa-tv mr-1"></i>Afișează întrebarea';
+
+  // RESETARE UI PENTRU STRIKES
+  DOM.progressiveStrikes.forEach((btn) => {
+    btn.classList.remove("active");
   });
 
   generateAnswersGrid(answersForState);

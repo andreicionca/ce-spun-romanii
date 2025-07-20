@@ -2,7 +2,10 @@
 <html lang="ro" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=3.0, user-scalable=yes"
+    />
     <title>Ce Spun Românii - Public Display</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,7 +23,6 @@
   <body class="bg-gray-900 min-h-screen h-full text-white">
     <!-- Connection Status -->
     <div id="connectionStatus" class="connection-status status-error">
-      <i class="fas fa-wifi mr-1"></i>
       <span id="connectionText">Conectare...</span>
     </div>
 
@@ -62,9 +64,7 @@
         </div>
 
         <!-- Teams -->
-        <div
-          class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-16"
-        >
+        <div class="flex items-center justify-center space-x-4 md:space-x-16">
           <div
             id="introTeam1"
             class="intro-team text-xl md:text-3xl font-bold text-white"
@@ -97,7 +97,7 @@
         >
           <div
             id="team1Name"
-            class="text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold text-white mb-1 truncate"
+            class="text-lg md:text-lg lg:text-2xl xl:text-3xl font-bold text-white truncate"
           >
             ECHIPA 1
           </div>
@@ -128,7 +128,7 @@
         >
           <div
             id="team2Name"
-            class="text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold text-white mb-1 truncate"
+            class="text-lg md:text-lg lg:text-2xl xl:text-3xl font-bold text-white truncate"
           >
             ECHIPA 2
           </div>
@@ -148,137 +148,113 @@
       >
         <div
           id="questionText"
-          class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-white"
+          class="text-sm sm:text-base md:text-1xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-white"
         ></div>
       </div>
 
       <!-- Answers Grid -->
       <div
-        class="flex-1 grid grid-cols-2 place-content-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 mb-2 sm:mb-3 md:mb-4 lg:mb-6"
+        class="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3 lg:gap-4 mb-2 sm:mb-3 md:mb-4 lg:mb-6"
       >
         <!-- Left Column (1-4) -->
         <div class="space-y-1 sm:space-y-2 md:space-y-3">
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="1"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">1</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="1">
+            <div class="answer-number">1</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="2"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">2</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="2">
+            <div class="answer-number">2</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="3"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">3</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="3">
+            <div class="answer-number">3</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="4"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">4</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="4">
+            <div class="answer-number">4</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
         </div>
 
         <!-- Right Column (5-8) -->
         <div class="space-y-1 sm:space-y-2 md:space-y-3">
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="5"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">5</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="5">
+            <div class="answer-number">5</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="6"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">6</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="6">
+            <div class="answer-number">6</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="7"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">7</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="7">
+            <div class="answer-number">7</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
 
-          <div
-            class="answer-slot rounded-lg p-1 sm:p-2 md:p-3 flex items-center justify-between"
-            data-position="8"
-          >
-            <div class="flex items-center flex-1 min-w-0">
-              <div class="answer-number">8</div>
+          <div class="answer-slot rounded-lg md:p-1" data-position="8">
+            <div class="answer-number">8</div>
+            <div class="answer-content">
               <div
-                class="answer-text text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate"
+                class="answer-text text-xs sm:text-sm md:text-2xl lg:text-3xl font-semibold truncate"
+              ></div>
+              <div
+                class="answer-points text-sm sm:text-base md:text-2xl lg:text-3xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
               ></div>
             </div>
-            <div
-              class="answer-points text-sm sm:text-base md:text-lg lg:text-xl font-bold points-display ml-1 sm:ml-2 flex-shrink-0"
-            ></div>
           </div>
         </div>
       </div>

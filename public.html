@@ -58,23 +58,30 @@
         <!-- Title -->
         <div
           id="introTitle"
-          class="intro-title text-4xl md:text-6xl lg:text-8xl font-bold text-yellow-400 mb-8"
+          class="intro-title text-4xl md:text-6xl lg:text-8xl font-bold text-yellow-400 mb-12 md:mb-16 lg:mb-20"
         >
           CE SPUN ROMÂNII
         </div>
 
         <!-- Teams -->
-        <div class="flex items-center justify-center space-x-4 md:space-x-16">
+        <div
+          class="grid grid-cols-3 items-center justify-items-center gap-1 md:gap-2 lg:gap-4 w-full max-w-2xl mx-auto"
+        >
           <div
             id="introTeam1"
-            class="intro-team text-xl md:text-3xl font-bold text-white"
+            class="intro-team text-xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white text-center"
           >
             ECHIPA 1
           </div>
-          <div class="text-2xl md:text-4xl text-gray-400 font-bold">VS</div>
+          <div
+            id="battleVS"
+            class="text-2xl md:text-4xl text-gray-400 font-bold vs-battle"
+          >
+            ⚔️
+          </div>
           <div
             id="introTeam2"
-            class="intro-team text-xl md:text-3xl font-bold text-white"
+            class="intro-team text-xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white text-center"
           >
             ECHIPA 2
           </div>
@@ -302,68 +309,160 @@
       </div>
     </div>
 
-    <!-- Game Finished Modal -->
-    <div id="gameFinishedModal" class="modal">
-      <div class="modal-content game-finished-content">
-        <div class="text-center p-6 md:p-8">
-          <div class="mb-6">
-            <i
-              class="fas fa-trophy text-6xl md:text-8xl text-yellow-400 mb-4"
-            ></i>
-            <h2 class="text-2xl md:text-4xl font-bold text-white mb-2">
-              JOCUL S-A ÎNCHEIAT!
+    <!-- Game Finished Modal - Responsive Mobile-First Design -->
+    <div
+      id="gameFinishedModal"
+      class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 hidden p-2 sm:p-4"
+    >
+      <!-- Modal Container - Mai lat și mai flexibil -->
+      <div
+        class="relative w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto overflow-hidden"
+      >
+        <!-- Background Gradient Animat -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-800 rounded-xl sm:rounded-2xl animate-gradient"
+        ></div>
+
+        <!-- Content Container -->
+        <div
+          class="relative bg-black bg-opacity-20 border-2 sm:border-4 border-yellow-400 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8"
+        >
+          <!-- ROW 1: ANUNȚ -->
+          <div class="text-center mb-4 sm:mb-6">
+            <h2
+              class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400 drop-shadow-lg"
+            >
+              JOC ÎNCHEIAT
             </h2>
           </div>
 
-          <div class="mb-6">
-            <div class="text-lg md:text-xl text-gray-300 mb-4">
-              Scorul final:
-            </div>
+          <!-- ROW 2: SCOR CU NUMELE ECHIPELOR -->
+          <div
+            class="flex items-center justify-center mb-6 sm:mb-8 text-center"
+          >
             <div
-              class="flex justify-between items-center bg-gray-800 rounded-lg p-4 md:p-6 mb-4"
+              class="flex items-center justify-between w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl"
             >
-              <div class="text-center flex-1">
+              <!-- Echipa 1 -->
+              <div class="flex-1 text-center px-1 sm:px-2">
                 <div
-                  id="finalTeam1Name"
-                  class="text-sm md:text-lg font-semibold mb-2 text-white"
+                  class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white mb-2 leading-tight"
+                  id="scoreTeamName1"
                 >
                   ECHIPA 1
                 </div>
                 <div
-                  id="finalTeam1Score"
-                  class="text-3xl md:text-5xl font-bold points-display"
+                  class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-yellow-400"
+                  id="scoreTeam1"
                 >
                   0
                 </div>
               </div>
-              <div class="text-gray-500 text-2xl md:text-4xl mx-4">VS</div>
-              <div class="text-center flex-1">
+
+              <!-- Separator -->
+              <div class="px-2 sm:px-4 md:px-6">
+                <span
+                  class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white"
+                  >-</span
+                >
+              </div>
+
+              <!-- Echipa 2 -->
+              <div class="flex-1 text-center px-1 sm:px-2">
                 <div
-                  id="finalTeam2Name"
-                  class="text-sm md:text-lg font-semibold mb-2 text-white"
+                  class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white mb-2 leading-tight"
+                  id="scoreTeamName2"
                 >
                   ECHIPA 2
                 </div>
                 <div
-                  id="finalTeam2Score"
-                  class="text-3xl md:text-5xl font-bold points-display"
+                  class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-yellow-400"
+                  id="scoreTeam2"
                 >
-                  0
+                  62
                 </div>
               </div>
             </div>
-            <div
-              id="winnerAnnouncement"
-              class="text-xl md:text-2xl font-bold text-yellow-400"
-            ></div>
           </div>
 
-          <button
-            id="newGameBtn"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold text-sm md:text-base transition-colors"
-          >
-            <i class="fas fa-home mr-2"></i>Înapoi la meniu
-          </button>
+          <!-- ROW 3: CARD UNIC CÂȘTIGĂTOR/EGALITATE -->
+          <div class="flex justify-center mb-6 sm:mb-8">
+            <!-- Winner Card - Mai lat și mai flexibil -->
+            <div
+              class="winner-card bg-white bg-opacity-5 border-2 border-white border-opacity-30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 text-center w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl transition-all duration-500"
+              id="winnerCard"
+            >
+              <!-- 1. Nume Echipă Câștigătoare - Îmbunătățit spacing -->
+              <div
+                class="winner-team-name text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-4 sm:mb-6 transition-all duration-300 leading-relaxed"
+                id="winnerTeamName"
+              >
+                ECHIPA 2
+              </div>
+
+              <!-- 2. Crown - Responsive sizing -->
+              <div
+                class="winner-crown text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-yellow-400 mb-4 sm:mb-6 transition-all duration-500 transform hover:scale-110"
+                id="winnerCrown"
+              >
+                👑
+              </div>
+
+              <!-- 3. CAMPION! - Responsive text -->
+              <div
+                class="champion-text text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-yellow-400 mb-3 sm:mb-4 transition-all duration-300"
+                id="championText"
+              >
+                CAMPIONII!
+              </div>
+
+              <!-- 4. FELICITĂRI! - Contrast îmbunătățit -->
+              <div
+                class="congratulations-text text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold text-white transition-all duration-300"
+                id="congratulationsText"
+              >
+                FELICITĂRI!
+              </div>
+            </div>
+
+            <!-- Tie Card - Sizing consistent -->
+            <div
+              class="tie-card bg-white bg-opacity-5 border-2 border-white border-opacity-30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 text-center w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl transition-all duration-500 hidden"
+              id="tieCard"
+            >
+              <!-- 1. EGALITATE! -->
+              <div
+                class="tie-title text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-yellow-400 mb-4 sm:mb-6"
+              >
+                EGALITATE!
+              </div>
+
+              <!-- 2. Handshake - Responsive emoji -->
+              <div
+                class="tie-handshake text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4 sm:mb-6 animate-bounce"
+              >
+                🤝
+              </div>
+
+              <!-- 3. Felicitări tuturor -->
+              <div
+                class="tie-congratulations text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold text-white"
+              >
+                Felicitări tuturor
+              </div>
+            </div>
+          </div>
+
+          <!-- ROW 4: BUTON MIC ȘI ELEGANT -->
+          <div class="text-center">
+            <button
+              id="newGameBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 rounded-md sm:rounded-lg font-semibold text-xs sm:text-sm md:text-base transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl inline-flex items-center gap-1 sm:gap-2"
+            >
+              <i class="fas fa-home text-xs sm:text-sm"></i>
+              <span class="hidden sm:inline">Înapoi la</span> meniu
+            </button>
+          </div>
         </div>
       </div>
     </div>

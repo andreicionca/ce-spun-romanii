@@ -27,6 +27,7 @@ const DOM = {
   resumeInfo: document.getElementById("resumeInfo"),
   startBtn: document.getElementById("startBtn"),
   startBtnText: document.getElementById("startBtnText"),
+  firstQuestionBtn: document.getElementById("firstQuestionBtn"),
   gameStatus: document.getElementById("gameStatus"),
   statusText: document.getElementById("statusText"),
 
@@ -89,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupEventListeners() {
   DOM.startBtn.addEventListener("click", startGame);
+  DOM.firstQuestionBtn.addEventListener("click", showFirstQuestion);
   DOM.questionPoints.addEventListener("click", showAssignModal);
   DOM.showQuestionBtn.addEventListener("click", showQuestionOnDisplay);
 
@@ -241,16 +243,24 @@ async function startGame() {
     questions = questionSet.questions;
     console.log("Questions loaded:", questions.length);
 
-    if (game.current_state && Object.keys(game.current_state).length > 0) {
+    if (
+      game.current_state &&
+      Object.keys(game.current_state).length > 0 &&
+      game.current_state.status !== "waiting"
+    ) {
       gameState = { ...game.current_state };
 
       console.log("Resuming game from state:", gameState);
       await restoreUIFromState();
+
+      DOM.initScreen.classList.add("hidden");
+      DOM.controlPanel.classList.remove("hidden");
     } else {
       console.log("Starting new game");
 
-      gameState = {
-        status: "waiting",
+      // Update game state to intro instead of playing
+      await updateGameState({
+        status: "intro",
         current_question_index: 0,
         current_question: null,
         team1_score: game.team1_score || 0,
@@ -259,16 +269,37 @@ async function startGame() {
         progressive_strikes: [false, false, false],
         question_displayed: false,
         last_buzz_strike: null,
-      };
+      });
 
-      await loadQuestion(0);
+      // Hide start button and show first question button
+      DOM.startBtn.style.display = "none";
+      DOM.firstQuestionBtn.style.display = "block";
     }
-
-    DOM.initScreen.classList.add("hidden");
-    DOM.controlPanel.classList.remove("hidden");
   } catch (error) {
     console.error("Error starting game:", error);
     showErrorModal("Eroare", "Eroare la pornirea jocului. Verifică codul.");
+  }
+}
+
+async function showFirstQuestion() {
+  try {
+    console.log("Showing first question");
+
+    // Load first question and update game state to playing
+    await loadQuestion(0);
+
+    await updateGameState({
+      status: "playing",
+    });
+
+    // Hide init screen and show control panel
+    DOM.initScreen.classList.add("hidden");
+    DOM.controlPanel.classList.remove("hidden");
+
+    console.log("First question displayed, control panel shown");
+  } catch (error) {
+    console.error("Error showing first question:", error);
+    showErrorModal("Eroare", "Eroare la afișarea primei întrebări.");
   }
 }
 

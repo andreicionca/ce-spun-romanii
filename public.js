@@ -57,11 +57,17 @@ const DOM = {
 
   // Game finished modal elements
   gameFinishedModal: document.getElementById("gameFinishedModal"),
-  finalTeam1Name: document.getElementById("finalTeam1Name"),
-  finalTeam2Name: document.getElementById("finalTeam2Name"),
-  finalTeam1Score: document.getElementById("finalTeam1Score"),
-  finalTeam2Score: document.getElementById("finalTeam2Score"),
-  winnerAnnouncement: document.getElementById("winnerAnnouncement"),
+  scoreTeamName1: document.getElementById("scoreTeamName1"),
+  scoreTeam1: document.getElementById("scoreTeam1"),
+  scoreTeamName2: document.getElementById("scoreTeamName2"),
+  scoreTeam2: document.getElementById("scoreTeam2"),
+  winnerCard: document.getElementById("winnerCard"),
+  tieCard: document.getElementById("tieCard"),
+  winnerTeamName: document.getElementById("winnerTeamName"),
+  winnerCrown: document.getElementById("winnerCrown"),
+  championText: document.getElementById("championText"),
+  congratulationsText: document.getElementById("congratulationsText"),
+
   newGameBtn: document.getElementById("newGameBtn"),
 
   // Game paused modal elements
@@ -86,10 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // Setup modal event listeners
 function setupModalEventListeners() {
   DOM.newGameBtn?.addEventListener("click", () => {
+    // Ascunde modalul înainte de redirect
+    DOM.gameFinishedModal.classList.add("hidden");
     window.location.href = "index.html";
   });
 
-  // Redirecționează la homepage când jocul este pe pauză
   DOM.pausedOkBtn?.addEventListener("click", () => {
     window.location.href = "index.html";
   });
@@ -152,6 +159,10 @@ function showScreenForStatus(status) {
   switch (status) {
     case "waiting":
       DOM.waitingScreen?.classList.remove("hidden");
+      break;
+    case "intro":
+      DOM.introScreen?.classList.remove("hidden");
+      DOM.introScreen?.classList.add("fade-in");
       break;
 
     case "playing":
@@ -242,6 +253,11 @@ function handleGameUpdate(payload) {
 
 function handleStatusChange(oldStatus, newStatus) {
   switch (newStatus) {
+    case "intro":
+      if (oldStatus === "waiting") {
+        playIntroAnimation();
+      }
+      break;
     case "playing":
       if (oldStatus === "waiting") {
         // Show intro animation for new games
@@ -269,10 +285,6 @@ function handleStatusChange(oldStatus, newStatus) {
 async function playIntroAnimation() {
   DOM.waitingScreen?.classList.add("hidden");
   DOM.introScreen?.classList.remove("hidden");
-
-  setTimeout(() => {
-    showScreenForStatus("playing");
-  }, 5000);
 }
 
 // UI UPDATES
@@ -352,7 +364,7 @@ function updateAnswers() {
     currentQuestionId = questionId;
     revealedAnswers.clear();
 
-    // Reset all slots
+    // ASCUNDE INSTANT toate sloturile pentru a preveni flickering-ul
     DOM.answerSlots.forEach((slot) => {
       slot.className = "answer-slot rounded-lg px-2 md:p-2";
       const answerText = slot.querySelector(".answer-text");
@@ -361,8 +373,10 @@ function updateAnswers() {
       if (answerPoints) answerPoints.textContent = "";
     });
 
-    // Animează progresiv sloturile care au răspunsuri
-    animateQuestionSlots(questionId);
+    // Folosește requestAnimationFrame pentru a asigura că resetarea s-a aplicat
+    requestAnimationFrame(() => {
+      animateQuestionSlots(questionId);
+    });
     return;
   }
 
@@ -384,45 +398,45 @@ function updateAnswers() {
     }
   });
 }
-
 function animateQuestionSlots(questionId) {
   const fullQuestion = allQuestions.find((q) => q.id === questionId);
   if (!fullQuestion?.answers) return;
 
-  // Ascunde toate sloturile care nu au răspunsuri
+  // Resetează toate sloturile la starea inițială
   for (let position = 1; position <= 8; position++) {
     const slot = document.querySelector(`[data-position="${position}"]`);
     if (slot) {
       const hasAnswer = fullQuestion.answers.some(
         (a) => a.position === position
       );
+
       if (!hasAnswer) {
         slot.classList.add("hidden-slot");
       } else {
         slot.classList.remove("hidden-slot");
+        slot.classList.add("slot-preparing");
+        slot.classList.remove("slot-ready", "exists", "slot-reveal");
       }
     }
   }
 
-  // Animează doar sloturile care au răspunsuri
-  fullQuestion.answers.forEach((answer, index) => {
-    if (answer.position >= 1 && answer.position <= 8) {
-      setTimeout(() => {
-        const slot = document.querySelector(
-          `[data-position="${answer.position}"]`
-        );
-        if (slot) {
-          slot.classList.add("slot-reveal");
-          setTimeout(() => {
-            slot.classList.add("exists");
-            slot.classList.remove("slot-reveal");
-          }, 400);
-        }
-      }, index * 150);
-    }
-  });
+  // Animează progresiv sloturile care au răspunsuri
+  setTimeout(() => {
+    fullQuestion.answers.forEach((answer, index) => {
+      if (answer.position >= 1 && answer.position <= 8) {
+        setTimeout(() => {
+          const slot = document.querySelector(
+            `[data-position="${answer.position}"]`
+          );
+          if (slot) {
+            slot.classList.remove("slot-preparing");
+            slot.classList.add("slot-ready");
+          }
+        }, (index + 1) * 200);
+      }
+    });
+  }, 1000);
 }
-
 function animateAnswerReveal(position, questionId) {
   const fullQuestion = allQuestions.find((q) => q.id === questionId);
   const answer = fullQuestion?.answers?.find((a) => a.position === position);
@@ -507,28 +521,58 @@ function showStrikeModal(strikeCount) {
   }, 2000);
 }
 
+// ✅ ÎNLOCUIEȘTE funcția showGameFinishedModal() existentă cu aceasta:
 function showGameFinishedModal(finalState) {
   if (!DOM.gameFinishedModal) return;
 
   const team1Score = finalState.team1_score || 0;
   const team2Score = finalState.team2_score || 0;
+  const team1Name = DOM.team1Name.textContent;
+  const team2Name = DOM.team2Name.textContent;
 
-  DOM.finalTeam1Name.textContent = DOM.team1Name.textContent;
-  DOM.finalTeam2Name.textContent = DOM.team2Name.textContent;
-  DOM.finalTeam1Score.textContent = team1Score;
-  DOM.finalTeam2Score.textContent = team2Score;
+  // Populează scorul cu numele echipelor
+  DOM.scoreTeamName1.textContent = team1Name;
+  DOM.scoreTeam1.textContent = team1Score;
+  DOM.scoreTeamName2.textContent = team2Name;
+  DOM.scoreTeam2.textContent = team2Score;
 
-  let winnerText = "";
-  if (team1Score > team2Score) {
-    winnerText = `🎉 ${DOM.team1Name.textContent} CÂȘTIGĂ! 🎉`;
-  } else if (team2Score > team1Score) {
-    winnerText = `🎉 ${DOM.team2Name.textContent} CÂȘTIGĂ! 🎉`;
+  // Resetează efectele
+  resetAllEffects();
+
+  // Determine winner/loser or tie
+  if (team1Score === team2Score) {
+    showTieCase();
   } else {
-    winnerText = "🤝 EGALITATE! 🤝";
+    const isTeam1Winner = team1Score > team2Score;
+    const winnerName = isTeam1Winner ? team1Name : team2Name;
+    showWinnerCase(winnerName);
   }
 
-  DOM.winnerAnnouncement.textContent = winnerText;
-  DOM.gameFinishedModal.classList.add("show");
+  // Afișează modalul
+  DOM.gameFinishedModal.classList.remove("hidden");
+}
+function resetAllEffects() {
+  // Resetează cardul câștigător
+  DOM.winnerCard.classList.remove("winner");
+
+  // Afișează cardul câștigător, ascunde tie
+  DOM.winnerCard.classList.remove("hidden");
+  DOM.tieCard.classList.add("hidden");
+}
+
+function showWinnerCase(winnerName) {
+  // Populează cardul câștigător
+  DOM.winnerTeamName.textContent = winnerName;
+
+  // Adaugă efectele de câștigător
+  DOM.winnerCard.classList.add("winner");
+}
+
+function showTieCase() {
+  // Ascunde cardul câștigător, afișează egalitatea
+  DOM.winnerCard.classList.add("hidden");
+  DOM.tieCard.classList.remove("hidden");
+  DOM.tieCard.classList.add("active");
 }
 
 function showGamePausedModal() {
@@ -548,7 +592,7 @@ function updateConnectionStatus(status) {
         '<i class="fas fa-check mr-1"></i>Conectat';
       break;
     case "connecting":
-      DOM.connectionStatus.className = "connection-status status-error";
+      DOM.connectionStatus.className = "connection-status status-loading";
       DOM.connectionText.innerHTML =
         '<i class="fas fa-spinner fa-spin mr-1"></i>Conectare...';
       break;

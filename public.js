@@ -317,9 +317,12 @@ function updateQuestionPoints() {
   let newPoints = 0;
 
   if (gameState.current_question?.answers) {
+    const multiplier =
+      Math.floor((gameState.current_question_index || 0) / 2) + 1;
+
     newPoints = gameState.current_question.answers
       .filter((a) => a?.revealed && !gameState.show_mode)
-      .reduce((sum, a) => sum + (a.points || 0), 0);
+      .reduce((sum, a) => sum + (a.points || 0) * multiplier, 0); // ← Aplică multiplicatorul
   }
 
   if (newPoints !== currentScores.question) {
@@ -448,7 +451,10 @@ function animateAnswerReveal(position, questionId) {
     const answerText = slot.querySelector(".answer-text");
     const answerPoints = slot.querySelector(".answer-points");
     if (answerText) answerText.textContent = answer.text;
-    if (answerPoints) answerPoints.textContent = answer.points;
+    const multiplier =
+      Math.floor((gameState.current_question_index || 0) / 2) + 1;
+    const displayPoints = answer.points * multiplier;
+    if (answerPoints) answerPoints.textContent = displayPoints;
   }
 }
 

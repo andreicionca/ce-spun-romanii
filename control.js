@@ -390,7 +390,9 @@ function generateAnswersGrid(answersForState) {
             ? "text-yellow-400"
             : "font-bold text-yellow-400";
 
-        btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="${pointsClass}">${answer.points}</span>`;
+        const multiplier = Math.floor(currentIndex / 2) + 1;
+        const displayPoints = answer.points * multiplier;
+        btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="${pointsClass}">${displayPoints}</span>`;
         btn.onclick = () => toggleAnswer(btn, answer.points);
         btn.dataset.text = answer.text;
         btn.dataset.points = answer.points;
@@ -479,7 +481,9 @@ function restoreAnswersFromState() {
             ? "text-yellow-400"
             : "font-bold text-yellow-400";
 
-        btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="${pointsClass}">${answer.points}</span>`;
+        const multiplier = Math.floor(currentIndex / 2) + 1;
+        const displayPoints = answer.points * multiplier;
+        btn.innerHTML = `<span>${num}. ${answer.text}</span><span class="${pointsClass}">${displayPoints}</span>`;
         btn.onclick = () => toggleAnswer(btn, answer.points);
         btn.dataset.text = answer.text;
         btn.dataset.points = answer.points;
@@ -538,7 +542,9 @@ async function toggleAnswer(btn, pts) {
     if (btn.classList.contains("revealed")) return;
 
     const sel = btn.classList.toggle("selected");
-    currentQPoints += sel ? pts : -pts;
+    const multiplier = Math.floor(currentIndex / 2) + 1;
+    const multipliedPoints = pts * multiplier;
+    currentQPoints += sel ? multipliedPoints : -multipliedPoints;
     DOM.questionPoints.textContent = currentQPoints;
 
     const updatedAnswers = gameState.current_question.answers.map((a) =>

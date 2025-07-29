@@ -1,6 +1,17 @@
 // ✅ Public Display Logic - Ce Spun Românii (OPTIMIZED & FIXED)
 // Synchronized with control panel via Supabase realtime
-
+// Sound Manager
+function playSound(soundId) {
+  try {
+    const audio = document.getElementById(soundId);
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch((e) => console.log("Audio play failed:", e));
+    }
+  } catch (error) {
+    console.log("Sound error:", error);
+  }
+}
 // Get game code from URL
 const gameCode = new URLSearchParams(window.location.search).get("game");
 
@@ -283,6 +294,8 @@ function handleStatusChange(oldStatus, newStatus) {
 
 // INTRO ANIMATION (only for new games)
 async function playIntroAnimation() {
+  playSound("introSound"); // ← ADAUGĂ AICI
+
   DOM.waitingScreen?.classList.add("hidden");
   DOM.introScreen?.classList.remove("hidden");
 }
@@ -303,11 +316,13 @@ function updateScores() {
   const newTeam2Score = gameState.team2_score || 0;
 
   if (newTeam1Score !== currentScores.team1) {
+    playSound("scoreUpdateSound");
     animateScoreUpdate(DOM.team1Score, currentScores.team1, newTeam1Score);
     currentScores.team1 = newTeam1Score;
   }
 
   if (newTeam2Score !== currentScores.team2) {
+    playSound("scoreUpdateSound");
     animateScoreUpdate(DOM.team2Score, currentScores.team2, newTeam2Score);
     currentScores.team2 = newTeam2Score;
   }
@@ -402,6 +417,7 @@ function updateAnswers() {
   });
 }
 function animateQuestionSlots(questionId) {
+  playSound("newQuestionSound");
   const fullQuestion = allQuestions.find((q) => q.id === questionId);
   if (!fullQuestion?.answers) return;
 
@@ -441,6 +457,7 @@ function animateQuestionSlots(questionId) {
   }, 1000);
 }
 function animateAnswerReveal(position, questionId) {
+  playSound("answerCorrectSound");
   const fullQuestion = allQuestions.find((q) => q.id === questionId);
   const answer = fullQuestion?.answers?.find((a) => a.position === position);
   if (!answer) return;
@@ -477,7 +494,6 @@ function updateStrikes() {
 // ANIMATIONS
 function animateScoreUpdate(element, fromValue, toValue) {
   if (!element) return;
-
   element.classList.add("updating");
 
   const duration = 800;
@@ -504,6 +520,7 @@ function animateScoreUpdate(element, fromValue, toValue) {
 
 // MODALS
 function showBuzzModal() {
+  playSound("buzzWrongSound");
   DOM.buzzModal?.classList.add("show");
   setTimeout(() => {
     DOM.buzzModal?.classList.remove("show");
@@ -511,6 +528,7 @@ function showBuzzModal() {
 }
 
 function showStrikeModal(strikeCount) {
+  playSound("buzzWrongSound");
   if (!DOM.strikeModal || !DOM.strikeDisplay) return;
 
   let strikeText = "";
@@ -529,6 +547,7 @@ function showStrikeModal(strikeCount) {
 
 // ✅ ÎNLOCUIEȘTE funcția showGameFinishedModal() existentă cu aceasta:
 function showGameFinishedModal(finalState) {
+  playSound("gameOverSound");
   if (!DOM.gameFinishedModal) return;
 
   const team1Score = finalState.team1_score || 0;

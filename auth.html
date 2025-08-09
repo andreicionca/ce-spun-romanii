@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autentificare - Ce Spun Românii</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="auth.css" />
+    <link rel="icon" type="image/png" href="/favicon-192x192.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body class="min-h-screen">
+    <div class="container mx-auto px-4 py-6 md:py-8">
+      <!-- Header -->
+      <header class="text-center mb-8 md:mb-12">
+        <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+          CE SPUN ROMÂNII
+        </h1>
+        <div class="flex justify-center gap-4 md:gap-6 game-icons mb-4">
+          <i class="fas fa-user-circle text-3xl md:text-4xl text-yellow-400"></i>
+          <i class="fas fa-gamepad text-3xl md:text-4xl text-yellow-400"></i>
+          <i class="fas fa-trophy text-3xl md:text-4xl text-yellow-400"></i>
+        </div>
+        <p class="text-blue-200 text-base md:text-lg font-semibold">
+          Intră în cont sau continuă ca vizitator
+        </p>
+      </header>
+
+      <!-- Auth Container -->
+      <main class="max-w-md mx-auto">
+        <!-- Login Form -->
+        <section id="loginSection" class="auth-card rounded-xl p-6 mb-6">
+          <div class="text-center mb-6">
+            <i class="fas fa-sign-in-alt text-4xl text-blue-400 mb-3"></i>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Conectează-te</h2>
+            <p class="text-blue-200 text-sm">Accesează seturile tale personale</p>
+          </div>
+
+          <form id="loginForm" class="space-y-4">
+            <div>
+              <label class="block text-white font-semibold mb-2 text-sm" for="loginEmail">
+                <i class="fas fa-envelope mr-2 text-yellow-400"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                id="loginEmail"
+                required
+                class="w-full px-4 py-3 rounded-lg auth-input text-white"
+                placeholder="email@exemplu.ro"
+              />
+            </div>
+
+            <div>
+              <label class="block text-white font-semibold mb-2 text-sm" for="loginPassword">
+                <i class="fas fa-lock mr-2 text-yellow-400"></i>
+                Parolă
+              </label>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="loginPassword"
+                  required
+                  class="w-full px-4 py-3 rounded-lg auth-input text-white pr-12"
+                  placeholder="Parola ta"
+                />
+                <button
+                  type="button"
+                  id="toggleLoginPassword"
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-300"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              id="loginBtn"
+              class="w-full py-3 px-6 rounded-lg auth-btn-primary font-bold text-lg min-h-[56px]"
+            >
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              CONECTEAZĂ-TE
+            </button>
+          </form>
+
+          <div class="text-center mt-6">
+            <p class="text-blue-200 text-sm mb-3">Nu ai cont?</p>
+            <button
+              id="showRegisterBtn"
+              class="text-yellow-400 hover:text-yellow-300 font-semibold text-sm transition-colors"
+            >
+              <i class="fas fa-user-plus mr-1"></i>
+              Înregistrează-te aici
+            </button>
+          </div>
+        </section>
+
+        <!-- Register Form -->
+        <section id="registerSection" class="auth-card rounded-xl p-6 mb-6 hidden">
+          <div class="text-center mb-6">
+            <i class="fas fa-user-plus text-4xl text-green-400 mb-3"></i>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Înregistrează-te</h2>
+            <p class="text-blue-200 text-sm">Creează cont pentru seturi nelimitate</p>
+          </div>
+
+          <form id="registerForm" class="space-y-4">
+            <div>
+              <label class="block text-white font-semibold mb-2 text-sm" for="registerUsername">
+                <i class="fas fa-user mr-2 text-yellow-400"></i>
+                Nume utilizator
+              </label>
+              <input
+                type="text"
+                id="registerUsername"
+                required
+                minlength="3"
+                class="w-full px-4 py-3 rounded-lg auth-input text-white"
+                placeholder="ex: jucator123"
+              />
+            </div>
+
+            <div>
+              <label class="block text-white font-semibold mb-2 text-sm" for="registerEmail">
+                <i class="fas fa-envelope mr-2 text-yellow-400"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                id="registerEmail"
+                required
+                class="w-full px-4 py-3 rounded-lg auth-input text-white"
+                placeholder="email@exemplu.ro"
+              />
+            </div>
+
+            <div>
+              <label class="block text-white font-semibold mb-2 text-sm" for="registerPassword">
+                <i class="fas fa-lock mr-2 text-yellow-400"></i>
+                Parolă
+              </label>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="registerPassword"
+                  required
+                  minlength="6"
+                  class="w-full px-4 py-3 rounded-lg auth-input text-white pr-12"
+                  placeholder="Minim 6 caractere"
+                />
+                <button
+                  type="button"
+                  id="toggleRegisterPassword"
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-300"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              id="registerBtn"
+              class="w-full py-3 px-6 rounded-lg auth-btn-success font-bold text-lg min-h-[56px]"
+            >
+              <i class="fas fa-user-plus mr-2"></i>
+              ÎNREGISTREAZĂ-TE
+            </button>
+          </form>
+
+          <div class="text-center mt-6">
+            <p class="text-blue-200 text-sm mb-3">Ai deja cont?</p>
+            <button
+              id="showLoginBtn"
+              class="text-yellow-400 hover:text-yellow-300 font-semibold text-sm transition-colors"
+            >
+              <i class="fas fa-sign-in-alt mr-1"></i>
+              Conectează-te aici
+            </button>
+          </div>
+        </section>
+
+        <!-- Guest Option -->
+        <section class="auth-card rounded-xl p-6">
+          <div class="text-center mb-4">
+            <i class="fas fa-user-ninja text-4xl text-purple-400 mb-3"></i>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Vizitator</h2>
+            <p class="text-blue-200 text-sm mb-4">Continuă fără cont cu acces limitat</p>
+            <div class="bg-yellow-500 bg-opacity-20 border border-yellow-400 rounded-lg p-3 mb-4">
+              <div class="flex items-start">
+                <i class="fas fa-info-circle text-yellow-400 mt-1 mr-2 flex-shrink-0"></i>
+                <div class="text-left">
+                  <p class="text-yellow-200 text-sm font-semibold mb-1">Limitări:</p>
+                  <ul class="text-yellow-100 text-xs space-y-1">
+                    <li>• Maxim 3 seturi de întrebări</li>
+                    <li>• Nu poți salva seturi personale</li>
+                    <li>• Doar seturi publice disponibile</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="continueAsGuestBtn"
+            class="w-full py-3 px-6 rounded-lg auth-btn-secondary font-bold text-lg min-h-[56px]"
+          >
+            <i class="fas fa-arrow-right mr-2"></i>
+            CONTINUĂ CA VIZITATOR
+          </button>
+        </section>
+
+        <!-- Loading -->
+        <section id="loadingSection" class="auth-card rounded-xl p-6 hidden">
+          <div class="text-center">
+            <i class="fas fa-spinner loading-spinner text-4xl text-yellow-400 mb-4"></i>
+            <p class="text-white text-lg" id="loadingText">Se procesează...</p>
+          </div>
+        </section>
+      </main>
+
+      <!-- Back Button -->
+      <footer class="text-center mt-8">
+        <button
+          onclick="window.location.href='index.html'"
+          class="back-button px-6 py-3 rounded-lg font-semibold transition-all"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          Înapoi la Pagina Principală
+        </button>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase/client.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

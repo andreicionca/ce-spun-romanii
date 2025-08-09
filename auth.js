@@ -64,10 +64,14 @@ function setupEventListeners() {
 
 async function checkExistingSession() {
   try {
+    console.log('=== CHECKING EXISTING SESSION ===');
+
     const {
       data: { session },
       error,
     } = await window.supabaseClient.raw.auth.getSession();
+
+    console.log('Session check result:', { session, error });
 
     if (error) {
       console.error('Error checking session:', error);
@@ -75,11 +79,23 @@ async function checkExistingSession() {
     }
 
     if (session) {
+      console.log('Session found, user:', session.user);
+      console.log('User confirmed:', session.user.email_confirmed_at);
+
+      // Check if email is confirmed
+      if (!session.user.email_confirmed_at) {
+        console.log('Email not confirmed, staying on auth page');
+        showInfo('Te rog confirmă adresa de email pentru a continua');
+        return;
+      }
+
       // User is already logged in, redirect to setup
       showSuccess('Ești deja conectat! Te redirectionăm...');
       setTimeout(() => {
         window.location.href = 'setup.html';
       }, 1500);
+    } else {
+      console.log('No session found');
     }
   } catch (error) {
     console.error('Error checking existing session:', error);

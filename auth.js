@@ -82,18 +82,9 @@ async function checkExistingSession() {
       console.log('Session found, user:', session.user);
       console.log('User confirmed:', session.user.email_confirmed_at);
 
-      // Check if email is confirmed
-      if (!session.user.email_confirmed_at) {
-        console.log('Email not confirmed, staying on auth page');
-        showInfo('Te rog confirmă adresa de email pentru a continua');
-        return;
-      }
-
       // User is already logged in, redirect to setup
       showSuccess('Ești deja conectat! Te redirectionăm...');
-      setTimeout(() => {
-        window.location.href = 'setup.html';
-      }, 1500);
+      window.location.replace('setup.html'); // Fără timeout, fără history
     } else {
       console.log('No session found');
     }
@@ -134,23 +125,6 @@ async function handleLogin(e) {
     }
 
     if (data.user) {
-      // Set user session info in localStorage for easy access
-      const { data: profile } = await window.supabaseClient.raw
-        .from('user_profiles')
-        .select('role, username')
-        .eq('id', data.user.id)
-        .single();
-
-      localStorage.setItem(
-        'user_session',
-        JSON.stringify({
-          id: data.user.id,
-          email: data.user.email,
-          username: profile?.username || '',
-          role: profile?.role || 'user',
-        })
-      );
-
       showSuccess('Conectare reușită! Te redirectionăm...');
 
       setTimeout(() => {
@@ -260,22 +234,23 @@ async function handleRegister(e) {
 }
 
 function handleGuestContinue() {
-  // Create guest session
-  const guestSession = {
-    type: 'guest',
-    sessionToken: generateGuestToken(),
-    setsUsedCount: 0,
-    maxSets: 3,
-    createdAt: new Date().toISOString(),
-  };
-
-  localStorage.setItem('guest_session', JSON.stringify(guestSession));
-
+  setCookie('is_guest', 'true', 24); // Doar cookie simplu
   showSuccess('Continuând ca vizitator...');
-
   setTimeout(() => {
     window.location.href = 'setup.html';
   }, 1000);
+}
+
+function setCookie(name, value, hours = 24) {
+  const expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Strict`;
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
 }
 
 // ==================== UI HELPERS ====================
@@ -370,9 +345,18 @@ function isValidEmail(email) {
 }
 
 function generateGuestToken() {
-  return 'guest_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-}
+  // Generează exact 32 de caractere hex (0-9, a-f)
+  const randomBytes = new Uint8Array(16); // 16 bytes = 32 hex chars
+  crypto.getRandomValues(randomBytes);
 
+  const randomPart = Array.from(randomBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  const timestamp = Date.now().toString(); // 13 digits
+
+  return `guest_${randomPart}_${timestamp}`;
+}
 // ==================== NOTIFICATION SYSTEM ====================
 
 function showError(message) {
@@ -456,24 +440,11 @@ if (window.supabaseClient?.raw?.auth) {
     console.log('Auth state changed:', event, session);
 
     if (event === 'SIGNED_IN' && session) {
-      // Get profile from DB
-      const { data: profile } = await window.supabaseClient.raw
-        .from('user_profiles')
-        .select('role, username')
-        .eq('id', session.user.id)
-        .single();
-
-      localStorage.setItem(
-        'user_session',
-        JSON.stringify({
-          id: session.user.id,
-          email: session.user.email,
-          username: profile?.username || '',
-          role: profile?.role || 'user',
-        })
-      );
+      if (window.location.pathname.includes('auth.html')) {
+        window.location.replace('setup.html');
+        return;
+      }
     } else if (event === 'SIGNED_OUT') {
-      localStorage.removeItem('user_session');
     }
   });
 }

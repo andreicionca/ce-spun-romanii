@@ -41,27 +41,42 @@ document.addEventListener('DOMContentLoaded', function () {
 // FUNCȚIE NOUĂ - verifică autentificarea
 async function checkAuthentication() {
   try {
-    // Verifică dacă e user autentificat
-    const userSession = localStorage.getItem('user_session');
-    if (userSession) {
-      currentUser = JSON.parse(userSession);
+    // 1. User autentificat?
+    const {
+      data: { session },
+    } = await window.supabaseClient.raw.auth.getSession();
+
+    if (session) {
+      // Get profile from DB
+      const { data: profile, error: profileError } = await window.supabaseClient.raw
+        .from('user_profiles')
+        .select('role, username')
+        .eq('id', session.user.id)
+        .single();
+
+      console.log('Profile error:', profileError); // ← AICI
+
+      currentUser = {
+        id: session.user.id,
+        email: session.user.email,
+        username: profile?.username || '',
+        role: profile?.role || 'user',
+      };
       userType = 'authenticated';
       console.log('User autentificat:', currentUser);
-    } else {
-      // Verifică dacă e guest
-      const guestSessionData = localStorage.getItem('guest_session');
-      if (guestSessionData) {
-        guestSession = JSON.parse(guestSessionData);
-        userType = 'guest';
-        console.log('User guest:', guestSession);
-      } else {
-        // Nu e autentificat deloc - redirect la auth
-        showError('Nu ești autentificat. Te redirectionăm...');
-        setTimeout(() => {
-          window.location.href = 'auth.html';
-        }, 2000);
-        return;
-      }
+    }
+    // 2. Guest simplu?
+    else if (getCookie('is_guest') === 'true') {
+      userType = 'guest';
+      console.log('User guest');
+    }
+    // 3. Nu e nimic
+    else {
+      showError('Nu ești autentificat. Te redirectionăm...');
+      setTimeout(() => {
+        window.location.href = 'auth.html';
+      }, 2000);
+      return;
     }
 
     // Continuă cu inițializarea normală
@@ -76,7 +91,6 @@ async function checkAuthentication() {
     }, 2000);
   }
 }
-
 // Afișează info utilizator în header
 function showUserInfo() {
   const userInfoHeader = document.getElementById('userInfoHeader');
@@ -109,7 +123,6 @@ function updateGuestInfo() {
 async function handleLogout() {
   try {
     await window.supabaseClient.raw.auth.signOut();
-    localStorage.removeItem('user_session');
     window.location.href = 'auth.html';
   } catch (error) {
     console.error('Logout error:', error);
@@ -224,23 +237,13 @@ async function loadSets() {
     let availableSets = [];
 
     if (userType === 'guest') {
-      // GUEST: doar seturile publice disponibile pentru vizitatori
-      const { data: guestSets, error } = await window.supabaseClient.raw
-        .from('visitor_available_sets')
-        .select(
-          `
-          set_id,
-          order_index,
-          question_sets (
-            id, name, description, type, is_public
-          )
-        `
-        )
-        .eq('is_active', true)
-        .order('order_index');
-
-      if (error) throw error;
-      availableSets = guestSets.map((item) => item.question_sets);
+      const { data: guestSets } = await window.supabaseClient.raw
+        .from('question_sets')
+        .select('*')
+        .eq('is_public', true)
+        .order('created_at')
+        .limit(3);
+      availableSets = guestSets;
     } else if (userType === 'authenticated') {
       // USER AUTENTIFICAT: seturi publice + seturi proprii private
       if (currentUser.role === 'admin') {
@@ -251,7 +254,7 @@ async function loadSets() {
         const { data: sets, error } = await window.supabaseClient.raw
           .from('question_sets')
           .select('*')
-          .or(`is_public.eq.true,created_by.eq.${currentUser.id}`);
+          .or(`is_public.eq.true,and(created_by.eq.${currentUser.id})`);
 
         if (error) throw error;
         availableSets = sets;
@@ -285,35 +288,33 @@ async function loadQuestions() {
     let questions = [];
 
     if (userType === 'guest') {
-      // GUEST: doar întrebări din seturile publice disponibile
-      const { data: guestQuestions, error } = await window.supabaseClient.raw
-        .from('questions')
-        .select(
-          `
-          *,
-          answers (*)
-        `
-        )
-        .in(
-          'id',
-          (
-            await window.supabaseClient.raw
-              .from('question_set_items')
-              .select('question_id')
-              .in(
-                'set_id',
-                (
-                  await window.supabaseClient.raw
-                    .from('visitor_available_sets')
-                    .select('set_id')
-                    .eq('is_active', true)
-                ).data.map((v) => v.set_id)
-              )
-          ).data.map((q) => q.question_id)
-        );
+      // GUEST: întrebări din primele 3 seturi publice
+      const { data: publicSets } = await window.supabaseClient.raw
+        .from('question_sets')
+        .select('id')
+        .eq('is_public', true)
+        .order('created_at')
+        .limit(3);
 
-      if (error) throw error;
-      questions = guestQuestions;
+      if (publicSets && publicSets.length > 0) {
+        const setIds = publicSets.map((s) => s.id);
+
+        const { data: guestQuestions, error } = await window.supabaseClient.raw
+          .from('questions')
+          .select('*, answers (*)')
+          .in(
+            'id',
+            (
+              await window.supabaseClient.raw
+                .from('question_set_items')
+                .select('question_id')
+                .in('set_id', setIds)
+            ).data.map((q) => q.question_id)
+          );
+
+        if (error) throw error;
+        questions = guestQuestions;
+      }
     } else if (userType === 'authenticated') {
       // USER AUTENTIFICAT: întrebări din seturile accesibile
       questions = await window.supabaseClient.getQuestions(selectedCategory);
@@ -334,7 +335,6 @@ async function loadQuestions() {
       '<div class="text-center text-red-300 col-span-full">Eroare la încărcarea întrebărilor</div>';
   }
 }
-
 async function loadCategories() {
   const container = document.getElementById('availableCategories');
   container.innerHTML =
@@ -820,6 +820,19 @@ async function createTemporarySet(questionIds, team1, team2) {
     throw new Error(`Eroare la crearea setului temporar: ${error.message}`);
   }
 }
+
+function setCookie(name, value, hours = 24) {
+  const expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Strict`;
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 // ==================== UI HELPERS ====================
 
 function showQuestionSection() {

@@ -116,7 +116,7 @@ function showUserInfo() {
 // Actualizează info guest
 function updateGuestInfo() {
   const guestSetsCount = document.getElementById('guestSetsCount');
-  guestSetsCount.textContent = `(acces la 3 seturi publice)`;
+  guestSetsCount.textContent = `(acces la un set public)`;
 }
 
 // Logout handler

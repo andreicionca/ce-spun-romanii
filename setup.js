@@ -63,7 +63,7 @@ async function checkAuthentication() {
         role: profile?.role || 'user',
       };
       userType = 'authenticated';
-      console.log('User autentificat:', currentUser);
+      // console.log('User autentificat:', currentUser);
     }
     // 2. Guest simplu?
     else if (getCookie('is_guest') === 'true') {
@@ -234,6 +234,11 @@ async function loadSets() {
     '<div class="text-center text-blue-200 col-span-full">Se încarcă seturile...</div>';
 
   try {
+    // Afișează notificarea pentru guest-uri în jocul rapid
+    if (userType === 'guest') {
+      showGuestQuickGameNotification();
+    }
+
     let availableSets = [];
 
     if (userType === 'guest') {
@@ -242,7 +247,7 @@ async function loadSets() {
         .select('*')
         .eq('is_public', true)
         .order('created_at')
-        .limit(3);
+        .limit(2);
       availableSets = guestSets;
     } else if (userType === 'authenticated') {
       // USER AUTENTIFICAT: seturi publice + seturi proprii private
@@ -288,43 +293,107 @@ async function loadQuestions() {
     let questions = [];
 
     if (userType === 'guest') {
-      // GUEST: întrebări din primele 3 seturi publice
+      // GUEST: întrebări DOAR din primele 3 seturi publice (aceleași ca la jocul rapid)
       const { data: publicSets } = await window.supabaseClient.raw
         .from('question_sets')
         .select('id')
         .eq('is_public', true)
         .order('created_at')
-        .limit(3);
+        .limit(2);
 
       if (publicSets && publicSets.length > 0) {
         const setIds = publicSets.map((s) => s.id);
 
-        const { data: guestQuestions, error } = await window.supabaseClient.raw
-          .from('questions')
-          .select('*, answers (*)')
-          .in(
-            'id',
-            (
-              await window.supabaseClient.raw
-                .from('question_set_items')
-                .select('question_id')
-                .in('set_id', setIds)
-            ).data.map((q) => q.question_id)
-          );
+        // Obține toate întrebările din aceste seturi
+        const { data: setItems } = await window.supabaseClient.raw
+          .from('question_set_items')
+          .select('question_id')
+          .in('set_id', setIds);
 
-        if (error) throw error;
-        questions = guestQuestions;
+        if (setItems && setItems.length > 0) {
+          const questionIds = setItems.map((item) => item.question_id);
+
+          const { data: guestQuestions, error } = await window.supabaseClient.raw
+            .from('questions')
+            .select('*, answers (*)')
+            .in('id', questionIds);
+
+          if (error) throw error;
+
+          // Filtrare după categorie dacă este selectată
+          if (selectedCategory) {
+            const { data: categoryQuestions } = await window.supabaseClient.raw
+              .from('question_categories')
+              .select('question_id')
+              .eq('category_id', selectedCategory);
+
+            if (categoryQuestions) {
+              const categoryQuestionIds = categoryQuestions.map((cq) => cq.question_id);
+              questions = guestQuestions.filter((q) => categoryQuestionIds.includes(q.id));
+            }
+          } else {
+            questions = guestQuestions;
+          }
+        }
       }
     } else if (userType === 'authenticated') {
-      // USER AUTENTIFICAT: întrebări din seturile accesibile
-      questions = await window.supabaseClient.getQuestions(selectedCategory);
+      // USER AUTENTIFICAT: accesul complet normal
+      if (currentUser.role === 'admin') {
+        // ADMIN: toate întrebările
+        questions = await window.supabaseClient.getQuestions(selectedCategory);
+      } else {
+        // USER NORMAL: întrebări din seturile accesibile (publice + proprii)
+        const { data: accessibleSets } = await window.supabaseClient.raw
+          .from('question_sets')
+          .select('id')
+          .or(`is_public.eq.true,and(created_by.eq.${currentUser.id})`);
+
+        if (accessibleSets && accessibleSets.length > 0) {
+          const setIds = accessibleSets.map((s) => s.id);
+
+          const { data: setItems } = await window.supabaseClient.raw
+            .from('question_set_items')
+            .select('question_id')
+            .in('set_id', setIds);
+
+          if (setItems && setItems.length > 0) {
+            const questionIds = setItems.map((item) => item.question_id);
+
+            let query = window.supabaseClient.raw
+              .from('questions')
+              .select('*, answers (*)')
+              .in('id', questionIds);
+
+            // Filtrare după categorie dacă este selectată
+            if (selectedCategory) {
+              const { data: categoryQuestions } = await window.supabaseClient.raw
+                .from('question_categories')
+                .select('question_id')
+                .eq('category_id', selectedCategory);
+
+              if (categoryQuestions) {
+                const categoryQuestionIds = categoryQuestions.map((cq) => cq.question_id);
+                const filteredIds = questionIds.filter((id) => categoryQuestionIds.includes(id));
+                query = window.supabaseClient.raw
+                  .from('questions')
+                  .select('*, answers (*)')
+                  .in('id', filteredIds);
+              }
+            }
+
+            const { data: userQuestions, error } = await query;
+            if (error) throw error;
+            questions = userQuestions;
+          }
+        }
+      }
     }
 
     allQuestions = questions;
 
     if (questions.length === 0) {
       container.innerHTML =
-        '<div class="text-center text-blue-200 col-span-full">Nu s-au găsit întrebări</div>';
+        '<div class="text-center text-blue-200 col-span-full">Nu s-au găsit întrebări pentru această categorie</div>';
       return;
     }
 
@@ -335,17 +404,76 @@ async function loadQuestions() {
       '<div class="text-center text-red-300 col-span-full">Eroare la încărcarea întrebărilor</div>';
   }
 }
+// Helper function pentru a obține seturile accesibile guest-urilor
+async function getGuestAccessibleSets() {
+  const { data: publicSets, error } = await window.supabaseClient.raw
+    .from('question_sets')
+    .select('id, name')
+    .eq('is_public', true)
+    .order('created_at')
+    .limit(2);
+
+  if (error) {
+    console.error('Error getting guest accessible sets:', error);
+    return [];
+  }
+
+  return publicSets || [];
+}
+
+// Actualizează și loadCategories pentru consistență
 async function loadCategories() {
   const container = document.getElementById('availableCategories');
   container.innerHTML =
     '<div class="text-center text-blue-200 col-span-full">Se încarcă categoriile...</div>';
 
   try {
-    if (allCategories.length === 0) {
-      allCategories = await window.supabaseClient.getCategories();
+    let availableCategories = [];
+
+    if (userType === 'guest') {
+      // GUEST: categorii doar din seturile publice accesibile
+      const guestSets = await getGuestAccessibleSets();
+      if (guestSets.length > 0) {
+        const setIds = guestSets.map((s) => s.id);
+
+        // Obține întrebările din aceste seturi
+        const { data: setItems } = await window.supabaseClient.raw
+          .from('question_set_items')
+          .select('question_id')
+          .in('set_id', setIds);
+
+        if (setItems && setItems.length > 0) {
+          const questionIds = setItems.map((item) => item.question_id);
+
+          // Obține categoriile acestor întrebări
+          const { data: questionCategories } = await window.supabaseClient.raw
+            .from('question_categories')
+            .select('category_id')
+            .in('question_id', questionIds);
+
+          if (questionCategories && questionCategories.length > 0) {
+            const categoryIds = [...new Set(questionCategories.map((qc) => qc.category_id))];
+
+            const { data: categories } = await window.supabaseClient.raw
+              .from('categories')
+              .select('*')
+              .in('id', categoryIds)
+              .order('name');
+
+            availableCategories = categories || [];
+          }
+        }
+      }
+    } else {
+      // USER AUTENTIFICAT: toate categoriile
+      if (allCategories.length === 0) {
+        allCategories = await window.supabaseClient.getCategories();
+      }
+      availableCategories = allCategories;
     }
 
-    displayCategories(allCategories);
+    displayCategories(availableCategories);
+
     const allCategoriesBtn = document.getElementById('allCategoriesBtn');
     if (!selectedCategory && !allCategoriesBtn.classList.contains('selected')) {
       allCategoriesBtn.classList.add('selected');
@@ -356,7 +484,6 @@ async function loadCategories() {
       '<div class="text-center text-red-300 col-span-full">Eroare la încărcarea categoriilor</div>';
   }
 }
-
 // ==================== DISPLAY FUNCTIONS ====================
 
 function displaySets(sets) {
@@ -834,13 +961,42 @@ function getCookie(name) {
 }
 
 // ==================== UI HELPERS ====================
+function showGuestQuickGameNotification() {
+  // Verifică dacă notificarea există deja
+  if (document.getElementById('guestQuickNotification')) return;
 
+  const notification = document.createElement('div');
+  notification.id = 'guestQuickNotification';
+  notification.className =
+    'bg-yellow-900/50 border border-yellow-500 rounded-lg p-4 mb-4 text-yellow-200';
+  notification.innerHTML = `
+    <div class="flex items-start">
+      <i class="fas fa-info-circle text-yellow-400 mt-1 mr-3"></i>
+      <div>
+        <p class="font-semibold mb-1">Cont vizitator - acces limitat</p>
+        <p class="text-sm">Poți selecta doar din primele 2 seturi publice disponibile.
+        Pentru acces complet, <a href="auth.html" class="text-yellow-400 hover:text-yellow-300 underline">creează un cont gratuit</a>.</p>
+      </div>
+    </div>
+  `;
+
+  // Inserează notificarea la începutul secțiunii quick game
+  const quickGameSets = document.getElementById('quickGameSets');
+  quickGameSets.insertBefore(notification, quickGameSets.firstChild);
+}
+// Actualizează showQuestionSection pentru a afișa notificarea guest
 function showQuestionSection() {
   questionSection.classList.remove('hidden');
   selectedQuestions = [];
   selectedSetId = null;
   selectedCategory = null;
   document.getElementById('selectedCount').textContent = '0';
+
+  // Șterge notificările existente
+  const existingQuickNotification = document.getElementById('guestQuickNotification');
+  const existingCustomNotification = document.getElementById('guestNotification');
+  if (existingQuickNotification) existingQuickNotification.remove();
+  if (existingCustomNotification) existingCustomNotification.remove();
 
   if (gameType === 'quick') {
     quickGameSets.classList.remove('hidden');
@@ -849,8 +1005,45 @@ function showQuestionSection() {
   } else {
     customGameQuestions.classList.remove('hidden');
     quickGameSets.classList.add('hidden');
+
+    // Afișează notificarea pentru guest-uri în jocul personalizat
+    if (userType === 'guest') {
+      showGuestCustomGameNotification();
+    }
+
     loadCategories();
   }
+}
+
+// Funcție nouă pentru notificarea guest
+function showGuestCustomGameNotification() {
+  // Verifică dacă notificarea există deja
+  if (document.getElementById('guestNotification')) return;
+
+  const notification = document.createElement('div');
+  notification.id = 'guestNotification';
+  notification.className =
+    'bg-yellow-900/50 border border-yellow-500 rounded-lg p-4 mb-4 text-yellow-200';
+  notification.innerHTML = `
+    <div class="flex items-start">
+      <i class="fas fa-info-circle text-yellow-400 mt-1 mr-3"></i>
+      <div>
+        <p class="font-semibold mb-1">Cont vizitator - acces limitat</p>
+        <p class="text-sm">Poți selecta întrebări doar din primele 2 seturi publice disponibile.
+        Pentru acces complet, <a href="auth.html" class="text-yellow-400 hover:text-yellow-300 underline">creează un cont gratuit</a>.</p>
+      </div>
+    </div>
+  `;
+
+  // Inserează notificarea la începutul secțiunii custom game
+  const customGameQuestions = document.getElementById('customGameQuestions');
+  customGameQuestions.insertBefore(notification, customGameQuestions.firstChild);
+}
+
+// Actualizează updateGuestInfo pentru a reflecta limitările
+function updateGuestInfo() {
+  const guestSetsCount = document.getElementById('guestSetsCount');
+  guestSetsCount.textContent = `(acces la 2 seturi publice)`;
 }
 
 function showTeamSection() {
